@@ -44,7 +44,14 @@ body{background:white;color:black}
 <h2>Agregar Piloto a Base de Datos</h2>
 <input type="number" id="numeroPiloto" placeholder="Número">
 <input type="text" id="nombrePiloto" placeholder="Nombre del piloto">
-<input type="text" id="categoriaPiloto" placeholder="Categoría. Ej: QX A">
+<select id="categoriaPiloto">
+<option value="">Seleccione categoría</option>
+<option value="QX A">QX A</option>
+<option value="QX B">QX B</option>
+<option value="QX C">QX C</option>
+<option value="UTV A">UTV A</option>
+<option value="UTV B">UTV B</option>
+</select>
 <button onclick="guardarPilotoBase()">GUARDAR PILOTO</button>
 <button class="gris" onclick="cargarCategorias()">ACTUALIZAR CATEGORÍAS</button>
 </div>
