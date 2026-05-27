@@ -47,6 +47,8 @@ body{background:white;color:black}
 <input type="text" id="nombreCompetencia" placeholder="Nombre de competencia">
 <input type="date" id="fechaCompetencia">
 <input type="text" id="categoriaCarrera" placeholder="Categoría de carrera">
+<button class="gris" onclick="filtrarPorCategoria()">FILTRAR COMPETIDORES</button>
+<button class="amarillo" onclick="mostrarTodosPilotos()">MOSTRAR TODOS</button>
 <input type="number" id="totalVueltas" placeholder="Cantidad de vueltas">
 <select id="mangaActual">
 <option value="1">Manga 1</option>
@@ -135,6 +137,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let pilotos = [];
+let pilotosOriginales = [];
 let carreraIniciada = false;
 let contadorPaso = 0;
 let competenciaId = localStorage.getItem("competenciaId") || "";
@@ -360,6 +363,42 @@ alert("✅ Pilotos importados correctamente");
 reader.readAsArrayBuffer(file);
 }
 
+function filtrarPorCategoria(){
+let categoria = document.getElementById("categoriaCarrera").value.trim();
+
+if(categoria === ""){
+alert("Escribe la categoría de carrera para filtrar.");
+return;
+}
+
+if(pilotosOriginales.length === 0){
+pilotosOriginales = [...pilotos];
+}
+
+pilotos = pilotosOriginales.filter(p =>
+String(p.categoria || "").toLowerCase().trim() === categoria.toLowerCase().trim()
+);
+
+if(pilotos.length === 0){
+alert("No hay pilotos en esta categoría.");
+pilotos = [...pilotosOriginales];
+return;
+}
+
+guardarLocal();
+mostrarTodo();
+
+alert("✅ Competidores filtrados por categoría: " + categoria);
+}
+
+function mostrarTodosPilotos(){
+if(pilotosOriginales.length > 0){
+pilotos = [...pilotosOriginales];
+guardarLocal();
+mostrarTodo();
+alert("✅ Se muestran todos los pilotos.");
+}
+}
 function empezarCarrera(){
 let vueltas = document.getElementById("totalVueltas").value;
 
