@@ -53,7 +53,9 @@ body{background:white;color:black}
 <h2>Nueva Competencia</h2>
 <input type="text" id="nombreCompetencia" placeholder="Nombre de competencia">
 <input type="date" id="fechaCompetencia">
-<select id="categoriaCarrera"></select>
+<select id="categoriaCarrera">
+<option value="">Seleccione categoría</option>
+</select>
 <input type="number" id="totalVueltas" placeholder="Cantidad de vueltas">
 <select id="mangaActual">
 <option value="1">Manga 1</option>
@@ -65,7 +67,9 @@ body{background:white;color:black}
 
 <div class="panel">
 <h2>Competencias Guardadas</h2>
-<select id="listaCompetencias" onchange="cargarCompetenciaSeleccionada()"></select>
+<select id="listaCompetencias" onchange="cargarCompetenciaSeleccionada()">
+<option value="">Seleccione competencia</option>
+</select>
 <button class="gris" onclick="cargarCompetencias()">ACTUALIZAR LISTA</button>
 </div>
 
@@ -131,6 +135,8 @@ let carreraIniciada = false;
 let contadorPaso = 0;
 let competenciaId = localStorage.getItem("competenciaId") || "";
 let resultados = {manga1:[],manga2:[]};
+let avisoDosVueltas = false;
+let avisoUltimaVuelta = false;
 
 const puntos = {
 1:25,2:22,3:20,4:18,5:16,
@@ -142,7 +148,7 @@ const puntos = {
 iniciar();
 
 function normalizar(txt){
-return String(txt || "").trim().toUpperCase();
+return String(txt || "").trim().toUpperCase().replace(/\s+/g," ");
 }
 
 function crearId(numero,categoria){
@@ -150,42 +156,29 @@ return normalizar(categoria).replaceAll(" ","_") + "_" + String(numero).trim();
 }
 
 async function iniciar(){
-
+try{
 cargarLocal();
-
 await cargarCategorias();
-
 await cargarCompetencias();
 
 if(competenciaId){
-
-let doc = await db.collection("competencias")
-.doc(competenciaId)
-.get();
-
+let doc = await db.collection("competencias").doc(competenciaId).get();
 if(doc.exists){
-
 let c = doc.data();
-
 document.getElementById("nombreCompetencia").value = c.nombre || "";
-
 document.getElementById("fechaCompetencia").value = c.fecha || "";
-
 document.getElementById("categoriaCarrera").value = c.categoria || "";
-
 document.getElementById("totalVueltas").value = c.vueltas || "";
-
 pilotos = c.pilotos || [];
-
-resultados = c.resultados || {
-manga1:[],
-manga2:[]
-};
-
+resultados = c.resultados || {manga1:[],manga2:[]};
+contadorPaso = c.contadorPaso || 0;
 }
 }
 
 mostrarTodo();
+}catch(error){
+alert("Error al iniciar: " + error.message);
+}
 }
 
 function guardarLocal(){
@@ -203,9 +196,8 @@ contadorPaso = parseInt(localStorage.getItem("contadorPaso")) || 0;
 
 async function guardarPilotoBase(){
 try{
-
 let numero = document.getElementById("numeroPiloto").value.trim();
-let nombre = document.getElementById("nombrePiloto").value.trim();
+let nombre = normalizar(document.getElementById("nombrePiloto").value);
 let categoria = normalizar(document.getElementById("categoriaPiloto").value);
 
 if(!numero || !nombre || !categoria){
@@ -230,33 +222,16 @@ document.getElementById("categoriaPiloto").value = "";
 await cargarCategorias();
 
 alert("✅ Piloto guardado: " + id);
-
 }catch(error){
-alert("❌ ERROR AL GUARDAR: " + error.message);
+alert("❌ ERROR AL GUARDAR PILOTO: " + error.message);
 console.error(error);
 }
 }
 
-let id = crearId(numero,categoria);
-
-await db.collection("pilotos").doc(id).set({
-id,
-numero,
-nombre,
-categoria,
-actualizado:new Date().toISOString()
-},{merge:true});
-
-document.getElementById("numeroPiloto").value = "";
-document.getElementById("nombrePiloto").value = "";
-document.getElementById("categoriaPiloto").value = "";
-
-await cargarCategorias();
-alert("✅ Piloto guardado en " + categoria);
-}
-
 async function cargarCategorias(){
+try{
 let select = document.getElementById("categoriaCarrera");
+let actual = select.value;
 select.innerHTML = `<option value="">Seleccione categoría</option>`;
 
 let snap = await db.collection("pilotos").get();
@@ -264,19 +239,25 @@ let cats = [];
 
 snap.forEach(doc=>{
 let p = doc.data();
-if(p.categoria && !cats.includes(p.categoria)){
-cats.push(p.categoria);
+let cat = normalizar(p.categoria || "");
+if(cat && !cats.includes(cat)){
+cats.push(cat);
 }
 });
 
 cats.sort();
 
 cats.forEach(cat=>{
-select.innerHTML += `<option value="${cat}">${cat}</option>`;
+let selected = cat === actual ? "selected" : "";
+select.innerHTML += `<option value="${cat}" ${selected}>${cat}</option>`;
 });
+}catch(error){
+alert("Error al cargar categorías: " + error.message);
+}
 }
 
 async function cargarPilotosCategoria(){
+try{
 let categoria = document.getElementById("categoriaCarrera").value;
 
 if(!categoria){
@@ -310,16 +291,26 @@ guardarLocal();
 mostrarTodo();
 
 alert("✅ Se cargaron " + pilotos.length + " pilotos de " + categoria);
+}catch(error){
+alert("Error al cargar pilotos: " + error.message);
+}
 }
 
+async function guardarCompetencia(){
+try{
+let nombre = document.getElementById("nombreCompetencia").value || "Competencia sin nombre";
+let fecha = document.getElementById("fechaCompetencia").value || new Date().toISOString().slice(0,10);
+let categoria = document.getElementById("categoriaCarrera").value || "";
+let vueltas = document.getElementById("totalVueltas").value || "";
+
 let data = {
-nombre,
-fecha,
-categoria,
-vueltas,
-pilotos,
-resultados,
-contadorPaso,
+nombre:nombre,
+fecha:fecha,
+categoria:categoria,
+vueltas:vueltas,
+pilotos:pilotos,
+resultados:resultados,
+contadorPaso:contadorPaso,
 actualizado:new Date().toISOString()
 };
 
@@ -333,6 +324,9 @@ competenciaId = doc.id;
 guardarLocal();
 await cargarCompetencias();
 alert("✅ Competencia guardada");
+}catch(error){
+alert("Error al guardar competencia: " + error.message);
+}
 }
 
 async function guardarCompetenciaFirebase(){
@@ -343,13 +337,15 @@ nombre:document.getElementById("nombreCompetencia").value || "Competencia sin no
 fecha:document.getElementById("fechaCompetencia").value || new Date().toISOString().slice(0,10),
 categoria:document.getElementById("categoriaCarrera").value || "",
 vueltas:document.getElementById("totalVueltas").value || "",
-pilotos,
-resultados,
+pilotos:pilotos,
+resultados:resultados,
+contadorPaso:contadorPaso,
 actualizado:new Date().toISOString()
 },{merge:true});
 }
 
 async function cargarCompetencias(){
+try{
 let select = document.getElementById("listaCompetencias");
 select.innerHTML = `<option value="">Seleccione competencia</option>`;
 
@@ -359,14 +355,15 @@ snap.forEach(doc=>{
 let c = doc.data();
 select.innerHTML += `<option value="${doc.id}">${c.fecha || ""} - ${c.nombre || ""} - ${c.categoria || ""}</option>`;
 });
+}catch(error){
+alert("Error al cargar competencias: " + error.message);
+}
 }
 
 async function cargarCompetenciaSeleccionada(){
+try{
 let id = document.getElementById("listaCompetencias").value;
-
-if(!id){
-return;
-}
+if(!id) return;
 
 let doc = await db.collection("competencias").doc(id).get();
 
@@ -376,7 +373,6 @@ return;
 }
 
 let c = doc.data();
-
 competenciaId = id;
 
 document.getElementById("nombreCompetencia").value = c.nombre || "";
@@ -384,43 +380,19 @@ document.getElementById("fechaCompetencia").value = c.fecha || "";
 document.getElementById("totalVueltas").value = c.vueltas || "";
 
 await cargarCategorias();
-
 document.getElementById("categoriaCarrera").value = c.categoria || "";
 
 pilotos = c.pilotos || [];
-
-resultados = c.resultados || {
-manga1:[],
-manga2:[]
-};
-
+resultados = c.resultados || {manga1:[],manga2:[]};
 contadorPaso = c.contadorPaso || 0;
 
 guardarLocal();
 mostrarTodo();
 
 alert("✅ Competencia cargada con " + pilotos.length + " pilotos.");
+}catch(error){
+alert("Error al cargar competencia: " + error.message);
 }
-let id = document.getElementById("listaCompetencias").value;
-if(!id) return;
-
-let doc = await db.collection("competencias").doc(id).get();
-if(!doc.exists) return;
-
-let c = doc.data();
-competenciaId = id;
-
-document.getElementById("nombreCompetencia").value = c.nombre || "";
-document.getElementById("fechaCompetencia").value = c.fecha || "";
-document.getElementById("categoriaCarrera").value = c.categoria || "";
-document.getElementById("totalVueltas").value = c.vueltas || "";
-
-pilotos = c.pilotos || [];
-resultados = c.resultados || {manga1:[],manga2:[]};
-
-guardarLocal();
-mostrarTodo();
-alert("✅ Competencia cargada");
 }
 
 function empezarCarrera(){
@@ -438,6 +410,8 @@ return;
 
 carreraIniciada = true;
 contadorPaso = 0;
+avisoDosVueltas = false;
+avisoUltimaVuelta = false;
 
 pilotos.forEach(p=>{
 p.vueltas = 0;
@@ -466,29 +440,22 @@ if(p.finalizado) return;
 contadorPaso++;
 p.vueltas++;
 p.ultimoPaso = contadorPaso;
+
 let lider = rankingEnVivo()[0];
 
 if(lider){
+let faltanCarrera = total - lider.vueltas;
 
-let faltanCarrera =
-total - lider.vueltas;
-
-if(faltanCarrera === 2){
-
+if(faltanCarrera === 2 && !avisoDosVueltas){
+avisoDosVueltas = true;
 hablar("Faltan dos vueltas para terminar la carrera");
-
 }
 
-if(faltanCarrera === 1){
-
+if(faltanCarrera === 1 && !avisoUltimaVuelta){
+avisoUltimaVuelta = true;
 hablar("Última vuelta");
-
 }
-
 }
-
-let faltan = total - p.vueltas;
-
 
 if(p.vueltas >= total){
 p.finalizado = true;
@@ -613,7 +580,6 @@ div.innerHTML += `
 Categoría: ${p.categoria}
 <div class="vueltas">${p.vueltas} vueltas</div>
 ${total > 0 && !p.finalizado ? `<p>Faltan: ${faltan}</p>` : ""}
-${faltan === 2 && !p.finalizado ? `<div class="alerta">⚠️ FALTAN 2 VUELTAS</div>` : ""}
 ${p.finalizado ? `<div class="alerta">🏁 FINALIZÓ - POSICIÓN ${p.posicion}</div>` : ""}
 <button class="amarillo" onclick="restarVuelta(${index})">QUITAR VUELTA</button>
 </div>`;
