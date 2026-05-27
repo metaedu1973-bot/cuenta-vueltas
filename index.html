@@ -202,6 +202,8 @@ contadorPaso = parseInt(localStorage.getItem("contadorPaso")) || 0;
 }
 
 async function guardarPilotoBase(){
+try{
+
 let numero = document.getElementById("numeroPiloto").value.trim();
 let nombre = document.getElementById("nombrePiloto").value.trim();
 let categoria = normalizar(document.getElementById("categoriaPiloto").value);
@@ -209,6 +211,30 @@ let categoria = normalizar(document.getElementById("categoriaPiloto").value);
 if(!numero || !nombre || !categoria){
 alert("Completa número, nombre y categoría.");
 return;
+}
+
+let id = crearId(numero,categoria);
+
+await db.collection("pilotos").doc(id).set({
+id:id,
+numero:numero,
+nombre:nombre,
+categoria:categoria,
+actualizado:new Date().toISOString()
+},{merge:true});
+
+document.getElementById("numeroPiloto").value = "";
+document.getElementById("nombrePiloto").value = "";
+document.getElementById("categoriaPiloto").value = "";
+
+await cargarCategorias();
+
+alert("✅ Piloto guardado: " + id);
+
+}catch(error){
+alert("❌ ERROR AL GUARDAR: " + error.message);
+console.error(error);
+}
 }
 
 let id = crearId(numero,categoria);
