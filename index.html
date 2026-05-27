@@ -263,7 +263,14 @@ pilotosOriginales = [];
 
 for(let f of filas){
 let numero = f.Numero || f.numero || f.Número || f["N°"] || f.Num;
-let nombre = f.Nombre || f.nombre || f.Piloto || f.piloto;
+let nombre =
+f.Nombre ||
+f.nombre ||
+f["Competidor unico"] ||
+f["COMPETIDOR UNICO"] ||
+f["Competidor Único"] ||
+f.Piloto ||
+f.piloto;
 let categoria = f.Categoria || f.Categoría || f.categoria || f.CATEGORIA || "";
 
 if(numero && nombre && categoria){
