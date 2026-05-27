@@ -286,12 +286,6 @@ mostrarTodo();
 alert("✅ Se cargaron " + pilotos.length + " pilotos de " + categoria);
 }
 
-async function guardarCompetencia(){
-let nombre = document.getElementById("nombreCompetencia").value || "Competencia sin nombre";
-let fecha = document.getElementById("fechaCompetencia").value || new Date().toISOString().slice(0,10);
-let categoria = document.getElementById("categoriaCarrera").value || "";
-let vueltas = document.getElementById("totalVueltas").value || "";
-
 let data = {
 nombre,
 fecha,
@@ -299,6 +293,7 @@ categoria,
 vueltas,
 pilotos,
 resultados,
+contadorPaso,
 actualizado:new Date().toISOString()
 };
 
@@ -341,6 +336,45 @@ select.innerHTML += `<option value="${doc.id}">${c.fecha || ""} - ${c.nombre || 
 }
 
 async function cargarCompetenciaSeleccionada(){
+let id = document.getElementById("listaCompetencias").value;
+
+if(!id){
+return;
+}
+
+let doc = await db.collection("competencias").doc(id).get();
+
+if(!doc.exists){
+alert("No se encontró la competencia.");
+return;
+}
+
+let c = doc.data();
+
+competenciaId = id;
+
+document.getElementById("nombreCompetencia").value = c.nombre || "";
+document.getElementById("fechaCompetencia").value = c.fecha || "";
+document.getElementById("totalVueltas").value = c.vueltas || "";
+
+await cargarCategorias();
+
+document.getElementById("categoriaCarrera").value = c.categoria || "";
+
+pilotos = c.pilotos || [];
+
+resultados = c.resultados || {
+manga1:[],
+manga2:[]
+};
+
+contadorPaso = c.contadorPaso || 0;
+
+guardarLocal();
+mostrarTodo();
+
+alert("✅ Competencia cargada con " + pilotos.length + " pilotos.");
+}
 let id = document.getElementById("listaCompetencias").value;
 if(!id) return;
 
