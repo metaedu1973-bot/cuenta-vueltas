@@ -258,8 +258,6 @@ let workbook = XLSX.read(data,{type:"array"});
 let hoja = workbook.Sheets[workbook.SheetNames[0]];
 let filas = XLSX.utils.sheet_to_json(hoja);
 
-pilotos = [];
-pilotosOriginales = [];
 
 for(let f of filas){
 let numero = f.Numero || f.numero || f.Número || f["N°"] || f.Num;
@@ -287,8 +285,12 @@ posicion:null,
 ultimoPaso:0
 };
 
+let existe = pilotosOriginales.find(p => p.id === nuevoPiloto.id);
+
+if(!existe){
 pilotos.push(nuevoPiloto);
 pilotosOriginales.push(nuevoPiloto);
+}
 
 await db.collection("pilotos").doc(id).set({
 id:nuevoPiloto.id,
