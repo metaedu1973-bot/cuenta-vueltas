@@ -258,32 +258,39 @@ let workbook = XLSX.read(data,{type:"array"});
 let hoja = workbook.Sheets[workbook.SheetNames[0]];
 let filas = XLSX.utils.sheet_to_json(hoja);
 
+pilotos = [];
+pilotosOriginales = [];
 
 for(let f of filas){
-let numero = f.Numero || f.numero || f.Número || f["N°"] || f.Num;
-let nombre =
-f.Nombre ||
-f.nombre ||
-f["Competidor unico"] ||
-f["COMPETIDOR UNICO"] ||
-f["Competidor Único"] ||
-f.Piloto ||
-f.piloto;
-let categoria = f.Categoria || f.Categoría || f.categoria || f.CATEGORIA || "";
+let numero = f.Numero || f.numero || f.Número || f["N°"];
+let categoria = f.Categoria || f.categoria || f.CATEGORIA || f.Categoría;
+let nombre = f.Nombre || f.nombre || f["Competidor unico"] || f["Competidor Único"] || f["COMPETIDOR UNICO"];
 
-if(numero && nombre && categoria){
-let id = crearId(numero,categoria);
-
+if(numero && categoria && nombre){
 let nuevoPiloto = {
-id,
-numero:String(numero).trim(),
-nombre:String(nombre).trim(),
-categoria:String(categoria).trim(),
+id: String(numero).trim() + "_" + String(categoria).trim().toUpperCase().replaceAll(" ","_"),
+numero: String(numero).trim(),
+nombre: String(nombre).trim(),
+categoria: String(categoria).trim().toUpperCase(),
 vueltas:0,
 finalizado:false,
 posicion:null,
 ultimoPaso:0
 };
+
+pilotos.push(nuevoPiloto);
+pilotosOriginales.push(nuevoPiloto);
+}
+}
+
+guardarLocal();
+mostrarTodo();
+
+alert("✅ Se importaron " + pilotos.length + " pilotos correctamente");
+};
+
+reader.readAsArrayBuffer(file);
+}
 
 let existe = pilotosOriginales.find(p => p.id === nuevoPiloto.id);
 
@@ -362,29 +369,26 @@ alert("✅ Piloto guardado");
 }
 
 function filtrarPorCategoria(){
-let categoria = document.getElementById("categoriaCarrera").value.trim();
+let categoria = document.getElementById("categoriaCarrera").value.trim().toUpperCase();
 
 if(categoria === ""){
-alert("Escribe la categoría de carrera para filtrar.");
+alert("Escribe la categoría de carrera.");
 return;
 }
 
-if(pilotosOriginales.length === 0){
-pilotosOriginales = [...pilotos];
-}
-
 pilotos = pilotosOriginales.filter(p =>
-String(p.categoria || "").toLowerCase().trim() === categoria.toLowerCase().trim()
+String(p.categoria || "").trim().toUpperCase() === categoria
 );
 
 if(pilotos.length === 0){
-alert("No hay pilotos en esta categoría.");
+alert("No hay pilotos en esta categoría: " + categoria);
 return;
 }
 
 guardarLocal();
 mostrarTodo();
-alert("✅ Competidores filtrados: " + categoria);
+
+alert("✅ Filtrado: " + pilotos.length + " pilotos en " + categoria);
 }
 
 function mostrarTodosPilotos(){
