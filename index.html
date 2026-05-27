@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cuenta Vueltas Profesional</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:white}
+header{background:#020617;padding:8px;text-align:center}
+h1{font-size:20px;margin:3px}
+h2{font-size:14px;margin:5px 0}
+.panel{background:#1e293b;margin:5px;padding:6px;border-radius:8px}
+input,select,button{width:100%;box-sizing:border-box;padding:8px;margin:4px 0;border:none;border-radius:8px;font-size:13px}
+button{background:#22c55e;color:white;font-weight:bold;cursor:pointer}
+.azul{background:#2563eb}.rojo{background:#dc2626}.amarillo{background:#facc15;color:black}.gris{background:#475569}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(65px,1fr));gap:5px}
+.numeroBtn{font-size:18px;height:52px;background:#16a34a}
+.piloto{background:#334155;padding:7px;margin:5px 0;border-radius:8px}
+.vueltas{font-size:18px;font-weight:bold;color:#facc15}
+.alerta{background:#dc2626;padding:5px;border-radius:8px;text-align:center;font-size:12px;font-weight:bold;margin-top:5px}
+.primero{border-left:5px solid gold}.segundo{border-left:5px solid silver}.tercero{border-left:5px solid #fb923c}
+table{width:100%;border-collapse:collapse;background:white;color:black;font-size:12px;display:block;overflow-x:auto;white-space:nowrap}
+th,td{border:1px solid #ccc;padding:5px;text-align:center}
+th{background:#020617;color:white}
+@media print{
+button,input,select{display:none}
+body{background:white;color:black}
+.panel{background:white;color:black;border:1px solid #ccc}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🏁 CUENTA VUELTAS PROFESIONAL</h1>
+<h2>Excel + Firebase + 2 Mangas</h2>
+</header>
+
+<div class="panel">
+<h2>Datos de Competencia</h2>
+<input type="text" id="nombreCompetencia" placeholder="Nombre de competencia">
+<input type="date" id="fechaCompetencia">
+<input type="text" id="categoriaCarrera" placeholder="Categoría de carrera">
+<input type="number" id="totalVueltas" placeholder="Cantidad de vueltas">
+<select id="mangaActual">
+<option value="1">Manga 1</option>
+<option value="2">Manga 2</option>
+</select>
+<button class="azul" onclick="crearCompetencia()">GUARDAR COMPETENCIA</button>
+</div>
+
+<div class="panel">
+<h2>Competencias Guardadas</h2>
+<select id="listaCompetencias" onchange="cargarCompetenciaSeleccionada()">
+<option value="">Seleccione competencia</option>
+</select>
+<button class="gris" onclick="cargarCompetencias()">ACTUALIZAR LISTA</button>
+</div>
+
+<div class="panel">
+<h2>Importar Pilotos desde Excel</h2>
+<input type="file" accept=".xlsx,.xls,.csv" onchange="importarExcel(event)">
+<p style="font-size:12px">Tu Excel debe tener: Numero | Nombre | Categoria</p>
+</div>
+
+<div class="panel">
+<h2>Agregar Piloto Manual</h2>
+<input type="number" id="numero" placeholder="Número" oninput="buscarPilotoPorNumero()">
+<input type="text" id="nombre" placeholder="Nombre">
+<input type="text" id="categoriaPiloto" placeholder="Categoría">
+<button onclick="agregarPiloto()">AGREGAR PILOTO</button>
+</div>
+
+<div class="panel">
+<button class="azul" onclick="empezarCarrera()">EMPEZAR CARRERA</button>
+<button class="rojo" onclick="finalizarCarrera()">FINALIZAR CARRERA</button>
+</div>
+
+<div class="panel">
+<h2>PASO POR META</h2>
+<div id="botonesPaso" class="grid"></div>
+</div>
+
+<div class="panel">
+<h2>POSICIONES EN VIVO</h2>
+<div id="rankingVivo"></div>
+</div>
+
+<div class="panel">
+<h2>PILOTOS</h2>
+<div id="listaPilotos"></div>
+</div>
+
+<div class="panel">
+<h2>MANGA 1</h2>
+<div id="resultadoManga1"></div>
+</div>
+
+<div class="panel">
+<h2>MANGA 2</h2>
+<div id="resultadoManga2"></div>
+</div>
+
+<div class="panel">
+<h2>REPORTE GENERAL</h2>
+<div id="tablaGeneral"></div>
+<button class="azul" onclick="descargarReporteCSV()">DESCARGAR EXCEL</button>
+<button class="amarillo" onclick="window.print()">GUARDAR PDF</button>
+</div>
+
+<div class="panel">
+<button class="amarillo" onclick="guardarManga()">GUARDAR MANGA</button>
+<button class="gris" onclick="limpiarSoloVueltas()">LIMPIAR VUELTAS</button>
+<button class="rojo" onclick="reiniciarTodo()">BORRAR TODO LOCAL</button>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCaoe6R_Qbjl7TACUGgLxPd5oWfKp8oW-o",
+  authDomain: "cuenta-vueltas-59c99.firebaseapp.com",
+  projectId: "cuenta-vueltas-59c99",
+  storageBucket: "cuenta-vueltas-59c99.firebasestorage.app",
+  messagingSenderId: "425422890967",
+  appId: "1:425422890967:web:874535c5dc1e44c5c2cd92",
+  measurementId: "G-F5EE9VRLHB"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let pilotos = [];
+let carreraIniciada = false;
+let contadorPaso = 0;
+let competenciaId = localStorage.getItem("competenciaId") || "";
+
+let resultados = {
+manga1:[],
+manga2:[]
+};
+
+const puntos = {
+1:25,2:22,3:20,4:18,5:16,
+6:15,7:14,8:13,9:12,10:11,
+11:10,12:9,13:8,14:7,15:6,
+16:5,17:4,18:3,19:2,20:1
+};
+
+cargarLocal();
+cargarCompetencias();
+
+function guardarLocal(){
+localStorage.setItem("pilotosCuenta",JSON.stringify(pilotos));
+localStorage.setItem("resultadosCuenta",JSON.stringify(resultados));
+localStorage.setItem("contadorPaso",contadorPaso);
+localStorage.setItem("competenciaId",competenciaId);
+}
+
+function cargarLocal(){
+pilotos = JSON.parse(localStorage.getItem("pilotosCuenta")) || [];
+resultados = JSON.parse(localStorage.getItem("resultadosCuenta")) || {manga1:[],manga2:[]};
+contadorPaso = parseInt(localStorage.getItem("contadorPaso")) || 0;
+mostrarTodo();
+}
+
+async function crearCompetencia(){
+let nombre = document.getElementById("nombreCompetencia").value || "Competencia sin nombre";
+let fecha = document.getElementById("fechaCompetencia").value || new Date().toISOString().slice(0,10);
+let categoria = document.getElementById("categoriaCarrera").value || "Sin categoría";
+let vueltas = document.getElementById("totalVueltas").value || "";
+
+let data = {
+nombre,
+fecha,
+categoria,
+vueltas,
+pilotos,
+resultados,
+actualizado:new Date().toISOString()
+};
+
+if(competenciaId){
+await db.collection("competencias").doc(competenciaId).set(data,{merge:true});
+}else{
+let doc = await db.collection("competencias").add(data);
+competenciaId = doc.id;
+}
+
+guardarLocal();
+cargarCompetencias();
+alert("✅ Competencia guardada");
+}
+
+async function guardarCompetenciaFirebase(){
+if(!competenciaId) return;
+
+await db.collection("competencias").doc(competenciaId).set({
+nombre:document.getElementById("nombreCompetencia").value || "Competencia sin nombre",
+fecha:document.getElementById("fechaCompetencia").value || new Date().toISOString().slice(0,10),
+categoria:document.getElementById("categoriaCarrera").value || "",
+vueltas:document.getElementById("totalVueltas").value || "",
+pilotos,
+resultados,
+actualizado:new Date().toISOString()
+},{merge:true});
+}
+
+async function cargarCompetencias(){
+let select = document.getElementById("listaCompetencias");
+select.innerHTML = `<option value="">Seleccione competencia</option>`;
+
+let snap = await db.collection("competencias").orderBy("actualizado","desc").limit(50).get();
+
+snap.forEach(doc=>{
+let c = doc.data();
+select.innerHTML += `<option value="${doc.id}">${c.fecha || ""} - ${c.nombre || ""} - ${c.categoria || ""}</option>`;
+});
+}
+
+async function cargarCompetenciaSeleccionada(){
+let id = document.getElementById("listaCompetencias").value;
+if(!id) return;
+
+let doc = await db.collection("competencias").doc(id).get();
+if(!doc.exists) return;
+
+let c = doc.data();
+competenciaId = id;
+
+document.getElementById("nombreCompetencia").value = c.nombre || "";
+document.getElementById("fechaCompetencia").value = c.fecha || "";
+document.getElementById("categoriaCarrera").value = c.categoria || "";
+document.getElementById("totalVueltas").value = c.vueltas || "";
+
+pilotos = c.pilotos || [];
+resultados = c.resultados || {manga1:[],manga2:[]};
+
+guardarLocal();
+mostrarTodo();
+alert("✅ Competencia cargada");
+}
+
+async function buscarPilotoPorNumero(){
+let numero = document.getElementById("numero").value;
+if(!numero) return;
+
+let local = pilotos.find(p=>String(p.numero) === String(numero));
+if(local){
+document.getElementById("nombre").value = local.nombre || "";
+document.getElementById("categoriaPiloto").value = local.categoria || "";
+return;
+}
+
+let doc = await db.collection("pilotos").doc(String(numero)).get();
+if(doc.exists){
+let p = doc.data();
+document.getElementById("nombre").value = p.nombre || "";
+document.getElementById("categoriaPiloto").value = p.categoria || "";
+}
+}
+
+async function agregarPiloto(){
+let numero = document.getElementById("numero").value.trim();
+let nombre = document.getElementById("nombre").value.trim();
+let categoria = document.getElementById("categoriaPiloto").value.trim();
+
+if(numero === "" || nombre === ""){
+alert("Completa número y nombre.");
+return;
+}
+
+let existe = pilotos.find(p=>String(p.numero) === String(numero));
+
+if(existe){
+existe.nombre = nombre;
+existe.categoria = categoria;
+}else{
+pilotos.push({
+numero,
+nombre,
+categoria,
+vueltas:0,
+finalizado:false,
+posicion:null,
+ultimoPaso:0
+});
+}
+
+await db.collection("pilotos").doc(String(numero)).set({
+numero,
+nombre,
+categoria,
+actualizado:new Date().toISOString()
+},{merge:true});
+
+document.getElementById("numero").value = "";
+document.getElementById("nombre").value = "";
+document.getElementById("categoriaPiloto").value = "";
+
+guardarLocal();
+guardarCompetenciaFirebase();
+mostrarTodo();
+}
+
+async function importarExcel(event){
+let file = event.target.files[0];
+if(!file) return;
+
+let reader = new FileReader();
+
+reader.onload = async function(e){
+let data = new Uint8Array(e.target.result);
+let workbook = XLSX.read(data,{type:"array"});
+let hoja = workbook.Sheets[workbook.SheetNames[0]];
+let filas = XLSX.utils.sheet_to_json(hoja);
+
+for(let f of filas){
+let numero = f.Numero || f.numero || f.Número || f["N°"] || f.Num;
+let nombre = f.Nombre || f.nombre || f.Piloto || f.piloto;
+let categoria = f.Categoria || f.Categoría || f.categoria || f.CATEGORIA || "";
+
+if(numero && nombre){
+let existe = pilotos.find(p=>String(p.numero) === String(numero));
+
+if(!existe){
+pilotos.push({
+numero:String(numero),
+nombre:String(nombre),
+categoria:String(categoria),
+vueltas:0,
+finalizado:false,
+posicion:null,
+ultimoPaso:0
+});
+}else{
+existe.nombre = String(nombre);
+existe.categoria = String(categoria);
+}
+
+await db.collection("pilotos").doc(String(numero)).set({
+numero:String(numero),
+nombre:String(nombre),
+categoria:String(categoria),
+actualizado:new Date().toISOString()
+},{merge:true});
+}
+}
+
+guardarLocal();
+guardarCompetenciaFirebase();
+mostrarTodo();
+alert("✅ Pilotos importados correctamente");
+};
+
+reader.readAsArrayBuffer(file);
+}
+
+function empezarCarrera(){
+let vueltas = document.getElementById("totalVueltas").value;
+
+if(vueltas === "" || vueltas <= 0){
+alert("Escribe la cantidad de vueltas.");
+return;
+}
+
+if(pilotos.length === 0){
+alert("Agrega o importa pilotos.");
+return;
+}
+
+carreraIniciada = true;
+contadorPaso = 0;
+
+pilotos.forEach(p=>{
+p.vueltas = 0;
+p.finalizado = false;
+p.posicion = null;
+p.ultimoPaso = 0;
+});
+
+guardarLocal();
+guardarCompetenciaFirebase();
+mostrarTodo();
+alert("🏁 Carrera iniciada");
+}
+
+function sumarVuelta(index){
+if(!carreraIniciada){
+alert("Primero inicia carrera.");
+return;
+}
+
+let total = parseInt(document.getElementById("totalVueltas").value);
+
+if(pilotos[index].finalizado) return;
+
+contadorPaso++;
+pilotos[index].vueltas++;
+pilotos[index].ultimoPaso = contadorPaso;
+
+let faltan = total - pilotos[index].vueltas;
+
+if(faltan === 2){
+hablar("Piloto número " + pilotos[index].numero + " le faltan dos vueltas");
+}
+
+if(pilotos[index].vueltas >= total){
+pilotos[index].finalizado = true;
+pilotos[index].posicion = obtenerPosicionFinal();
+hablar("Piloto número " + pilotos[index].numero + " terminó");
+}
+
+guardarLocal();
+guardarCompetenciaFirebase();
+mostrarTodo();
+}
+
+function obtenerPosicionFinal(){
+return pilotos.filter(p=>p.finalizado && p.posicion !== null).length + 1;
+}
+
+function rankingEnVivo(){
+return [...pilotos].sort((a,b)=>{
+if(b.vueltas !== a.vueltas) return b.vueltas - a.vueltas;
+return a.ultimoPaso - b.ultimoPaso;
+});
+}
+
+function mostrarTodo(){
+mostrarBotones();
+mostrarRankingVivo();
+mostrarPilotos();
+mostrarResultados();
+mostrarTablaGeneral();
+}
+
+function mostrarBotones(){
+let div = document.getElementById("botonesPaso");
+div.innerHTML = "";
+
+pilotos.forEach((p,index)=>{
+div.innerHTML += `<button class="numeroBtn" onclick="sumarVuelta(${index})">#${p.numero}</button>`;
+});
+}
+
+function mostrarRankingVivo(){
+let div = document.getElementById("rankingVivo");
+let ranking = rankingEnVivo();
+
+if(ranking.length === 0){
+div.innerHTML = "<p>No hay pilotos.</p>";
+return;
+}
+
+let html = `<table>
+<tr><th>Pos</th><th>N°</th><th>Piloto</th><th>Categoría</th><th>Vueltas</th></tr>`;
+
+ranking.forEach((p,i)=>{
+html += `<tr>
+<td>${i+1}</td>
+<td>${p.numero}</td>
+<td>${p.nombre}</td>
+<td>${p.categoria || ""}</td>
+<td>${p.vueltas}</td>
+</tr>`;
+});
+
+html += "</table>";
+div.innerHTML = html;
+}
+
+function mostrarPilotos(){
+let div = document.getElementById("listaPilotos");
+div.innerHTML = "";
+
+let total = parseInt(document.getElementById("totalVueltas").value || 0);
+let ranking = rankingEnVivo();
+
+ranking.forEach(p=>{
+let index = pilotos.indexOf(p);
+let faltan = total - p.vueltas;
+let posVivo = ranking.indexOf(p) + 1;
+let clase = posVivo === 1 ? "primero" : posVivo === 2 ? "segundo" : posVivo === 3 ? "tercero" : "";
+
+div.innerHTML += `
+<div class="piloto ${clase}">
+<b>${posVivo}° lugar</b><br>
+#${p.numero} - ${p.nombre}<br>
+Categoría: ${p.categoria || ""}
+<div class="vueltas">${p.vueltas} vueltas</div>
+${total > 0 && !p.finalizado ? `<p>Faltan: ${faltan}</p>` : ""}
+${faltan === 2 && !p.finalizado ? `<div class="alerta">⚠️ FALTAN 2 VUELTAS</div>` : ""}
+${p.finalizado ? `<div class="alerta">🏁 FINALIZÓ - POSICIÓN ${p.posicion}</div>` : ""}
+<button class="amarillo" onclick="restarVuelta(${index})">QUITAR VUELTA</button>
+</div>`;
+});
+}
+
+function restarVuelta(index){
+if(pilotos[index].vueltas > 0){
+pilotos[index].vueltas--;
+pilotos[index].finalizado = false;
+pilotos[index].posicion = null;
+}
+guardarLocal();
+guardarCompetenciaFirebase();
+mostrarTodo();
+}
+
+function guardarManga(){
+let manga = document.getElementById("mangaActual").value;
+
+let ordenFinal = [...pilotos].sort((a,b)=>{
+if(a.finalizado && b.finalizado) return a.posicion - b.posicion;
+if(a.finalizado && !b.finalizado) return -1;
+if(!a.finalizado && b.finalizado) return 1;
+if(b.vueltas !== a.vueltas) return b.vueltas - a.vueltas;
+return a.ultimoPaso - b.ultimoPaso;
+});
+
+let data = ordenFinal.map((p,index)=>({
+numero:p.numero,
+nombre:p.nombre,
+categoria:p.categoria || "",
+posicion:p.finalizado ? p.posicion : index + 1,
+puntos:p.finalizado ? (puntos[p.posicion] || 0) : 0,
+vueltas:p.vueltas,
+estado:p.finalizado ? "Finalizó" : "No finalizó"
+}));
+
+if(manga === "1"){
+resultados.manga1 = data;
+document.getElementById("mangaActual").value = "2";
+alert("✅ Manga 1 guardada");
+}else{
+resultados.manga2 = data;
+alert("✅ Manga 2 guardada");
+}
+
+limpiarSoloVueltas(false);
+carreraIniciada = false;
+guardarLocal();
+guardarCompetenciaFirebase();
+mostrarTodo();
+}
+
+function crearTabla(data){
+if(!data || data.length === 0) return "<p>No hay resultados.</p>";
+
+let html = `<table>
+<tr><th>Pos</th><th>N°</th><th>Piloto</th><th>Categoría</th><th>Vueltas</th><th>Estado</th><th>Pts</th></tr>`;
+
+data.forEach(p=>{
+html += `<tr>
+<td>${p.posicion}</td>
+<td>${p.numero}</td>
+<td>${p.nombre}</td>
+<td>${p.categoria || ""}</td>
+<td>${p.vueltas || 0}</td>
+<td>${p.estado || ""}</td>
+<td>${p.puntos}</td>
+</tr>`;
+});
+
+html += "</table>";
+return html;
+}
+
+function mostrarResultados(){
+document.getElementById("resultadoManga1").innerHTML = crearTabla(resultados.manga1);
+document.getElementById("resultadoManga2").innerHTML = crearTabla(resultados.manga2);
+}
+
+function obtenerTablaGeneral(){
+let total = {};
+
+pilotos.forEach(p=>{
+total[p.numero] = {
+numero:p.numero,
+nombre:p.nombre,
+categoria:p.categoria || "",
+manga1:0,
+manga2:0,
+posManga1:999,
+posManga2:999,
+puntos:0
+};
+});
+
+resultados.manga1.forEach(p=>{
+if(!total[p.numero]){
+total[p.numero] = {
+numero:p.numero,
+nombre:p.nombre,
+categoria:p.categoria || "",
+manga1:0,
+manga2:0,
+posManga1:999,
+posManga2:999,
+puntos:0
+};
+}
+total[p.numero].manga1 = p.puntos;
+total[p.numero].posManga1 = p.posicion || 999;
+total[p.numero].puntos += p.puntos;
+});
+
+resultados.manga2.forEach(p=>{
+if(!total[p.numero]){
+total[p.numero] = {
+numero:p.numero,
+nombre:p.nombre,
+categoria:p.categoria || "",
+manga1:0,
+manga2:0,
+posManga1:999,
+posManga2:999,
+puntos:0
+};
+}
+total[p.numero].manga2 = p.puntos;
+total[p.numero].posManga2 = p.posicion || 999;
+total[p.numero].puntos += p.puntos;
+});
+
+return Object.values(total).sort((a,b)=>{
+if(b.puntos !== a.puntos) return b.puntos - a.puntos;
+return a.posManga2 - b.posManga2;
+});
+}
+
+function mostrarTablaGeneral(){
+let tabla = obtenerTablaGeneral();
+
+if(tabla.length === 0){
+document.getElementById("tablaGeneral").innerHTML = "<p>No hay puntajes.</p>";
+return;
+}
+
+let html = `<table>
+<tr>
+<th>Gral</th>
+<th>N°</th>
+<th>Piloto</th>
+<th>Categoría</th>
+<th>M1</th>
+<th>M2</th>
+<th>Total</th>
+<th>Desempate</th>
+</tr>`;
+
+tabla.forEach((p,i)=>{
+html += `<tr>
+<td>${i+1}</td>
+<td>${p.numero}</td>
+<td>${p.nombre}</td>
+<td>${p.categoria || ""}</td>
+<td>${p.manga1}</td>
+<td>${p.manga2}</td>
+<td><b>${p.puntos}</b></td>
+<td>M2 Pos: ${p.posManga2 === 999 ? "-" : p.posManga2}</td>
+</tr>`;
+});
+
+html += "</table>";
+document.getElementById("tablaGeneral").innerHTML = html;
+}
+
+function descargarReporteCSV(){
+let tabla = obtenerTablaGeneral();
+
+if(tabla.length === 0){
+alert("No hay datos.");
+return;
+}
+
+let competencia = document.getElementById("nombreCompetencia").value || "Competencia";
+let categoria = document.getElementById("categoriaCarrera").value || "Sin categoria";
+
+let csv = "REPORTE GENERAL\n";
+csv += "Competencia," + competencia + "\n";
+csv += "Categoria," + categoria + "\n\n";
+csv += "Posicion,Numero,Piloto,Categoria,Manga1,Manga2,Total,Posicion Manga2\n";
+
+tabla.forEach((p,i)=>{
+csv += `${i+1},${p.numero},${p.nombre},${p.categoria || ""},${p.manga1},${p.manga2},${p.puntos},${p.posManga2 === 999 ? "" : p.posManga2}\n`;
+});
+
+let archivo = new Blob([csv],{type:"text/csv;charset=utf-8;"});
+let url = URL.createObjectURL(archivo);
+let link = document.createElement("a");
+link.href = url;
+link.download = "reporte_" + categoria + ".csv";
+link.click();
+URL.revokeObjectURL(url);
+}
+
+function finalizarCarrera(){
+carreraIniciada = false;
+guardarCompetenciaFirebase();
+alert("🏆 Carrera finalizada");
+hablar("Carrera finalizada");
+}
+
+function limpiarSoloVueltas(actualizar=true){
+pilotos.forEach(p=>{
+p.vueltas = 0;
+p.finalizado = false;
+p.posicion = null;
+p.ultimoPaso = 0;
+});
+contadorPaso = 0;
+guardarLocal();
+if(actualizar) guardarCompetenciaFirebase();
+mostrarTodo();
+}
+
+function hablar(texto){
+let voz = new SpeechSynthesisUtterance(texto);
+voz.lang = "es-ES";
+speechSynthesis.speak(voz);
+}
+
+function reiniciarTodo(){
+if(confirm("¿Seguro que deseas borrar solo los datos locales?")){
+pilotos = [];
+resultados = {manga1:[],manga2:[]};
+contadorPaso = 0;
+carreraIniciada = false;
+competenciaId = "";
+localStorage.clear();
+mostrarTodo();
+}
+}
+</script>
+
+</body>
+</html>
