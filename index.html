@@ -150,9 +150,41 @@ return normalizar(categoria).replaceAll(" ","_") + "_" + String(numero).trim();
 }
 
 async function iniciar(){
+
 cargarLocal();
+
 await cargarCategorias();
+
 await cargarCompetencias();
+
+if(competenciaId){
+
+let doc = await db.collection("competencias")
+.doc(competenciaId)
+.get();
+
+if(doc.exists){
+
+let c = doc.data();
+
+document.getElementById("nombreCompetencia").value = c.nombre || "";
+
+document.getElementById("fechaCompetencia").value = c.fecha || "";
+
+document.getElementById("categoriaCarrera").value = c.categoria || "";
+
+document.getElementById("totalVueltas").value = c.vueltas || "";
+
+pilotos = c.pilotos || [];
+
+resultados = c.resultados || {
+manga1:[],
+manga2:[]
+};
+
+}
+}
+
 mostrarTodo();
 }
 
