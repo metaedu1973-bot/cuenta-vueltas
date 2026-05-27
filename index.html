@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Cuenta Vueltas Profesional</title>
+<title>Campeonato Quadcross</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -11,19 +11,18 @@
 
 <style>
 body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:white}
-header{background:#020617;padding:8px;text-align:center}
+header{background:#020617;padding:10px;text-align:center}
 h1{font-size:20px;margin:3px}
-h2{font-size:14px;margin:5px 0}
-.panel{background:#1e293b;margin:5px;padding:6px;border-radius:8px}
-input,select,button{width:100%;box-sizing:border-box;padding:8px;margin:4px 0;border:none;border-radius:8px;font-size:13px}
+h2{font-size:15px;margin:6px 0}
+.panel{background:#1e293b;margin:6px;padding:8px;border-radius:8px}
+input,select,button{width:100%;box-sizing:border-box;padding:9px;margin:5px 0;border:none;border-radius:8px;font-size:14px}
 button{background:#22c55e;color:white;font-weight:bold;cursor:pointer}
 .azul{background:#2563eb}.rojo{background:#dc2626}.amarillo{background:#facc15;color:black}.gris{background:#475569}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(65px,1fr));gap:5px}
-.numeroBtn{font-size:18px;height:52px;background:#16a34a}
-.piloto{background:#334155;padding:7px;margin:5px 0;border-radius:8px}
-.vueltas{font-size:18px;font-weight:bold;color:#facc15}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:5px}
+.numeroBtn{font-size:18px;height:55px;background:#16a34a}
+.piloto{background:#334155;padding:8px;margin:6px 0;border-radius:8px}
+.vueltas{font-size:19px;font-weight:bold;color:#facc15}
 .alerta{background:#dc2626;padding:5px;border-radius:8px;text-align:center;font-size:12px;font-weight:bold;margin-top:5px}
-.primero{border-left:5px solid gold}.segundo{border-left:5px solid silver}.tercero{border-left:5px solid #fb923c}
 table{width:100%;border-collapse:collapse;background:white;color:black;font-size:12px;display:block;overflow-x:auto;white-space:nowrap}
 th,td{border:1px solid #ccc;padding:5px;text-align:center}
 th{background:#020617;color:white}
@@ -38,20 +37,15 @@ body{background:white;color:black}
 <body>
 
 <header>
-<h1>🏁 CUENTA VUELTAS PROFESIONAL</h1>
-<h2>Excel + Firebase + 2 Mangas</h2>
+<h1>🏁 CAMPEONATO QUADCROSS</h1>
+<h2>Cuenta Vueltas Profesional</h2>
 </header>
 
 <div class="panel">
 <h2>Datos de Competencia</h2>
 <input type="text" id="nombreCompetencia" placeholder="Nombre de competencia">
 <input type="date" id="fechaCompetencia">
-<input type="text" id="categoriaCarrera" placeholder="Categoría de carrera">
-<input type="text" id="categoriaCarrera" placeholder="Categoría de carrera">
-
-<button class="gris" onclick="filtrarPorCategoria()">FILTRAR COMPETIDORES</button>
-
-<button class="amarillo" onclick="mostrarTodosPilotos()">MOSTRAR TODOS</button>
+<input type="text" id="categoriaCarrera" placeholder="Categoría de carrera. Ej: QX A">
 <button class="gris" onclick="filtrarPorCategoria()">FILTRAR COMPETIDORES</button>
 <button class="amarillo" onclick="mostrarTodosPilotos()">MOSTRAR TODOS</button>
 <input type="number" id="totalVueltas" placeholder="Cantidad de vueltas">
@@ -73,12 +67,12 @@ body{background:white;color:black}
 <div class="panel">
 <h2>Importar Pilotos desde Excel</h2>
 <input type="file" accept=".xlsx,.xls,.csv" onchange="importarExcel(event)">
-<p style="font-size:12px">Tu Excel debe tener: Numero | Nombre | Categoria</p>
+<p style="font-size:12px">Excel: Numero | Nombre | Categoria</p>
 </div>
 
 <div class="panel">
 <h2>Agregar Piloto Manual</h2>
-<input type="number" id="numero" placeholder="Número" oninput="buscarPilotoPorNumero()">
+<input type="number" id="numero" placeholder="Número">
 <input type="text" id="nombre" placeholder="Nombre">
 <input type="text" id="categoriaPiloto" placeholder="Categoría">
 <button onclick="agregarPiloto()">AGREGAR PILOTO</button>
@@ -129,13 +123,13 @@ body{background:white;color:black}
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyCaoe6R_Qbjl7TACUGgLxPd5oWfKp8oW-o",
-  authDomain: "cuenta-vueltas-59c99.firebaseapp.com",
-  projectId: "cuenta-vueltas-59c99",
-  storageBucket: "cuenta-vueltas-59c99.firebasestorage.app",
-  messagingSenderId: "425422890967",
-  appId: "1:425422890967:web:874535c5dc1e44c5c2cd92",
-  measurementId: "G-F5EE9VRLHB"
+apiKey: "AIzaSyCaoe6R_Qbjl7TACUGgLxPd5oWfKp8oW-o",
+authDomain: "cuenta-vueltas-59c99.firebaseapp.com",
+projectId: "cuenta-vueltas-59c99",
+storageBucket: "cuenta-vueltas-59c99.firebasestorage.app",
+messagingSenderId: "425422890967",
+appId: "1:425422890967:web:874535c5dc1e44c5c2cd92",
+measurementId: "G-F5EE9VRLHB"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -147,10 +141,7 @@ let carreraIniciada = false;
 let contadorPaso = 0;
 let competenciaId = localStorage.getItem("competenciaId") || "";
 
-let resultados = {
-manga1:[],
-manga2:[]
-};
+let resultados = {manga1:[],manga2:[]};
 
 const puntos = {
 1:25,2:22,3:20,4:18,5:16,
@@ -162,8 +153,13 @@ const puntos = {
 cargarLocal();
 cargarCompetencias();
 
+function crearId(numero,categoria){
+return String(numero).trim() + "_" + String(categoria).trim().replaceAll(" ","_").toUpperCase();
+}
+
 function guardarLocal(){
 localStorage.setItem("pilotosCuenta",JSON.stringify(pilotos));
+localStorage.setItem("pilotosOriginalesCuenta",JSON.stringify(pilotosOriginales));
 localStorage.setItem("resultadosCuenta",JSON.stringify(resultados));
 localStorage.setItem("contadorPaso",contadorPaso);
 localStorage.setItem("competenciaId",competenciaId);
@@ -171,6 +167,7 @@ localStorage.setItem("competenciaId",competenciaId);
 
 function cargarLocal(){
 pilotos = JSON.parse(localStorage.getItem("pilotosCuenta")) || [];
+pilotosOriginales = JSON.parse(localStorage.getItem("pilotosOriginalesCuenta")) || [...pilotos];
 resultados = JSON.parse(localStorage.getItem("resultadosCuenta")) || {manga1:[],manga2:[]};
 contadorPaso = parseInt(localStorage.getItem("contadorPaso")) || 0;
 mostrarTodo();
@@ -183,12 +180,7 @@ let categoria = document.getElementById("categoriaCarrera").value || "Sin catego
 let vueltas = document.getElementById("totalVueltas").value || "";
 
 let data = {
-nombre,
-fecha,
-categoria,
-vueltas,
-pilotos,
-resultados,
+nombre,fecha,categoria,vueltas,pilotos,pilotosOriginales,resultados,
 actualizado:new Date().toISOString()
 };
 
@@ -213,6 +205,7 @@ fecha:document.getElementById("fechaCompetencia").value || new Date().toISOStrin
 categoria:document.getElementById("categoriaCarrera").value || "",
 vueltas:document.getElementById("totalVueltas").value || "",
 pilotos,
+pilotosOriginales,
 resultados,
 actualizado:new Date().toISOString()
 },{merge:true});
@@ -223,7 +216,6 @@ let select = document.getElementById("listaCompetencias");
 select.innerHTML = `<option value="">Seleccione competencia</option>`;
 
 let snap = await db.collection("competencias").orderBy("actualizado","desc").limit(50).get();
-
 snap.forEach(doc=>{
 let c = doc.data();
 select.innerHTML += `<option value="${doc.id}">${c.fecha || ""} - ${c.nombre || ""} - ${c.categoria || ""}</option>`;
@@ -246,73 +238,12 @@ document.getElementById("categoriaCarrera").value = c.categoria || "";
 document.getElementById("totalVueltas").value = c.vueltas || "";
 
 pilotos = c.pilotos || [];
+pilotosOriginales = c.pilotosOriginales || [...pilotos];
 resultados = c.resultados || {manga1:[],manga2:[]};
 
 guardarLocal();
 mostrarTodo();
 alert("✅ Competencia cargada");
-}
-
-async function buscarPilotoPorNumero(){
-let numero = document.getElementById("numero").value;
-if(!numero) return;
-
-let local = pilotos.find(p=>String(p.numero) === String(numero));
-if(local){
-document.getElementById("nombre").value = local.nombre || "";
-document.getElementById("categoriaPiloto").value = local.categoria || "";
-return;
-}
-
-let doc = await db.collection("pilotos").doc(String(numero)).get();
-if(doc.exists){
-let p = doc.data();
-document.getElementById("nombre").value = p.nombre || "";
-document.getElementById("categoriaPiloto").value = p.categoria || "";
-}
-}
-
-async function agregarPiloto(){
-let numero = document.getElementById("numero").value.trim();
-let nombre = document.getElementById("nombre").value.trim();
-let categoria = document.getElementById("categoriaPiloto").value.trim();
-
-if(numero === "" || nombre === ""){
-alert("Completa número y nombre.");
-return;
-}
-
-let existe = pilotos.find(p=>String(p.numero) === String(numero));
-
-if(existe){
-existe.nombre = nombre;
-existe.categoria = categoria;
-}else{
-pilotos.push({
-numero,
-nombre,
-categoria,
-vueltas:0,
-finalizado:false,
-posicion:null,
-ultimoPaso:0
-});
-}
-
-await db.collection("pilotos").doc(String(numero)).set({
-numero,
-nombre,
-categoria,
-actualizado:new Date().toISOString()
-},{merge:true});
-
-document.getElementById("numero").value = "";
-document.getElementById("nombre").value = "";
-document.getElementById("categoriaPiloto").value = "";
-
-guardarLocal();
-guardarCompetenciaFirebase();
-mostrarTodo();
 }
 
 async function importarExcel(event){
@@ -327,33 +258,36 @@ let workbook = XLSX.read(data,{type:"array"});
 let hoja = workbook.Sheets[workbook.SheetNames[0]];
 let filas = XLSX.utils.sheet_to_json(hoja);
 
+pilotos = [];
+pilotosOriginales = [];
+
 for(let f of filas){
 let numero = f.Numero || f.numero || f.Número || f["N°"] || f.Num;
 let nombre = f.Nombre || f.nombre || f.Piloto || f.piloto;
 let categoria = f.Categoria || f.Categoría || f.categoria || f.CATEGORIA || "";
 
-if(numero && nombre){
-let existe = pilotos.find(p=>String(p.numero) === String(numero));
+if(numero && nombre && categoria){
+let id = crearId(numero,categoria);
 
-if(!existe){
-pilotos.push({
-numero:String(numero),
-nombre:String(nombre),
-categoria:String(categoria),
+let nuevoPiloto = {
+id,
+numero:String(numero).trim(),
+nombre:String(nombre).trim(),
+categoria:String(categoria).trim(),
 vueltas:0,
 finalizado:false,
 posicion:null,
 ultimoPaso:0
-});
-}else{
-existe.nombre = String(nombre);
-existe.categoria = String(categoria);
-}
+};
 
-await db.collection("pilotos").doc(String(numero)).set({
-numero:String(numero),
-nombre:String(nombre),
-categoria:String(categoria),
+pilotos.push(nuevoPiloto);
+pilotosOriginales.push(nuevoPiloto);
+
+await db.collection("pilotos").doc(id).set({
+id:nuevoPiloto.id,
+numero:nuevoPiloto.numero,
+nombre:nuevoPiloto.nombre,
+categoria:nuevoPiloto.categoria,
 actualizado:new Date().toISOString()
 },{merge:true});
 }
@@ -362,10 +296,60 @@ actualizado:new Date().toISOString()
 guardarLocal();
 guardarCompetenciaFirebase();
 mostrarTodo();
-alert("✅ Pilotos importados correctamente");
+
+alert("✅ Se importaron " + pilotos.length + " pilotos correctamente");
 };
 
 reader.readAsArrayBuffer(file);
+}
+
+async function agregarPiloto(){
+let numero = document.getElementById("numero").value.trim();
+let nombre = document.getElementById("nombre").value.trim();
+let categoria = document.getElementById("categoriaPiloto").value.trim();
+
+if(numero === "" || nombre === "" || categoria === ""){
+alert("Completa número, nombre y categoría.");
+return;
+}
+
+let id = crearId(numero,categoria);
+
+let nuevo = {
+id,numero,nombre,categoria,
+vueltas:0,finalizado:false,posicion:null,ultimoPaso:0
+};
+
+let existe = pilotosOriginales.find(p=>p.id === id);
+
+if(existe){
+existe.nombre = nombre;
+existe.categoria = categoria;
+}else{
+pilotosOriginales.push(nuevo);
+}
+
+let existeActual = pilotos.find(p=>p.id === id);
+if(existeActual){
+existeActual.nombre = nombre;
+existeActual.categoria = categoria;
+}else{
+pilotos.push(nuevo);
+}
+
+await db.collection("pilotos").doc(id).set({
+id,numero,nombre,categoria,
+actualizado:new Date().toISOString()
+},{merge:true});
+
+document.getElementById("numero").value = "";
+document.getElementById("nombre").value = "";
+document.getElementById("categoriaPiloto").value = "";
+
+guardarLocal();
+guardarCompetenciaFirebase();
+mostrarTodo();
+alert("✅ Piloto guardado");
 }
 
 function filtrarPorCategoria(){
@@ -386,14 +370,12 @@ String(p.categoria || "").toLowerCase().trim() === categoria.toLowerCase().trim(
 
 if(pilotos.length === 0){
 alert("No hay pilotos en esta categoría.");
-pilotos = [...pilotosOriginales];
 return;
 }
 
 guardarLocal();
 mostrarTodo();
-
-alert("✅ Competidores filtrados por categoría: " + categoria);
+alert("✅ Competidores filtrados: " + categoria);
 }
 
 function mostrarTodosPilotos(){
@@ -401,9 +383,10 @@ if(pilotosOriginales.length > 0){
 pilotos = [...pilotosOriginales];
 guardarLocal();
 mostrarTodo();
-alert("✅ Se muestran todos los pilotos.");
+alert("✅ Se muestran todos los pilotos");
 }
 }
+
 function empezarCarrera(){
 let vueltas = document.getElementById("totalVueltas").value;
 
@@ -440,7 +423,6 @@ return;
 }
 
 let total = parseInt(document.getElementById("totalVueltas").value);
-
 if(pilotos[index].finalizado) return;
 
 contadorPaso++;
@@ -529,10 +511,9 @@ ranking.forEach(p=>{
 let index = pilotos.indexOf(p);
 let faltan = total - p.vueltas;
 let posVivo = ranking.indexOf(p) + 1;
-let clase = posVivo === 1 ? "primero" : posVivo === 2 ? "segundo" : posVivo === 3 ? "tercero" : "";
 
 div.innerHTML += `
-<div class="piloto ${clase}">
+<div class="piloto">
 <b>${posVivo}° lugar</b><br>
 #${p.numero} - ${p.nombre}<br>
 Categoría: ${p.categoria || ""}
@@ -568,6 +549,7 @@ return a.ultimoPaso - b.ultimoPaso;
 });
 
 let data = ordenFinal.map((p,index)=>({
+id:p.id,
 numero:p.numero,
 nombre:p.nombre,
 categoria:p.categoria || "",
@@ -624,52 +606,28 @@ function obtenerTablaGeneral(){
 let total = {};
 
 pilotos.forEach(p=>{
-total[p.numero] = {
-numero:p.numero,
-nombre:p.nombre,
-categoria:p.categoria || "",
-manga1:0,
-manga2:0,
-posManga1:999,
-posManga2:999,
-puntos:0
+total[p.id] = {
+id:p.id,numero:p.numero,nombre:p.nombre,categoria:p.categoria || "",
+manga1:0,manga2:0,posManga1:999,posManga2:999,puntos:0
 };
 });
 
 resultados.manga1.forEach(p=>{
-if(!total[p.numero]){
-total[p.numero] = {
-numero:p.numero,
-nombre:p.nombre,
-categoria:p.categoria || "",
-manga1:0,
-manga2:0,
-posManga1:999,
-posManga2:999,
-puntos:0
-};
+if(!total[p.id]){
+total[p.id]={id:p.id,numero:p.numero,nombre:p.nombre,categoria:p.categoria || "",manga1:0,manga2:0,posManga1:999,posManga2:999,puntos:0};
 }
-total[p.numero].manga1 = p.puntos;
-total[p.numero].posManga1 = p.posicion || 999;
-total[p.numero].puntos += p.puntos;
+total[p.id].manga1 = p.puntos;
+total[p.id].posManga1 = p.posicion || 999;
+total[p.id].puntos += p.puntos;
 });
 
 resultados.manga2.forEach(p=>{
-if(!total[p.numero]){
-total[p.numero] = {
-numero:p.numero,
-nombre:p.nombre,
-categoria:p.categoria || "",
-manga1:0,
-manga2:0,
-posManga1:999,
-posManga2:999,
-puntos:0
-};
+if(!total[p.id]){
+total[p.id]={id:p.id,numero:p.numero,nombre:p.nombre,categoria:p.categoria || "",manga1:0,manga2:0,posManga1:999,posManga2:999,puntos:0};
 }
-total[p.numero].manga2 = p.puntos;
-total[p.numero].posManga2 = p.posicion || 999;
-total[p.numero].puntos += p.puntos;
+total[p.id].manga2 = p.puntos;
+total[p.id].posManga2 = p.posicion || 999;
+total[p.id].puntos += p.puntos;
 });
 
 return Object.values(total).sort((a,b)=>{
@@ -688,14 +646,8 @@ return;
 
 let html = `<table>
 <tr>
-<th>Gral</th>
-<th>N°</th>
-<th>Piloto</th>
-<th>Categoría</th>
-<th>M1</th>
-<th>M2</th>
-<th>Total</th>
-<th>Desempate</th>
+<th>Gral</th><th>N°</th><th>Piloto</th><th>Categoría</th>
+<th>M1</th><th>M2</th><th>Total</th><th>Desempate</th>
 </tr>`;
 
 tabla.forEach((p,i)=>{
@@ -717,7 +669,6 @@ document.getElementById("tablaGeneral").innerHTML = html;
 
 function descargarReporteCSV(){
 let tabla = obtenerTablaGeneral();
-
 if(tabla.length === 0){
 alert("No hay datos.");
 return;
@@ -773,6 +724,7 @@ speechSynthesis.speak(voz);
 function reiniciarTodo(){
 if(confirm("¿Seguro que deseas borrar solo los datos locales?")){
 pilotos = [];
+pilotosOriginales = [];
 resultados = {manga1:[],manga2:[]};
 contadorPaso = 0;
 carreraIniciada = false;
