@@ -406,12 +406,29 @@ if(p.finalizado) return;
 contadorPaso++;
 p.vueltas++;
 p.ultimoPaso = contadorPaso;
+let lider = rankingEnVivo()[0];
+
+if(lider){
+
+let faltanCarrera =
+total - lider.vueltas;
+
+if(faltanCarrera === 2){
+
+hablar("Faltan dos vueltas para terminar la carrera");
+
+}
+
+if(faltanCarrera === 1){
+
+hablar("Última vuelta");
+
+}
+
+}
 
 let faltan = total - p.vueltas;
 
-if(faltan === 2){
-hablar("Piloto número " + p.numero + " le faltan dos vueltas");
-}
 
 if(p.vueltas >= total){
 p.finalizado = true;
