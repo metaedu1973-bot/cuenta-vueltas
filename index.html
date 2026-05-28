@@ -561,16 +561,27 @@ document.getElementById("tablaGeneral").innerHTML=html;
 
 function descargarReporteCSV(){
 let tabla=obtenerTablaGeneral();
-if(tabla.length===0){alert("No hay datos.");return;}
+
+if(tabla.length===0){
+alert("No hay datos.");
+return;
+}
+
 let csv="REPORTE GENERAL\n";
-csv+="Posicion,Numero,Piloto,Categoria,Manga1,Manga2,Total,Posicion Manga2\n";
-tabla.forEach((p,i)=>{csv+=`${i+1},${p.numero},${p.nombre},${p.categoria},${p.manga1},${p.manga2},${p.puntos},${p.posManga2===999?"":p.posManga2}\n`;});
+csv+="Posicion;Numero;Piloto;Categoria;Manga1;Manga2;Total;Posicion Manga2\n";
+
+tabla.forEach((p,i)=>{
+csv+=`${i+1};${p.numero};${p.nombre};${p.categoria};${p.manga1};${p.manga2};${p.puntos};${p.posManga2===999?"":p.posManga2}\n`;
+});
+
 let archivo=new Blob([csv],{type:"text/csv;charset=utf-8;"});
 let url=URL.createObjectURL(archivo);
 let link=document.createElement("a");
+
 link.href=url;
 link.download="reporte_quadcross.csv";
 link.click();
+
 URL.revokeObjectURL(url);
 }
 
