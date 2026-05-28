@@ -21,7 +21,21 @@ h1{font-size:21px;margin:3px}
 h2{font-size:15px;margin:6px 0}
 .panel{background:#1e293b;margin:6px;padding:8px;border-radius:10px}
 input,select,button{width:100%;box-sizing:border-box;padding:9px;margin:5px 0;border:none;border-radius:8px;font-size:14px}
-button{background:#22c55e;color:white;font-weight:bold;cursor:pointer}
+button{
+background:#22c55e;
+color:white;
+font-weight:bold;
+cursor:pointer;
+border-bottom:4px solid rgba(0,0,0,0.35);
+box-shadow:0 5px 0 rgba(0,0,0,0.35);
+transition:all 0.08s ease;
+}
+
+button:active{
+transform:translateY(5px);
+box-shadow:0 0 0 rgba(0,0,0,0.35);
+border-bottom:0;
+}
 .azul{background:#2563eb}.rojo{background:#dc2626}.amarillo{background:#facc15;color:black}.gris{background:#475569}.morado{background:#7c3aed}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:5px}
 .numeroBtn{font-size:19px;height:55px;background:#16a34a}
