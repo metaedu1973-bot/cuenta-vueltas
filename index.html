@@ -84,117 +84,72 @@ function mostrarTablaGeneral(){let tabla=obtenerTablaGeneral();if(tabla.length==
 function descargarReporteCSV(){let tabla=obtenerTablaGeneral();if(tabla.length===0){alert("No hay datos.");return;}let competencia=document.getElementById("nombreCompetencia").value||"Competencia",fecha=document.getElementById("fechaCompetencia").value||"",campeon=tabla[0]?tabla[0].nombre:"",numeroCampeon=tabla[0]?tabla[0].numero:"";let csv="CAMPEONATO QUADCROSS\n";csv+="Competencia;"+competencia+"\n";csv+="Fecha;"+fecha+"\n";csv+="Categoria;GENERAL\n";csv+="Campeon;#"+numeroCampeon+" "+campeon+"\n\n";csv+="Posicion;Numero;Piloto;Categoria;Manga1;Manga2;Total;Posicion Manga2\n";tabla.forEach((p,i)=>{csv+=`${i+1};${p.numero};${p.nombre};${p.categoria};${p.manga1};${p.manga2};${p.puntos};${p.posManga2===999?"":p.posManga2}\n`;});let archivo=new Blob([csv],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(archivo),link=document.createElement("a");link.href=url;link.download="reporte_general_quadcross.csv";link.click();URL.revokeObjectURL(url);}
 function descargarReporteCategoria(){let categoria=document.getElementById("categoriaCarrera").value;if(!categoria){alert("Selecciona una categoría.");return;}let tabla=obtenerTablaGeneral().filter(p=>p.categoria===categoria);if(tabla.length===0){alert("No hay datos de esa categoría.");return;}let competencia=document.getElementById("nombreCompetencia").value||"Competencia",fecha=document.getElementById("fechaCompetencia").value||"",campeon=tabla[0]?tabla[0].nombre:"",numeroCampeon=tabla[0]?tabla[0].numero:"";let csv="CAMPEONATO QUADCROSS\n";csv+="Competencia;"+competencia+"\n";csv+="Fecha;"+fecha+"\n";csv+="Categoria;"+categoria+"\n";csv+="Campeon;#"+numeroCampeon+" "+campeon+"\n\n";csv+="Posicion;Numero;Piloto;Manga1;Manga2;Total;Desempate\n";tabla.forEach((p,i)=>{csv+=`${i+1};${p.numero};${p.nombre};${p.manga1};${p.manga2};${p.puntos};${p.posManga2===999?"":p.posManga2}\n`;});let archivo=new Blob([csv],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(archivo),link=document.createElement("a");link.href=url;link.download=`reporte_${categoria}.csv`;link.click();URL.revokeObjectURL(url);}
 
-async function cargarCampeonato(){
-try{
-let div=document.getElementById("tablaCampeonato");
+function imprimirCampeonato(){
+let contenido=document.getElementById("tablaCampeonato").innerHTML;
 
-if(!div){
+if(!contenido || contenido.includes("No hay")){
+alert("Primero actualiza el campeonato.");
 return;
 }
 
-div.innerHTML="<p>Cargando campeonato...</p>";
+let ventana=window.open("","_blank");
 
-let snap=await db.collection("competencias").orderBy("actualizado","desc").limit(100).get();
+ventana.document.write(`
+<html>
+<head>
+<title>Campeonato Quadcross</title>
+<style>
+body{font-family:Arial;color:black;background:white;padding:20px}
+h1{text-align:center}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{border:1px solid #333;padding:6px;text-align:center}
+th{background:#111;color:white}
+</style>
+</head>
+<body>
+<h1>CAMPEONATO QUADCROSS</h1>
+${contenido}
+</body>
+</html>
+`);
 
-if(snap.empty){
-div.innerHTML="<p>No hay competencias guardadas.</p>";
-return;
-}
-
-let html=`<table>
-<tr>
-<th>Fecha</th>
-<th>Competencia</th>
-<th>Categoría</th>
-<th>🥇 1° Lugar</th>
-<th>🥈 2° Lugar</th>
-<th>🥉 3° Lugar</th>
-</tr>`;
-
-snap.forEach(doc=>{
-let c=doc.data();
-let resultados=c.resultados||{manga1:[],manga2:[]};
-let pilotos=c.pilotos||[];
-let total={};
-
-pilotos.forEach(p=>{
-total[p.id]={
-id:p.id,
-numero:p.numero,
-nombre:p.nombre,
-categoria:p.categoria,
-manga1:0,
-manga2:0,
-posManga2:999,
-puntos:0
-};
-});
-
-(resultados.manga1||[]).forEach(p=>{
-if(!total[p.id]){
-total[p.id]={
-id:p.id,
-numero:p.numero,
-nombre:p.nombre,
-categoria:p.categoria,
-manga1:0,
-manga2:0,
-posManga2:999,
-puntos:0
-};
-}
-
-total[p.id].manga1=p.puntos||0;
-total[p.id].puntos+=(p.puntos||0);
-});
-
-(resultados.manga2||[]).forEach(p=>{
-if(!total[p.id]){
-total[p.id]={
-id:p.id,
-numero:p.numero,
-nombre:p.nombre,
-categoria:p.categoria,
-manga1:0,
-manga2:0,
-posManga2:999,
-puntos:0
-};
-}
-
-total[p.id].manga2=p.puntos||0;
-total[p.id].posManga2=p.posicion||999;
-total[p.id].puntos+=(p.puntos||0);
-});
-
-let tabla=Object.values(total).sort((a,b)=>{
-if(b.puntos!==a.puntos)return b.puntos-a.puntos;
-return a.posManga2-b.posManga2;
-});
-
-let primero=tabla[0]?`#${tabla[0].numero} ${tabla[0].nombre} (${tabla[0].puntos} pts)`:"-";
-let segundo=tabla[1]?`#${tabla[1].numero} ${tabla[1].nombre} (${tabla[1].puntos} pts)`:"-";
-let tercero=tabla[2]?`#${tabla[2].numero} ${tabla[2].nombre} (${tabla[2].puntos} pts)`:"-";
-
-html+=`<tr>
-<td>${c.fecha||""}</td>
-<td>${c.nombre||""}</td>
-<td>${c.categoria||""}</td>
-<td><b>${primero}</b></td>
-<td>${segundo}</td>
-<td>${tercero}</td>
-</tr>`;
-});
-
-html+="</table>";
-div.innerHTML=html;
-
-}catch(error){
-alert("Error al cargar campeonato: "+error.message);
-}
+ventana.document.close();
+ventana.print();
 }
 
 function finalizarCarrera(){carreraIniciada=false;guardarCompetenciaFirebase();alert("🏆 Carrera finalizada");hablar("Carrera finalizada");}function limpiarSoloVueltas(actualizar=true){pilotos.forEach(p=>{p.vueltas=0;p.finalizado=false;p.posicion=null;p.ultimoPaso=0;});contadorPaso=0;guardarLocal();if(actualizar)guardarCompetenciaFirebase();mostrarTodo();}function hablar(texto){let voz=new SpeechSynthesisUtterance(texto);voz.lang="es-ES";speechSynthesis.speak(voz);}function reiniciarLocal(){if(confirm("¿Seguro que deseas borrar solo datos locales?")){pilotos=[];resultados={manga1:[],manga2:[]};contadorPaso=0;competenciaId="";carreraIniciada=false;localStorage.clear();mostrarTodo();}}
+function imprimirCampeonato(){
+let contenido=document.getElementById("tablaCampeonato").innerHTML;
+
+if(!contenido || contenido.includes("No hay")){
+alert("Primero actualiza el campeonato.");
+return;
+}
+
+let ventana=window.open("","_blank");
+
+ventana.document.write(`
+<html>
+<head>
+<title>Campeonato Quadcross</title>
+<style>
+body{font-family:Arial;color:black;background:white;padding:20px}
+h1{text-align:center}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{border:1px solid #333;padding:6px;text-align:center}
+th{background:#111;color:white}
+</style>
+</head>
+<body>
+<h1>CAMPEONATO QUADCROSS</h1>
+${contenido}
+</body>
+</html>
+`);
+
+ventana.document.close();
+ventana.print();
+}
 </script>
 </body>
 </html>
