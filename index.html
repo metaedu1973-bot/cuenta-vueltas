@@ -660,15 +660,16 @@ let faltan=total-p.vueltas;
 let pos=ranking.indexOf(p)+1;
 
 div.innerHTML+=`
-<div class="piloto">
-<b>${pos}° lugar</b><br>
-#${p.numero} - ${p.nombre}<br>
-Categoría: ${p.categoria}
-<div class="vueltas">${p.vueltas} vueltas</div>
-${total>0&&!p.finalizado?`<p>Faltan: ${faltan}</p>`:""}
-${p.finalizado?`<div class="alerta">🏁 FINALIZÓ - POSICIÓN ${p.posicion}</div>`:""}
-<button class="amarillo" onclick="restarVuelta(${index})">QUITAR VUELTA</button>
-<button class="rojo" onclick="quitarDeCarrera(${index})">QUITAR DE ESTA CARRERA</button>
+<div class="piloto" style="padding:6px;margin:4px 0">
+<b>${pos}°</b> 
+#${p.numero} - ${p.nombre}
+<span style="color:#facc15;font-weight:bold">
+ | ${p.vueltas} vueltas
+</span>
+${p.finalizado ? `<span style="color:#22c55e;font-weight:bold"> | Finalizó</span>` : ""}
+<br>
+<button class="amarillo" style="width:48%;padding:6px;font-size:12px" onclick="restarVuelta(${index})">- VUELTA</button>
+<button class="rojo" style="width:48%;padding:6px;font-size:12px" onclick="quitarDeCarrera(${index})">QUITAR</button>
 </div>`;
 });
 }
