@@ -571,18 +571,19 @@ mostrarTodo();
 function obtenerPosicionFinal(){return pilotos.filter(p=>p.finalizado&&p.posicion!==null).length+1;}
 function rankingEnVivo(){return [...pilotos].sort((a,b)=>{if(b.vueltas!==a.vueltas)return b.vueltas-a.vueltas;return a.ultimoPaso-b.ultimoPaso;});}
 
-function guardarManga(){
-let manga=document.getElementById("mangaActual").value;
+let data = ordenFinal.map((p,index)=>({
+id:p.id,
+numero:p.numero,
+nombre:p.nombre,
+categoria:p.categoria,
+posicion:index+1,
+puntos:(puntos[index+1] || 0),
+vueltas:p.vueltas,
+estado:p.finalizado ? "Finalizó" : "No finalizó"
+}));
 
-let ordenFinal=[...pilotos].sort((a,b)=>{
-if(a.finalizado&&b.finalizado)return a.posicion-b.posicion;
-if(a.finalizado&&!b.finalizado)return -1;
-if(!a.finalizado&&b.finalizado)return 1;
-if(b.vueltas!==a.vueltas)return b.vueltas-a.vueltas;
-return a.ultimoPaso-b.ultimoPaso;
-});
-
-let data=ordenFinal.map((p,index)=>({id:p.id,numero:p.numero,nombre:p.nombre,categoria:p.categoria,posicion:p.finalizado?p.posicion:index+1,puntos:p.finalizado?(puntos[p.posicion]||0):0,vueltas:p.vueltas,estado:p.finalizado?"Finalizó":"No finalizó"}));
+let data=ordenFinal.map((p,index)=>({id:p.id,numero:p.numero,nombre:p.nombre,categoria:p.categoria,posicion:index+1,
+puntos:(puntos[index+1] || 0),vueltas:p.vueltas,estado:p.finalizado?"Finalizó":"No finalizó"}));
 
 if(manga==="1"){
 resultados.manga1=data;
