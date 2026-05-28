@@ -142,9 +142,6 @@ color:black!important;
 
 <button class="amarillo" onclick="descargarReporteCategoria()">DESCARGAR CATEGORÍA SELECCIONADA</button>
 
-<button class="morado" onclick="imprimirGeneral()">IMPRIMIR GENERAL</button>
-</div>
-
 <div class="panel">
 <h2>Competencias Guardadas</h2>
 <select id="listaCompetencias" onchange="cargarCompetenciaSeleccionada()">
@@ -787,12 +784,9 @@ mostrarTodo();
 function imprimirGeneral(){
 abrirTab('tabGeneral', document.querySelector('.tabBtn:nth-child(4)'));
 setTimeout(()=>{
-window.print();
 },300);
 }
-function imprimirGeneral(){
-window.print();
-}
+
 </script>
 </body>
 </html>
