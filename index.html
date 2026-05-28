@@ -552,10 +552,55 @@ return Object.values(total).sort((a,b)=>{if(b.puntos!==a.puntos)return b.puntos-
 
 function mostrarTablaGeneral(){
 let tabla=obtenerTablaGeneral();
-if(tabla.length===0){document.getElementById("tablaGeneral").innerHTML="<p>No hay puntajes.</p>";return;}
-let html=`<table><tr><th>Gral</th><th>N°</th><th>Piloto</th><th>Categoría</th><th>M1</th><th>M2</th><th>Total</th><th>Desempate</th></tr>`;
-tabla.forEach((p,i)=>{html+=`<tr><td>${i+1}</td><td>${p.numero}</td><td>${p.nombre}</td><td>${p.categoria}</td><td>${p.manga1}</td><td>${p.manga2}</td><td><b>${p.puntos}</b></td><td>M2 Pos: ${p.posManga2===999?"-":p.posManga2}</td></tr>`;});
-html+="</table>";
+
+if(tabla.length===0){
+document.getElementById("tablaGeneral").innerHTML="<p>No hay puntajes.</p>";
+return;
+}
+
+let grupos={};
+
+tabla.forEach(p=>{
+let cat=p.categoria||"SIN CATEGORÍA";
+if(!grupos[cat]) grupos[cat]=[];
+grupos[cat].push(p);
+});
+
+let html="";
+
+Object.keys(grupos).sort().forEach(cat=>{
+html+=`
+<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">
+🏆 GENERAL ${cat}
+</h2>
+
+<table>
+<tr>
+<th>Gral</th>
+<th>N°</th>
+<th>Piloto</th>
+<th>M1</th>
+<th>M2</th>
+<th>Total</th>
+<th>Desempate</th>
+</tr>`;
+
+grupos[cat].forEach((p,i)=>{
+html+=`
+<tr>
+<td>${i+1}</td>
+<td>${p.numero}</td>
+<td>${p.nombre}</td>
+<td>${p.manga1}</td>
+<td>${p.manga2}</td>
+<td><b>${p.puntos}</b></td>
+<td>M2 Pos: ${p.posManga2===999?"-":p.posManga2}</td>
+</tr>`;
+});
+
+html+="</table><br>";
+});
+
 document.getElementById("tablaGeneral").innerHTML=html;
 }
 
