@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Pantalla Pública - Quadcross</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<style>
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#020617;
+color:white;
+}
+
+header{
+background:linear-gradient(180deg,#020617,#111827);
+padding:18px;
+text-align:center;
+border-bottom:4px solid #facc15;
+box-shadow:0 4px 20px rgba(0,0,0,.45);
+}
+
+header img{
+width:120px;
+max-width:90%;
+margin-bottom:8px;
+filter:drop-shadow(0 0 12px rgba(255,255,255,.25));
+}
+
+h1{
+font-size:30px;
+margin:4px;
+color:#facc15;
+}
+
+h2{
+font-size:19px;
+margin:4px;
+color:white;
+}
+
+.resumen{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+gap:10px;
+padding:10px;
+}
+
+.card{
+background:#1e293b;
+border-radius:14px;
+padding:14px;
+text-align:center;
+box-shadow:0 4px 15px rgba(0,0,0,.35);
+border:1px solid #334155;
+}
+
+.card h3{
+font-size:15px;
+margin:4px;
+color:#cbd5e1;
+}
+
+.card .valor{
+font-size:36px;
+font-weight:bold;
+color:#facc15;
+}
+
+.top3{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:10px;
+padding:10px;
+}
+
+.podio{
+border-radius:16px;
+padding:12px;
+text-align:center;
+font-weight:bold;
+box-shadow:0 4px 15px rgba(0,0,0,.35);
+}
+
+.podio .medalla{
+font-size:34px;
+}
+
+.podio .numero{
+font-size:28px;
+}
+
+.podio .nombre{
+font-size:18px;
+}
+
+.oro{background:#facc15;color:black}
+.plata{background:#e5e7eb;color:black}
+.bronce{background:#fb923c;color:black}
+
+.tabla{
+padding:10px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+color:black;
+font-size:22px;
+border-radius:12px;
+overflow:hidden;
+}
+
+th,td{
+border:1px solid #cbd5e1;
+padding:10px;
+text-align:center;
+}
+
+th{
+background:#111827;
+color:white;
+font-size:18px;
+}
+
+tr:nth-child(even){
+background:#f1f5f9;
+}
+
+.faltan2{
+background:#dc2626!important;
+color:white!important;
+font-weight:bold;
+}
+
+.ultima{
+background:#facc15!important;
+color:black!important;
+font-weight:bold;
+}
+
+.finalizo{
+background:#16a34a!important;
+color:white!important;
+font-weight:bold;
+}
+
+.estado{
+font-size:13px;
+padding:8px;
+text-align:center;
+color:#cbd5e1;
+}
+
+.sinDatos{
+text-align:center;
+padding:20px;
+font-size:18px;
+color:#cbd5e1;
+}
+
+@media(max-width:700px){
+h1{font-size:23px}
+h2{font-size:16px}
+table{font-size:13px}
+th,td{padding:6px}
+.card .valor{font-size:28px}
+.podio .numero{font-size:22px}
+.podio .nombre{font-size:15px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<img src="logo.png" alt="Logo">
+<h1>🏁 RESULTADOS EN VIVO</h1>
+<h2 id="tituloCompetencia">Cargando...</h2>
+</header>
+
+<div class="resumen">
+<div class="card">
+<h3>Categoría</h3>
+<div class="valor" id="categoriaActual">-</div>
+</div>
+
+<div class="card">
+<h3>Vueltas líder</h3>
+<div class="valor" id="vueltasLider">0</div>
+</div>
+
+<div class="card">
+<h3>Faltan</h3>
+<div class="valor" id="faltanCarrera">-</div>
+</div>
+
+<div class="card">
+<h3>Pilotos</h3>
+<div class="valor" id="totalPilotos">0</div>
+</div>
+</div>
+
+<div class="top3" id="topTres">
+<div class="podio oro"><div class="medalla">🥇</div><div class="nombre">Esperando datos</div></div>
+<div class="podio plata"><div class="medalla">🥈</div><div class="nombre">Esperando datos</div></div>
+<div class="podio bronce"><div class="medalla">🥉</div><div class="nombre">Esperando datos</div></div>
+</div>
+
+<div class="tabla">
+<table>
+<thead>
+<tr>
+<th>Pos</th>
+<th>N°</th>
+<th>Piloto</th>
+<th>Categoría</th>
+<th>Vueltas</th>
+<th>Faltan</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody id="tablaVivo">
+<tr><td colspan="7">Esperando datos...</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="estado" id="estadoConexion">Conectando...</div>
+
+<script>
+const firebaseConfig={
+apiKey:"AIzaSyCaoe6R_Qbjl7TACUGgLxPd5oWfKp8oW-o",
+authDomain:"cuenta-vueltas-59c99.firebaseapp.com",
+projectId:"cuenta-vueltas-59c99",
+storageBucket:"cuenta-vueltas-59c99.firebasestorage.app",
+messagingSenderId:"425422890967",
+appId:"1:425422890967:web:874535c5dc1e44c5c2cd92",
+measurementId:"G-F5EE9VRLHB"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+
+let params=new URLSearchParams(window.location.search);
+let competenciaId=params.get("id");
+
+if(!competenciaId){
+document.getElementById("tituloCompetencia").innerText="Falta ID de competencia";
+document.getElementById("estadoConexion").innerText="Copia el link desde el botón COPIAR LINK PÚBLICO del sistema principal.";
+document.getElementById("tablaVivo").innerHTML='<tr><td colspan="7">No hay ID de competencia.</td></tr>';
+}else{
+escucharCompetencia();
+}
+
+function escucharCompetencia(){
+db.collection("competencias").doc(competenciaId).onSnapshot(doc=>{
+if(!doc.exists){
+document.getElementById("tituloCompetencia").innerText="Competencia no encontrada";
+document.getElementById("tablaVivo").innerHTML='<tr><td colspan="7">No existe esta competencia.</td></tr>';
+return;
+}
+
+let c=doc.data();
+let pilotos=c.pilotos||[];
+let total=parseInt(c.vueltas||0);
+
+document.getElementById("tituloCompetencia").innerText=(c.nombre||"Competencia")+" - "+(c.fecha||"");
+document.getElementById("categoriaActual").innerText=c.categoria||"-";
+document.getElementById("totalPilotos").innerText=pilotos.length;
+
+let ranking=[...pilotos].sort((a,b)=>{
+if((b.vueltas||0)!==(a.vueltas||0)){
+return (b.vueltas||0)-(a.vueltas||0);
+}
+return (a.ultimoPaso||0)-(b.ultimoPaso||0);
+});
+
+let lider=ranking[0];
+let vueltasLider=lider?(lider.vueltas||0):0;
+let faltanCarrera=total>0?total-vueltasLider:"-";
+
+document.getElementById("vueltasLider").innerText=vueltasLider;
+document.getElementById("faltanCarrera").innerText=faltanCarrera;
+
+mostrarTopTres(ranking);
+mostrarTabla(ranking,total);
+
+document.getElementById("estadoConexion").innerText="Actualizado automáticamente";
+},error=>{
+document.getElementById("estadoConexion").innerText="Error: "+error.message;
+});
+}
+
+function mostrarTopTres(ranking){
+let top=document.getElementById("topTres");
+
+let clases=["oro","plata","bronce"];
+let medallas=["🥇","🥈","🥉"];
+
+let html="";
+
+for(let i=0;i<3;i++){
+let p=ranking[i];
+
+if(p){
+html+=`
+<div class="podio ${clases[i]}">
+<div class="medalla">${medallas[i]}</div>
+<div class="numero">#${p.numero||""}</div>
+<div class="nombre">${p.nombre||""}</div>
+<div>${p.vueltas||0} vueltas</div>
+</div>`;
+}else{
+html+=`
+<div class="podio ${clases[i]}">
+<div class="medalla">${medallas[i]}</div>
+<div class="nombre">Sin piloto</div>
+</div>`;
+}
+}
+
+top.innerHTML=html;
+}
+
+function mostrarTabla(ranking,total){
+let tbody=document.getElementById("tablaVivo");
+tbody.innerHTML="";
+
+if(ranking.length===0){
+tbody.innerHTML='<tr><td colspan="7">No hay pilotos cargados.</td></tr>';
+return;
+}
+
+ranking.forEach((p,i)=>{
+let vueltas=p.vueltas||0;
+let faltan=total>0?total-vueltas:"-";
+let clase="";
+let estado=p.finalizado?"FINALIZÓ":"EN CARRERA";
+
+if(faltan===2){
+clase="faltan2";
+}
+
+if(faltan===1){
+clase="ultima";
+}
+
+if(faltan<=0&&total>0){
+clase="finalizo";
+estado="FINALIZÓ";
+}
+
+tbody.innerHTML+=`
+<tr class="${clase}">
+<td>${i+1}</td>
+<td>${p.numero||""}</td>
+<td>${p.nombre||""}</td>
+<td>${p.categoria||""}</td>
+<td>${vueltas}</td>
+<td>${faltan}</td>
+<td>${estado}</td>
+</tr>`;
+});
+}
+</script>
+
+</body>
+</html>
