@@ -136,7 +136,7 @@ color:black!important;
 <h2>REPORTE GENERAL</h2>
 
 <div id="tablaGeneral"></div>
-<button class="morado" onclick="imprimirGeneral()">IMPRIMIR GENERAL</button>
+
 
 <button class="azul" onclick="descargarReporteCSV()">DESCARGAR GENERAL COMPLETA</button>
 
@@ -783,14 +783,7 @@ carreraIniciada=false;
 localStorage.clear();
 mostrarTodo();
 }
-}
-function imprimirGeneral(){
-abrirTab('tabGeneral', document.querySelector('.tabBtn:nth-child(4)'));
 
-setTimeout(()=>{
-window.print();
-},300);
-}
 function imprimirGeneral(){
 abrirTab('tabGeneral', document.querySelector('.tabBtn:nth-child(4)'));
 setTimeout(()=>{
