@@ -567,7 +567,18 @@ alert("No hay datos.");
 return;
 }
 
-let csv="REPORTE GENERAL\n";
+let competencia=document.getElementById("nombreCompetencia").value||"Competencia";
+let fecha=document.getElementById("fechaCompetencia").value||"";
+let categoria=document.getElementById("categoriaCarrera").value||"";
+
+let campeon=tabla[0] ? tabla[0].nombre : "";
+let numeroCampeon=tabla[0] ? tabla[0].numero : "";
+
+let csv="CAMPEONATO QUADCROSS\n";
+csv+="Competencia;"+competencia+"\n";
+csv+="Fecha;"+fecha+"\n";
+csv+="Categoria;"+categoria+"\n";
+csv+="Campeon;#"+numeroCampeon+" "+campeon+"\n\n";
 csv+="Posicion;Numero;Piloto;Categoria;Manga1;Manga2;Total;Posicion Manga2\n";
 
 tabla.forEach((p,i)=>{
@@ -579,7 +590,7 @@ let url=URL.createObjectURL(archivo);
 let link=document.createElement("a");
 
 link.href=url;
-link.download="reporte_quadcross.csv";
+link.download="reporte_quadcross_nuevo.csv";
 link.click();
 
 URL.revokeObjectURL(url);
