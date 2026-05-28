@@ -95,8 +95,9 @@ th,td{border:1px solid #ccc;padding:5px;text-align:center}th{background:#020617;
 <section id="tabMangas" class="tabContenido"><div class="panel"><h2>MANGA 1</h2><div id="resultadoManga1"></div></div><div class="panel"><h2>MANGA 2</h2><div id="resultadoManga2"></div></div></section>
 
 <section id="tabGeneral" class="tabContenido">
-<div class="panel"><h2>REPORTE GENERAL</h2><div id="tablaGeneral"></div><button class="azul" onclick="descargarReporteCSV()">DESCARGAR EXCEL</button><button class="amarillo" onclick="window.print()">GUARDAR PDF</button></div>
-<div class="panel"><h2>Competencias Guardadas</h2><select id="listaCompetencias" onchange="cargarCompetenciaSeleccionada()"><option value="">Seleccione competencia</option></select><button class="gris" onclick="cargarCompetencias()">ACTUALIZAR LISTA</button></div>
+<div class="panel"><h2>REPORTE GENERAL</h2><div id="tablaGeneral"></<button class="azul" onclick="descargarReporteCSV()">DESCARGAR GENERAL COMPLETA</button>
+
+<button class="amarillo" onclick="descargarReporteCategoria()">DESCARGAR CATEGORÍA SELECCIONADA</button>
 </section>
 
 <section id="tabConfig" class="tabContenido">
@@ -605,6 +606,59 @@ document.getElementById("tablaGeneral").innerHTML=html;
 }
 
 function descargarReporteCSV(){
+function descargarReporteCategoria(){
+
+let categoria=document.getElementById("categoriaCarrera").value;
+
+if(!categoria){
+alert("Selecciona una categoría.");
+return;
+}
+
+let tabla=obtenerTablaGeneral().filter(
+p=>p.categoria===categoria
+);
+
+if(tabla.length===0){
+alert("No hay datos de esa categoría.");
+return;
+}
+
+let competencia=document.getElementById("nombreCompetencia").value||"Competencia";
+let fecha=document.getElementById("fechaCompetencia").value||"";
+
+let campeon=tabla[0] ? tabla[0].nombre : "";
+let numeroCampeon=tabla[0] ? tabla[0].numero : "";
+
+let csv="CAMPEONATO QUADCROSS\n";
+csv+="Competencia;"+competencia+"\n";
+csv+="Fecha;"+fecha+"\n";
+csv+="Categoria;"+categoria+"\n";
+csv+="Campeon;#"+numeroCampeon+" "+campeon+"\n\n";
+
+csv+="Posicion;Numero;Piloto;Manga1;Manga2;Total;Desempate\n";
+
+tabla.forEach((p,i)=>{
+csv+=`${i+1};${p.numero};${p.nombre};${p.manga1};${p.manga2};${p.puntos};${p.posManga2===999?"":p.posManga2}\n`;
+});
+
+let archivo=new Blob([csv],{
+type:"text/csv;charset=utf-8;"
+});
+
+let url=URL.createObjectURL(archivo);
+
+let link=document.createElement("a");
+
+link.href=url;
+
+link.download=`reporte_${categoria}.csv`;
+
+link.click();
+
+URL.revokeObjectURL(url);
+
+}
 let tabla=obtenerTablaGeneral();
 
 if(tabla.length===0){
