@@ -12,7 +12,8 @@ body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:white}header
 </head>
 <body>
 <header><img src="logo.png" alt="Logo"><h1>🏁 CAMPEONATO QUADCROSS</h1><h2>Sistema Profesional de Carrera</h2></header>
-<div class="tabs"><button class="tabBtn activo" onclick="abrirTab('tabCarrera',this)">🏁 Carrera</button><button class="tabBtn" onclick="abrirTab('tabPilotos',this)">👨 Pilotos</button><button class="tabBtn" onclick="abrirTab('tabMangas',this)">📊 Mangas</button><button class="tabBtn" onclick="abrirTab('tabGeneral',this)">🏆 General</button><button class="tabBtn" onclick="abrirTab('tabConfig',this)">⚙️ Configuración</button></div>
+<div class="tabs"><button class="tabBtn activo" onclick="abrirTab('tabCarrera',this)">🏁 Carrera</button><button class="tabBtn" onclick="abrirTab('tabPilotos',this)">👨 Pilotos</button><button class="tabBtn" onclick="abrirTab('tabMangas',this)">📊 Mangas</button><button class="tabBtn" onclick="abrirTab('tabGeneral',this)">🏆 General</button><button class="tabBtn" onclick="abrirTab('tabCampeonato',this)">📅 Campeonato</button>
+<button class="tabBtn" onclick="abrirTab('tabConfig',this)">⚙️ Configuración</button></div>
 <section id="tabCarrera" class="tabContenido activo"><div class="panel"><h2>Nueva Competencia</h2><input type="text" id="nombreCompetencia" placeholder="Nombre de competencia"><input type="date" id="fechaCompetencia"><select id="categoriaCarrera"><option value="">Seleccione categoría</option></select><input type="number" id="totalVueltas" placeholder="Cantidad de vueltas"><select id="mangaActual"><option value="1">Manga 1</option><option value="2">Manga 2</option></select><button class="azul" onclick="cargarPilotosCategoria()">CARGAR PILOTOS DE ESTA CATEGORÍA</button><button class="azul" onclick="guardarCompetencia()">GUARDAR COMPETENCIA</button><button class="morado" onclick="copiarLinkPublico()">COPIAR LINK PÚBLICO</button></div><div class="panel"><button class="azul" onclick="empezarCarrera()">EMPEZAR CARRERA</button><button class="rojo" onclick="finalizarCarrera()">FINALIZAR CARRERA</button></div><div class="panel"><h2>PASO POR META</h2><div id="botonesPaso" class="grid"></div></div><div class="panel"><h2>POSICIONES EN VIVO</h2><div id="rankingVivo"></div></div><div class="panel"><h2>PILOTOS EN CARRERA</h2><div id="listaPilotos"></div></div><div class="panel"><button class="amarillo" onclick="guardarManga()">GUARDAR MANGA</button><button class="gris" onclick="limpiarSoloVueltas()">LIMPIAR VUELTAS</button><button class="rojo" onclick="reiniciarLocal()">BORRAR LOCAL</button></div></section>
 <section id="tabPilotos" class="tabContenido"><div class="panel"><h2>Agregar Piloto a Base de Datos</h2><input type="number" id="numeroPiloto" placeholder="Número"><input type="text" id="nombrePiloto" placeholder="Nombre del piloto"><select id="categoriaPiloto"><option value="">Seleccione categoría</option></select><button onclick="guardarPilotoBase()">GUARDAR PILOTO</button><button class="gris" onclick="cargarCategorias()">ACTUALIZAR CATEGORÍAS</button><p class="nota">No permite repetir número ni nombre dentro de la misma categoría.</p></div><div class="panel"><h2>Buscar / Editar Piloto</h2><input type="number" id="buscarNumeroPiloto" placeholder="Número del piloto"><select id="buscarCategoriaPiloto"><option value="">Seleccione categoría</option></select><button class="gris" onclick="buscarPilotoEditar()">BUSCAR PILOTO</button><input type="number" id="editarNumeroPiloto" placeholder="Número corregido"><input type="text" id="editarNombrePiloto" placeholder="Nombre corregido"><select id="editarCategoriaPiloto"><option value="">Seleccione nueva categoría</option></select><button class="amarillo" onclick="actualizarPiloto()">ACTUALIZAR PILOTO</button></div></section>
 <section id="tabMangas" class="tabContenido"><div class="panel"><h2>MANGA 1</h2><div id="resultadoManga1"></div></div><div class="panel"><h2>MANGA 2</h2><div id="resultadoManga2"></div></div></section>
@@ -35,6 +36,16 @@ body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:white}header
 </div>
 
 </section>
+
+<section id="tabCampeonato" class="tabContenido">
+<div class="panel">
+<h2>📅 Campeonato</h2>
+<p class="nota">Aquí se muestran las competencias guardadas, campeones y categorías.</p>
+<button class="azul" onclick="cargarCampeonato()">ACTUALIZAR CAMPEONATO</button>
+<div id="tablaCampeonato"></div>
+</div>
+</section>
+
 <section id="tabConfig" class="tabContenido"><div class="panel"><h2>Categorías</h2><input type="text" id="nuevaCategoria" placeholder="Nueva categoría. Ej: QX A"><button onclick="guardarCategoria()">GUARDAR CATEGORÍA</button><select id="categoriaEditar"></select><input type="text" id="nuevoNombreCategoria" placeholder="Nuevo nombre de la categoría"><button class="amarillo" onclick="editarCategoria()">EDITAR NOMBRE DE CATEGORÍA</button><p class="nota">Editar categoría NO borra pilotos. Cambia todos los pilotos de esa categoría.</p></div></section>
 <script>
 const firebaseConfig={apiKey:"AIzaSyCaoe6R_Qbjl7TACUGgLxPd5oWfKp8oW-o",authDomain:"cuenta-vueltas-59c99.firebaseapp.com",projectId:"cuenta-vueltas-59c99",storageBucket:"cuenta-vueltas-59c99.firebasestorage.app",messagingSenderId:"425422890967",appId:"1:425422890967:web:874535c5dc1e44c5c2cd92",measurementId:"G-F5EE9VRLHB"};
@@ -72,6 +83,95 @@ function obtenerTablaGeneral(){let total={};pilotos.forEach(p=>{total[p.id]={id:
 function mostrarTablaGeneral(){let tabla=obtenerTablaGeneral();if(tabla.length===0){document.getElementById("tablaGeneral").innerHTML="<p>No hay puntajes.</p>";return;}let grupos={};tabla.forEach(p=>{let cat=p.categoria||"SIN CATEGORÍA";if(!grupos[cat])grupos[cat]=[];grupos[cat].push(p);});let html="";Object.keys(grupos).sort().forEach(cat=>{html+=`<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">🏆 GENERAL ${cat}</h2><table><tr><th>Gral</th><th>N°</th><th>Piloto</th><th>M1</th><th>M2</th><th>Total</th><th>Desempate</th></tr>`;grupos[cat].forEach((p,i)=>{html+=`<tr><td>${i+1}</td><td>${p.numero}</td><td>${p.nombre}</td><td>${p.manga1}</td><td>${p.manga2}</td><td><b>${p.puntos}</b></td><td>M2 Pos: ${p.posManga2===999?"-":p.posManga2}</td></tr>`;});html+="</table><br>";});document.getElementById("tablaGeneral").innerHTML=html;}
 function descargarReporteCSV(){let tabla=obtenerTablaGeneral();if(tabla.length===0){alert("No hay datos.");return;}let competencia=document.getElementById("nombreCompetencia").value||"Competencia",fecha=document.getElementById("fechaCompetencia").value||"",campeon=tabla[0]?tabla[0].nombre:"",numeroCampeon=tabla[0]?tabla[0].numero:"";let csv="CAMPEONATO QUADCROSS\n";csv+="Competencia;"+competencia+"\n";csv+="Fecha;"+fecha+"\n";csv+="Categoria;GENERAL\n";csv+="Campeon;#"+numeroCampeon+" "+campeon+"\n\n";csv+="Posicion;Numero;Piloto;Categoria;Manga1;Manga2;Total;Posicion Manga2\n";tabla.forEach((p,i)=>{csv+=`${i+1};${p.numero};${p.nombre};${p.categoria};${p.manga1};${p.manga2};${p.puntos};${p.posManga2===999?"":p.posManga2}\n`;});let archivo=new Blob([csv],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(archivo),link=document.createElement("a");link.href=url;link.download="reporte_general_quadcross.csv";link.click();URL.revokeObjectURL(url);}
 function descargarReporteCategoria(){let categoria=document.getElementById("categoriaCarrera").value;if(!categoria){alert("Selecciona una categoría.");return;}let tabla=obtenerTablaGeneral().filter(p=>p.categoria===categoria);if(tabla.length===0){alert("No hay datos de esa categoría.");return;}let competencia=document.getElementById("nombreCompetencia").value||"Competencia",fecha=document.getElementById("fechaCompetencia").value||"",campeon=tabla[0]?tabla[0].nombre:"",numeroCampeon=tabla[0]?tabla[0].numero:"";let csv="CAMPEONATO QUADCROSS\n";csv+="Competencia;"+competencia+"\n";csv+="Fecha;"+fecha+"\n";csv+="Categoria;"+categoria+"\n";csv+="Campeon;#"+numeroCampeon+" "+campeon+"\n\n";csv+="Posicion;Numero;Piloto;Manga1;Manga2;Total;Desempate\n";tabla.forEach((p,i)=>{csv+=`${i+1};${p.numero};${p.nombre};${p.manga1};${p.manga2};${p.puntos};${p.posManga2===999?"":p.posManga2}\n`;});let archivo=new Blob([csv],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(archivo),link=document.createElement("a");link.href=url;link.download=`reporte_${categoria}.csv`;link.click();URL.revokeObjectURL(url);}
+
+async function cargarCampeonato(){
+try{
+let div=document.getElementById("tablaCampeonato");
+
+if(!div){
+return;
+}
+
+div.innerHTML="<p>Cargando campeonato...</p>";
+
+let snap=await db.collection("competencias").orderBy("actualizado","desc").limit(100).get();
+
+if(snap.empty){
+div.innerHTML="<p>No hay competencias guardadas.</p>";
+return;
+}
+
+let html=`<table>
+<tr>
+<th>Fecha</th>
+<th>Competencia</th>
+<th>Categoría</th>
+<th>Campeón</th>
+<th>Puntos</th>
+</tr>`;
+
+snap.forEach(doc=>{
+let c=doc.data();
+let resultados=c.resultados||{manga1:[],manga2:[]};
+let pilotos=c.pilotos||[];
+let total={};
+
+pilotos.forEach(p=>{
+total[p.id]={
+id:p.id,
+numero:p.numero,
+nombre:p.nombre,
+categoria:p.categoria,
+manga1:0,
+manga2:0,
+posManga2:999,
+puntos:0
+};
+});
+
+(resultados.manga1||[]).forEach(p=>{
+if(!total[p.id]){
+total[p.id]={id:p.id,numero:p.numero,nombre:p.nombre,categoria:p.categoria,manga1:0,manga2:0,posManga2:999,puntos:0};
+}
+total[p.id].manga1=p.puntos||0;
+total[p.id].puntos+=(p.puntos||0);
+});
+
+(resultados.manga2||[]).forEach(p=>{
+if(!total[p.id]){
+total[p.id]={id:p.id,numero:p.numero,nombre:p.nombre,categoria:p.categoria,manga1:0,manga2:0,posManga2:999,puntos:0};
+}
+total[p.id].manga2=p.puntos||0;
+total[p.id].posManga2=p.posicion||999;
+total[p.id].puntos+=(p.puntos||0);
+});
+
+let tabla=Object.values(total).sort((a,b)=>{
+if(b.puntos!==a.puntos)return b.puntos-a.puntos;
+return a.posManga2-b.posManga2;
+});
+
+let campeon=tabla[0];
+let nombreCampeon=campeon ? "#"+campeon.numero+" "+campeon.nombre : "-";
+let puntosCampeon=campeon ? campeon.puntos : "-";
+
+html+=`<tr>
+<td>${c.fecha||""}</td>
+<td>${c.nombre||""}</td>
+<td>${c.categoria||""}</td>
+<td><b>${nombreCampeon}</b></td>
+<td>${puntosCampeon}</td>
+</tr>`;
+});
+
+html+="</table>";
+div.innerHTML=html;
+
+}catch(error){
+alert("Error al cargar campeonato: "+error.message);
+}
+}
+
 function finalizarCarrera(){carreraIniciada=false;guardarCompetenciaFirebase();alert("🏆 Carrera finalizada");hablar("Carrera finalizada");}function limpiarSoloVueltas(actualizar=true){pilotos.forEach(p=>{p.vueltas=0;p.finalizado=false;p.posicion=null;p.ultimoPaso=0;});contadorPaso=0;guardarLocal();if(actualizar)guardarCompetenciaFirebase();mostrarTodo();}function hablar(texto){let voz=new SpeechSynthesisUtterance(texto);voz.lang="es-ES";speechSynthesis.speak(voz);}function reiniciarLocal(){if(confirm("¿Seguro que deseas borrar solo datos locales?")){pilotos=[];resultados={manga1:[],manga2:[]};contadorPaso=0;competenciaId="";carreraIniciada=false;localStorage.clear();mostrarTodo();}}
 </script>
 </body>
