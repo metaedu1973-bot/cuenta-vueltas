@@ -37,19 +37,14 @@ body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:white}header
 
 </section>
 
-
 <section id="tabCampeonato" class="tabContenido">
-
 <div class="panel">
 <h2>📅 Campeonato</h2>
-<p class="nota">Muestra los 3 primeros lugares de Manga 1, Manga 2 y General por cada competencia guardada.</p>
+<p class="nota">Presiona actualizar para ver los 3 primeros lugares de Manga 1, Manga 2 y General.</p>
 <button class="azul" onclick="cargarCampeonato()">ACTUALIZAR CAMPEONATO</button>
-<button class="amarillo" onclick="imprimirCampeonato()">IMPRIMIR CAMPEONATO</button>
 <div id="tablaCampeonato"></div>
 </div>
-
 </section>
-
 
 <section id="tabConfig" class="tabContenido"><div class="panel"><h2>Categorías</h2><input type="text" id="nuevaCategoria" placeholder="Nueva categoría. Ej: QX A"><button onclick="guardarCategoria()">GUARDAR CATEGORÍA</button><select id="categoriaEditar"></select><input type="text" id="nuevoNombreCategoria" placeholder="Nuevo nombre de la categoría"><button class="amarillo" onclick="editarCategoria()">EDITAR NOMBRE DE CATEGORÍA</button><p class="nota">Editar categoría NO borra pilotos. Cambia todos los pilotos de esa categoría.</p></div></section>
 <script>
@@ -89,96 +84,10 @@ function mostrarTablaGeneral(){let tabla=obtenerTablaGeneral();if(tabla.length==
 function descargarReporteCSV(){let tabla=obtenerTablaGeneral();if(tabla.length===0){alert("No hay datos.");return;}let competencia=document.getElementById("nombreCompetencia").value||"Competencia",fecha=document.getElementById("fechaCompetencia").value||"",campeon=tabla[0]?tabla[0].nombre:"",numeroCampeon=tabla[0]?tabla[0].numero:"";let csv="CAMPEONATO QUADCROSS\n";csv+="Competencia;"+competencia+"\n";csv+="Fecha;"+fecha+"\n";csv+="Categoria;GENERAL\n";csv+="Campeon;#"+numeroCampeon+" "+campeon+"\n\n";csv+="Posicion;Numero;Piloto;Categoria;Manga1;Manga2;Total;Posicion Manga2\n";tabla.forEach((p,i)=>{csv+=`${i+1};${p.numero};${p.nombre};${p.categoria};${p.manga1};${p.manga2};${p.puntos};${p.posManga2===999?"":p.posManga2}\n`;});let archivo=new Blob([csv],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(archivo),link=document.createElement("a");link.href=url;link.download="reporte_general_quadcross.csv";link.click();URL.revokeObjectURL(url);}
 function descargarReporteCategoria(){let categoria=document.getElementById("categoriaCarrera").value;if(!categoria){alert("Selecciona una categoría.");return;}let tabla=obtenerTablaGeneral().filter(p=>p.categoria===categoria);if(tabla.length===0){alert("No hay datos de esa categoría.");return;}let competencia=document.getElementById("nombreCompetencia").value||"Competencia",fecha=document.getElementById("fechaCompetencia").value||"",campeon=tabla[0]?tabla[0].nombre:"",numeroCampeon=tabla[0]?tabla[0].numero:"";let csv="CAMPEONATO QUADCROSS\n";csv+="Competencia;"+competencia+"\n";csv+="Fecha;"+fecha+"\n";csv+="Categoria;"+categoria+"\n";csv+="Campeon;#"+numeroCampeon+" "+campeon+"\n\n";csv+="Posicion;Numero;Piloto;Manga1;Manga2;Total;Desempate\n";tabla.forEach((p,i)=>{csv+=`${i+1};${p.numero};${p.nombre};${p.manga1};${p.manga2};${p.puntos};${p.posManga2===999?"":p.posManga2}\n`;});let archivo=new Blob([csv],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(archivo),link=document.createElement("a");link.href=url;link.download=`reporte_${categoria}.csv`;link.click();URL.revokeObjectURL(url);}
 
-
-
-div.innerHTML="<p>Cargando campeonato...</p>";
-
-let snap=await db.collection("competencias").orderBy("actualizado","desc").limit(100).get();
-
-if(snap.empty){
-div.innerHTML="<p>No hay competencias guardadas.</p>";
-return;
-}
-
-let html=`<table>
-<tr>
-<th>Fecha</th>
-<th>Competencia</th>
-<th>Categoría</th>
-<th>Campeón</th>
-<th>Puntos</th>
-</tr>`;
-
-snap.forEach(doc=>{
-let c=doc.data();
-let resultados=c.resultados||{manga1:[],manga2:[]};
-let pilotos=c.pilotos||[];
-let total={};
-
-pilotos.forEach(p=>{
-total[p.id]={
-id:p.id,
-numero:p.numero,
-nombre:p.nombre,
-categoria:p.categoria,
-manga1:0,
-manga2:0,
-posManga2:999,
-puntos:0
-};
-});
-
-(resultados.manga1||[]).forEach(p=>{
-if(!total[p.id]){
-total[p.id]={id:p.id,numero:p.numero,nombre:p.nombre,categoria:p.categoria,manga1:0,manga2:0,posManga2:999,puntos:0};
-}
-total[p.id].manga1=p.puntos||0;
-total[p.id].puntos+=(p.puntos||0);
-});
-
-(resultados.manga2||[]).forEach(p=>{
-if(!total[p.id]){
-total[p.id]={id:p.id,numero:p.numero,nombre:p.nombre,categoria:p.categoria,manga1:0,manga2:0,posManga2:999,puntos:0};
-}
-total[p.id].manga2=p.puntos||0;
-total[p.id].posManga2=p.posicion||999;
-total[p.id].puntos+=(p.puntos||0);
-});
-
-let tabla=Object.values(total).sort((a,b)=>{
-if(b.puntos!==a.puntos)return b.puntos-a.puntos;
-return a.posManga2-b.posManga2;
-});
-
-let campeon=tabla[0];
-let nombreCampeon=campeon ? "#"+campeon.numero+" "+campeon.nombre : "-";
-let puntosCampeon=campeon ? campeon.puntos : "-";
-
-html+=`<tr>
-<td>${c.fecha||""}</td>
-<td>${c.nombre||""}</td>
-<td>${c.categoria||""}</td>
-<td><b>${nombreCampeon}</b></td>
-<td>${puntosCampeon}</td>
-</tr>`;
-});
-
-html+="</table>";
-div.innerHTML=html;
-
-}catch(error){
-alert("Error al cargar campeonato: "+error.message);
-}
-}
-
-
 async function cargarCampeonato(){
 try{
 let div=document.getElementById("tablaCampeonato");
-
-if(!div){
-return;
-}
+if(!div){return;}
 
 div.innerHTML="<p>Cargando campeonato...</p>";
 
@@ -189,10 +98,12 @@ div.innerHTML="<p>No hay competencias guardadas.</p>";
 return;
 }
 
-function textoTop(lista){
-return (lista||[]).slice(0,3).map((p,i)=>{
+function topTres(lista){
+let datos=(lista||[]).slice().sort((a,b)=>(a.posicion||999)-(b.posicion||999)).slice(0,3);
+if(datos.length===0){return "-";}
+return datos.map((p,i)=>{
 let medalla=i===0?"🥇":i===1?"🥈":"🥉";
-return `${medalla} #${p.numero||""} ${p.nombre||""} (${p.puntos||0} pts)`;
+return medalla+" #"+(p.numero||"")+" "+(p.nombre||"")+" ("+(p.puntos||0)+" pts)";
 }).join("<br>");
 }
 
@@ -201,72 +112,48 @@ let html=`<table>
 <th>Fecha</th>
 <th>Competencia</th>
 <th>Categoría</th>
-<th>🏁 Top 3 Manga 1</th>
-<th>🏁 Top 3 Manga 2</th>
-<th>🏆 Top 3 General</th>
+<th>Manga 1</th>
+<th>Manga 2</th>
+<th>General</th>
 </tr>`;
 
 snap.forEach(doc=>{
 let c=doc.data();
 let r=c.resultados||{manga1:[],manga2:[]};
-
-let m1=(r.manga1||[]).slice().sort((a,b)=>(a.posicion||999)-(b.posicion||999));
-let m2=(r.manga2||[]).slice().sort((a,b)=>(a.posicion||999)-(b.posicion||999));
-
 let general={};
 
-m1.forEach(p=>{
+(r.manga1||[]).forEach(p=>{
 if(!general[p.id]){
-general[p.id]={
-id:p.id,
-numero:p.numero,
-nombre:p.nombre,
-categoria:p.categoria,
-manga1:0,
-manga2:0,
-posManga2:999,
-puntos:0
-};
+general[p.id]={id:p.id,numero:p.numero,nombre:p.nombre,puntos:0,posManga2:999};
 }
-general[p.id].manga1=p.puntos||0;
 general[p.id].puntos+=(p.puntos||0);
 });
 
-m2.forEach(p=>{
+(r.manga2||[]).forEach(p=>{
 if(!general[p.id]){
-general[p.id]={
-id:p.id,
-numero:p.numero,
-nombre:p.nombre,
-categoria:p.categoria,
-manga1:0,
-manga2:0,
-posManga2:999,
-puntos:0
-};
+general[p.id]={id:p.id,numero:p.numero,nombre:p.nombre,puntos:0,posManga2:999};
 }
-general[p.id].manga2=p.puntos||0;
-general[p.id].posManga2=p.posicion||999;
 general[p.id].puntos+=(p.puntos||0);
+general[p.id].posManga2=p.posicion||999;
 });
 
 let generalOrden=Object.values(general).sort((a,b)=>{
 if(b.puntos!==a.puntos)return b.puntos-a.puntos;
 return a.posManga2-b.posManga2;
-});
+}).slice(0,3);
 
-let topGeneral=generalOrden.slice(0,3).map((p,i)=>{
+let generalTexto=generalOrden.length===0?"-":generalOrden.map((p,i)=>{
 let medalla=i===0?"🥇":i===1?"🥈":"🥉";
-return `${medalla} #${p.numero||""} ${p.nombre||""} (${p.puntos||0} pts)`;
+return medalla+" #"+(p.numero||"")+" "+(p.nombre||"")+" ("+(p.puntos||0)+" pts)";
 }).join("<br>");
 
 html+=`<tr>
 <td>${c.fecha||""}</td>
 <td>${c.nombre||""}</td>
 <td>${c.categoria||""}</td>
-<td>${textoTop(m1)||"-"}</td>
-<td>${textoTop(m2)||"-"}</td>
-<td><b>${topGeneral||"-"}</b></td>
+<td>${topTres(r.manga1)}</td>
+<td>${topTres(r.manga2)}</td>
+<td><b>${generalTexto}</b></td>
 </tr>`;
 });
 
@@ -276,63 +163,6 @@ div.innerHTML=html;
 }catch(error){
 alert("Error al cargar campeonato: "+error.message);
 }
-}
-
-
-function imprimirCampeonato(){
-let contenido=document.getElementById("tablaCampeonato").innerHTML;
-
-if(!contenido || contenido.includes("No hay") || contenido.includes("Cargando")){
-alert("Primero presiona ACTUALIZAR CAMPEONATO.");
-return;
-}
-
-let ventana=window.open("","_blank");
-
-ventana.document.write(`
-<html>
-<head>
-<title>Campeonato Quadcross</title>
-<style>
-body{
-font-family:Arial,sans-serif;
-color:black;
-background:white;
-padding:20px;
-}
-h1{
-text-align:center;
-font-size:24px;
-}
-table{
-width:100%;
-border-collapse:collapse;
-font-size:11px;
-}
-th,td{
-border:1px solid #333;
-padding:6px;
-text-align:center;
-vertical-align:top;
-}
-th{
-background:#111;
-color:white;
-}
-</style>
-</head>
-<body>
-<h1>CAMPEONATO QUADCROSS</h1>
-${contenido}
-</body>
-</html>
-`);
-
-ventana.document.close();
-
-setTimeout(()=>{
-ventana.print();
-},300);
 }
 
 function finalizarCarrera(){carreraIniciada=false;guardarCompetenciaFirebase();alert("🏆 Carrera finalizada");hablar("Carrera finalizada");}function limpiarSoloVueltas(actualizar=true){pilotos.forEach(p=>{p.vueltas=0;p.finalizado=false;p.posicion=null;p.ultimoPaso=0;});contadorPaso=0;guardarLocal();if(actualizar)guardarCompetenciaFirebase();mostrarTodo();}function hablar(texto){let voz=new SpeechSynthesisUtterance(texto);voz.lang="es-ES";speechSynthesis.speak(voz);}function reiniciarLocal(){if(confirm("¿Seguro que deseas borrar solo datos locales?")){pilotos=[];resultados={manga1:[],manga2:[]};contadorPaso=0;competenciaId="";carreraIniciada=false;localStorage.clear();mostrarTodo();}}
