@@ -106,8 +106,9 @@ let html=`<table>
 <th>Fecha</th>
 <th>Competencia</th>
 <th>Categoría</th>
-<th>Campeón</th>
-<th>Puntos</th>
+<th>🥇 1° Lugar</th>
+<th>🥈 2° Lugar</th>
+<th>🥉 3° Lugar</th>
 </tr>`;
 
 snap.forEach(doc=>{
@@ -131,16 +132,36 @@ puntos:0
 
 (resultados.manga1||[]).forEach(p=>{
 if(!total[p.id]){
-total[p.id]={id:p.id,numero:p.numero,nombre:p.nombre,categoria:p.categoria,manga1:0,manga2:0,posManga2:999,puntos:0};
+total[p.id]={
+id:p.id,
+numero:p.numero,
+nombre:p.nombre,
+categoria:p.categoria,
+manga1:0,
+manga2:0,
+posManga2:999,
+puntos:0
+};
 }
+
 total[p.id].manga1=p.puntos||0;
 total[p.id].puntos+=(p.puntos||0);
 });
 
 (resultados.manga2||[]).forEach(p=>{
 if(!total[p.id]){
-total[p.id]={id:p.id,numero:p.numero,nombre:p.nombre,categoria:p.categoria,manga1:0,manga2:0,posManga2:999,puntos:0};
+total[p.id]={
+id:p.id,
+numero:p.numero,
+nombre:p.nombre,
+categoria:p.categoria,
+manga1:0,
+manga2:0,
+posManga2:999,
+puntos:0
+};
 }
+
 total[p.id].manga2=p.puntos||0;
 total[p.id].posManga2=p.posicion||999;
 total[p.id].puntos+=(p.puntos||0);
@@ -151,16 +172,17 @@ if(b.puntos!==a.puntos)return b.puntos-a.puntos;
 return a.posManga2-b.posManga2;
 });
 
-let campeon=tabla[0];
-let nombreCampeon=campeon ? "#"+campeon.numero+" "+campeon.nombre : "-";
-let puntosCampeon=campeon ? campeon.puntos : "-";
+let primero=tabla[0]?`#${tabla[0].numero} ${tabla[0].nombre} (${tabla[0].puntos} pts)`:"-";
+let segundo=tabla[1]?`#${tabla[1].numero} ${tabla[1].nombre} (${tabla[1].puntos} pts)`:"-";
+let tercero=tabla[2]?`#${tabla[2].numero} ${tabla[2].nombre} (${tabla[2].puntos} pts)`:"-";
 
 html+=`<tr>
 <td>${c.fecha||""}</td>
 <td>${c.nombre||""}</td>
 <td>${c.categoria||""}</td>
-<td><b>${nombreCampeon}</b></td>
-<td>${puntosCampeon}</td>
+<td><b>${primero}</b></td>
+<td>${segundo}</td>
+<td>${tercero}</td>
 </tr>`;
 });
 
