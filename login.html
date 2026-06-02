@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Cuenta Vueltas</title>
+</head>
+<body>
+
+  <h2>Iniciar sesión</h2>
+
+  <input type="email" id="email" placeholder="Correo">
+  <br><br>
+
+  <input type="password" id="password" placeholder="Contraseña">
+  <br><br>
+
+  <button onclick="login()">Ingresar</button>
+  <br><br>
+
+  <button onclick="resetPassword()">Olvidé mi contraseña</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCaoe6R_Qbjl7TACUGgLxPd5oWfKp8oW-o",
+      authDomain: "cuenta-vueltas-59c99.firebaseapp.com",
+      projectId: "cuenta-vueltas-59c99",
+      storageBucket: "cuenta-vueltas-59c99.firebasestorage.app",
+      messagingSenderId: "425422890967",
+      appId: "1:425422890967:web:874535c5dc1e44c5c2cd92",
+      measurementId: "G-F5EE9VRLHB"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    window.login = async function () {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        alert("Escribe correo y contraseña");
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert("Ingreso correcto");
+        window.location.href = "index.html";
+      } catch (error) {
+        alert("Correo o contraseña incorrectos");
+      }
+    };
+
+    window.resetPassword = async function () {
+      const email = document.getElementById("email").value.trim();
+
+      if (!email) {
+        alert("Primero escribe tu correo");
+        return;
+      }
+
+      try {
+        await sendPasswordResetEmail(auth, email);
+        alert("Te enviamos un correo para restablecer la contraseña");
+      } catch (error) {
+        alert("No se pudo enviar el correo");
+      }
+    };
+  </script>
+
+</body>
+</html>

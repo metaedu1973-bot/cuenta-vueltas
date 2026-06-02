@@ -2,373 +2,78 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Pantalla Pública - Quadcross</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>Visualizador en Vivo - Quadcross</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
 <style>
-body{
-margin:0;
-font-family:Arial,sans-serif;
-background:#020617;
-color:white;
-}
-
-header{
-background:linear-gradient(180deg,#020617,#111827);
-padding:18px;
-text-align:center;
-border-bottom:4px solid #facc15;
-box-shadow:0 4px 20px rgba(0,0,0,.45);
-}
-
-header img{
-width:120px;
-max-width:90%;
-margin-bottom:8px;
-filter:drop-shadow(0 0 12px rgba(255,255,255,.25));
-}
-
-h1{
-font-size:30px;
-margin:4px;
-color:#facc15;
-}
-
-h2{
-font-size:19px;
-margin:4px;
-color:white;
-}
-
-.resumen{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-gap:10px;
-padding:10px;
-}
-
-.card{
-background:#1e293b;
-border-radius:14px;
-padding:14px;
-text-align:center;
-box-shadow:0 4px 15px rgba(0,0,0,.35);
-border:1px solid #334155;
-}
-
-.card h3{
-font-size:15px;
-margin:4px;
-color:#cbd5e1;
-}
-
-.card .valor{
-font-size:36px;
-font-weight:bold;
-color:#facc15;
-}
-
-.top3{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:10px;
-padding:10px;
-}
-
-.podio{
-border-radius:16px;
-padding:12px;
-text-align:center;
-font-weight:bold;
-box-shadow:0 4px 15px rgba(0,0,0,.35);
-}
-
-.podio .medalla{
-font-size:34px;
-}
-
-.podio .numero{
-font-size:28px;
-}
-
-.podio .nombre{
-font-size:18px;
-}
-
-.oro{background:#facc15;color:black}
-.plata{background:#e5e7eb;color:black}
-.bronce{background:#fb923c;color:black}
-
-.tabla{
-padding:10px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
-color:black;
-font-size:22px;
-border-radius:12px;
-overflow:hidden;
-}
-
-th,td{
-border:1px solid #cbd5e1;
-padding:10px;
-text-align:center;
-}
-
-th{
-background:#111827;
-color:white;
-font-size:18px;
-}
-
-tr:nth-child(even){
-background:#f1f5f9;
-}
-
-.faltan2{
-background:#dc2626!important;
-color:white!important;
-font-weight:bold;
-}
-
-.ultima{
-background:#facc15!important;
-color:black!important;
-font-weight:bold;
-}
-
-.finalizo{
-background:#16a34a!important;
-color:white!important;
-font-weight:bold;
-}
-
-.estado{
-font-size:13px;
-padding:8px;
-text-align:center;
-color:#cbd5e1;
-}
-
-.sinDatos{
-text-align:center;
-padding:20px;
-font-size:18px;
-color:#cbd5e1;
-}
-
-@media(max-width:700px){
-h1{font-size:23px}
-h2{font-size:16px}
-table{font-size:13px}
-th,td{padding:6px}
-.card .valor{font-size:28px}
-.podio .numero{font-size:22px}
-.podio .nombre{font-size:15px}
-}
+:root{--orange:#ff6a00;--yellow:#facc15;--green:#22c55e;--red:#dc2626;--bg:#020617;--panel:#0f172a;--text:#fff;--muted:#cbd5e1}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(255,106,0,.24),transparent 30%),linear-gradient(135deg,#020617,#050505 72%);color:var(--text);min-height:100vh}
+.top{padding:14px 20px;background:linear-gradient(90deg,#050505,#111827,#1b0b00);border-bottom:4px solid var(--orange);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+h1{margin:0;font-size:28px;text-shadow:0 0 16px rgba(255,106,0,.7)}
+.sub{margin:4px 0 0;color:var(--muted);font-weight:bold;font-size:14px}
+.live{display:inline-block;background:#052e16;border:2px solid var(--green);color:#bbf7d0;border-radius:999px;padding:7px 12px;font-weight:900;text-align:center}
+.clock{font-size:44px;line-height:1;margin-top:5px;font-family:Arial Black,Arial,sans-serif;color:var(--yellow);text-shadow:0 0 22px rgba(250,204,21,.45);text-align:right}
+.wrap{padding:14px;display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.panel{background:linear-gradient(180deg,rgba(15,23,42,.96),rgba(2,6,23,.96));border:1px solid rgba(255,106,0,.35);border-radius:18px;padding:14px;box-shadow:0 12px 34px rgba(0,0,0,.42)}
+.status{display:none;text-align:center;font-size:25px;font-weight:900;border-radius:15px;padding:12px;margin-bottom:12px}
+.status.green{display:block;background:linear-gradient(135deg,#064e3b,#16a34a);border:2px solid #bbf7d0}
+.status.red{display:block;background:linear-gradient(135deg,#7f1d1d,#dc2626);border:2px solid #fecaca}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.box{background:#050505;border:1px solid rgba(255,106,0,.35);border-radius:14px;padding:10px;text-align:center}
+.box span{display:block;color:var(--muted);font-size:11px;font-weight:bold}
+.box b{display:block;color:var(--yellow);font-size:18px;margin-top:3px}
+.leader{text-align:center;background:radial-gradient(circle at top,rgba(255,106,0,.22),transparent 60%),#050505;border:2px solid rgba(250,204,21,.5);border-radius:18px;padding:12px;margin-bottom:10px;font-weight:900}
+.leader b{display:block;font-size:36px;color:var(--yellow);margin-top:4px}
+.small{font-size:13px;color:var(--muted)}
+table{width:100%;border-collapse:separate;border-spacing:0 6px}
+th{color:var(--yellow);text-align:left;font-size:13px;padding:6px 8px}
+td{background:#111827;padding:9px 8px;font-size:20px;font-weight:900;border-top:1px solid rgba(255,106,0,.22);border-bottom:1px solid rgba(255,106,0,.22)}
+td:first-child{border-left:1px solid rgba(255,106,0,.22);border-radius:12px 0 0 12px;text-align:center;color:var(--yellow);width:55px}
+td:last-child{border-right:1px solid rgba(255,106,0,.22);border-radius:0 12px 12px 0}
+.num{color:#fb923c;width:70px;text-align:center}
+.vueltas{text-align:center;color:#bbf7d0;width:120px}
+.finishedTitle{margin:0 0 8px;color:#fecaca;font-size:20px}.finalTitle{margin:0 0 8px;color:var(--yellow);font-size:23px}
+.closed{min-height:100vh;display:none;place-items:center;text-align:center;padding:30px}.closed h1{font-size:58px;color:var(--yellow)}.closed p{font-size:24px;color:var(--muted)}
+@media(max-width:900px){.top{grid-template-columns:1fr}.clock{text-align:left;font-size:36px}.wrap{grid-template-columns:1fr}.meta{grid-template-columns:repeat(2,1fr)}h1{font-size:23px}td{font-size:16px}.leader b{font-size:28px}}
 </style>
 </head>
-
 <body>
-
-<header>
-<img src="logo.png" alt="Logo">
-<h1>🏁 RESULTADOS EN VIVO</h1>
-<h2 id="tituloCompetencia">Cargando...</h2>
-</header>
-
-<div class="resumen">
-<div class="card">
-<h3>Categoría</h3>
-<div class="valor" id="categoriaActual">-</div>
+<div id="closed" class="closed"><div><h1>🔒 TRANSMISIÓN FINALIZADA</h1><p>Gracias por asistir al evento.</p></div></div>
+<div id="app">
+  <div class="top"><div><h1>🏁 VISUALIZADOR EN VIVO</h1><p class="sub">Sistema de Cronometraje Deportivo</p></div><div><div class="live">🟢 EN VIVO</div><div id="reloj" class="clock">00:00:00</div></div></div>
+  <div class="wrap">
+    <section class="panel">
+      <div id="estadoManga" class="status"></div>
+      <div class="meta"><div class="box"><span>COMPETENCIA</span><b id="nombreComp">-</b></div><div class="box"><span>CATEGORÍA</span><b id="categoriaComp">-</b></div><div class="box"><span>MANGA</span><b id="mangaComp">-</b></div><div class="box"><span>VUELTAS</span><b id="vueltasComp">-</b></div></div>
+      <div id="lider" class="leader">LÍDER DE CARRERA<b>-</b><div class="small">Esperando datos...</div></div>
+      <table><thead><tr><th>POS</th><th>N°</th><th>PILOTO</th><th>VUELTAS</th></tr></thead><tbody id="tablaRanking"><tr><td colspan="4">Cargando carrera...</td></tr></tbody></table>
+    </section>
+    <section class="panel"><div id="panelFinal"></div><div id="panelTerminada"></div></section>
+  </div>
 </div>
-
-<div class="card">
-<h3>Vueltas líder</h3>
-<div class="valor" id="vueltasLider">0</div>
-</div>
-
-<div class="card">
-<h3>Faltan</h3>
-<div class="valor" id="faltanCarrera">-</div>
-</div>
-
-<div class="card">
-<h3>Pilotos</h3>
-<div class="valor" id="totalPilotos">0</div>
-</div>
-</div>
-
-<div class="top3" id="topTres">
-<div class="podio oro"><div class="medalla">🥇</div><div class="nombre">Esperando datos</div></div>
-<div class="podio plata"><div class="medalla">🥈</div><div class="nombre">Esperando datos</div></div>
-<div class="podio bronce"><div class="medalla">🥉</div><div class="nombre">Esperando datos</div></div>
-</div>
-
-<div class="tabla">
-<table>
-<thead>
-<tr>
-<th>Pos</th>
-<th>N°</th>
-<th>Piloto</th>
-<th>Categoría</th>
-<th>Vueltas</th>
-<th>Faltan</th>
-<th>Estado</th>
-</tr>
-</thead>
-<tbody id="tablaVivo">
-<tr><td colspan="7">Esperando datos...</td></tr>
-</tbody>
-</table>
-</div>
-
-<div class="estado" id="estadoConexion">Conectando...</div>
-
 <script>
-const firebaseConfig={
-apiKey:"AIzaSyCaoe6R_Qbjl7TACUGgLxPd5oWfKp8oW-o",
-authDomain:"cuenta-vueltas-59c99.firebaseapp.com",
-projectId:"cuenta-vueltas-59c99",
-storageBucket:"cuenta-vueltas-59c99.firebasestorage.app",
-messagingSenderId:"425422890967",
-appId:"1:425422890967:web:874535c5dc1e44c5c2cd92",
-measurementId:"G-F5EE9VRLHB"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
-
-let params=new URLSearchParams(window.location.search);
-let competenciaId=params.get("id");
-
-if(!competenciaId){
-document.getElementById("tituloCompetencia").innerText="Falta ID de competencia";
-document.getElementById("estadoConexion").innerText="Copia el link desde el botón COPIAR LINK PÚBLICO del sistema principal.";
-document.getElementById("tablaVivo").innerHTML='<tr><td colspan="7">No hay ID de competencia.</td></tr>';
-}else{
-escucharCompetencia();
-}
-
-function escucharCompetencia(){
-db.collection("competencias").doc(competenciaId).onSnapshot(doc=>{
-if(!doc.exists){
-document.getElementById("tituloCompetencia").innerText="Competencia no encontrada";
-document.getElementById("tablaVivo").innerHTML='<tr><td colspan="7">No existe esta competencia.</td></tr>';
-return;
-}
-
-let c=doc.data();
-let pilotos=c.pilotos||[];
-let total=parseInt(c.vueltas||0);
-
-document.getElementById("tituloCompetencia").innerText=(c.nombre||"Competencia")+" - "+(c.fecha||"");
-document.getElementById("categoriaActual").innerText=c.categoria||"-";
-document.getElementById("totalPilotos").innerText=pilotos.length;
-
-let ranking=[...pilotos].sort((a,b)=>{
-if((b.vueltas||0)!==(a.vueltas||0)){
-return (b.vueltas||0)-(a.vueltas||0);
-}
-return (a.ultimoPaso||0)-(b.ultimoPaso||0);
-});
-
-let lider=ranking[0];
-let vueltasLider=lider?(lider.vueltas||0):0;
-let faltanCarrera=total>0?total-vueltasLider:"-";
-
-document.getElementById("vueltasLider").innerText=vueltasLider;
-document.getElementById("faltanCarrera").innerText=faltanCarrera;
-
-mostrarTopTres(ranking);
-mostrarTabla(ranking,total);
-
-document.getElementById("estadoConexion").innerText="Actualizado automáticamente";
-},error=>{
-document.getElementById("estadoConexion").innerText="Error: "+error.message;
-});
-}
-
-function mostrarTopTres(ranking){
-let top=document.getElementById("topTres");
-
-let clases=["oro","plata","bronce"];
-let medallas=["🥇","🥈","🥉"];
-
-let html="";
-
-for(let i=0;i<3;i++){
-let p=ranking[i];
-
-if(p){
-html+=`
-<div class="podio ${clases[i]}">
-<div class="medalla">${medallas[i]}</div>
-<div class="numero">#${p.numero||""}</div>
-<div class="nombre">${p.nombre||""}</div>
-<div>${p.vueltas||0} vueltas</div>
-</div>`;
-}else{
-html+=`
-<div class="podio ${clases[i]}">
-<div class="medalla">${medallas[i]}</div>
-<div class="nombre">Sin piloto</div>
-</div>`;
-}
-}
-
-top.innerHTML=html;
-}
-
-function mostrarTabla(ranking,total){
-let tbody=document.getElementById("tablaVivo");
-tbody.innerHTML="";
-
-if(ranking.length===0){
-tbody.innerHTML='<tr><td colspan="7">No hay pilotos cargados.</td></tr>';
-return;
-}
-
-ranking.forEach((p,i)=>{
-let vueltas=p.vueltas||0;
-let faltan=total>0?total-vueltas:"-";
-let clase="";
-let estado=p.finalizado?"FINALIZÓ":"EN CARRERA";
-
-if(faltan===2){
-clase="faltan2";
-}
-
-if(faltan===1){
-clase="ultima";
-}
-
-if(faltan<=0&&total>0){
-clase="finalizo";
-estado="FINALIZÓ";
-}
-
-tbody.innerHTML+=`
-<tr class="${clase}">
-<td>${i+1}</td>
-<td>${p.numero||""}</td>
-<td>${p.nombre||""}</td>
-<td>${p.categoria||""}</td>
-<td>${vueltas}</td>
-<td>${faltan}</td>
-<td>${estado}</td>
-</tr>`;
-});
-}
+const firebaseConfig={apiKey:"AIzaSyCaoe6R_Qbjl7TACUGgLxPd5oWfKp8oW-o",authDomain:"cuenta-vueltas-59c99.firebaseapp.com",projectId:"cuenta-vueltas-59c99",storageBucket:"cuenta-vueltas-59c99.firebasestorage.app",messagingSenderId:"425422890967",appId:"1:425422890967:web:874535c5dc1e44c5c2cd92",measurementId:"G-F5EE9VRLHB"};
+firebase.initializeApp(firebaseConfig);const db=firebase.firestore();
+let competencia=null, visualizadorAbierto=true, unsubscribeCompetencia=null, timer=null; const CLIENTE_ID="eduardo_tinizaray";
+function perteneceCliente(d){return !d.clienteId || d.clienteId===CLIENTE_ID}
+function fmt(ms){ms=Math.max(0,Number(ms||0));const t=Math.floor(ms/1000);return String(Math.floor(t/3600)).padStart(2,"0")+":"+String(Math.floor((t%3600)/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0")}
+function parseTiempo(txt){const p=String(txt||"00:00:00").split(":").map(n=>parseInt(n,10)||0);if(p.length===3)return ((p[0]*3600)+(p[1]*60)+p[2])*1000;if(p.length===2)return ((p[0]*60)+p[1])*1000;return 0}
+function relojKey(c){return "reloj_publico_"+[c?.nombre||"",c?.fecha||"",c?.categoria||"",c?.mangaActual||""].join("_").replace(/[^a-zA-Z0-9_\-]/g,"_")}
+function actualizarReloj(){const r=document.getElementById("reloj");if(!r||!competencia)return;if(competencia.carreraIniciada){let inicio=Number(competencia.inicioCarreraMs||competencia.inicioMs||competencia.horaInicioMs||0);const key=relojKey(competencia);if(!inicio){inicio=Number(localStorage.getItem(key)||0);if(!inicio){inicio=Date.now()-parseTiempo(competencia.tiempoCarrera||competencia.tiempoTotal||competencia.tiempoFinal||"00:00:00");localStorage.setItem(key,String(inicio))}}r.textContent=fmt(Date.now()-inicio)}else{r.textContent=competencia.tiempoCarrera||competencia.tiempoTotal||competencia.tiempoFinal||"00:00:00"}}
+function ordenarPilotos(lista){return [...(lista||[])].sort((a,b)=>(Number(b.vueltas||0)-Number(a.vueltas||0))||(Number(a.ultimoPaso||999999)-Number(b.ultimoPaso||999999))||String(a.nombre||"").localeCompare(String(b.nombre||"")))}
+function normalizarResultadoArray(arr,totalVueltas){return (arr||[]).map((p,i)=>({posicion:Number(p.posicion||p.pos||i+1),numero:p.numero||"",nombre:p.nombre||"",vueltas:Number(p.vueltas||p.vueltasDadas||0),totalVueltas:Number(p.totalVueltas||totalVueltas||0),puntos:Number(p.puntos||0)})).sort((a,b)=>a.posicion-b.posicion)}
+function puntosPorPos(pos){const tabla={1:25,2:22,3:20,4:18,5:16,6:15,7:14,8:13,9:12,10:11,11:10,12:9,13:8,14:7,15:6,16:5,17:4,18:3,19:2,20:1};return tabla[pos]||0}
+function tablaHTML(lista){if(!lista.length)return "<p class='small'>Sin resultados guardados.</p>";return `<table><thead><tr><th>POS</th><th>N°</th><th>PILOTO</th><th>VUELTAS</th></tr></thead><tbody>${lista.map((p,i)=>`<tr><td>${p.posicion||i+1}</td><td class="num">${p.numero||""}</td><td>${p.nombre||""}</td><td class="vueltas">${p.vueltas||0}/${p.totalVueltas||"-"}</td></tr>`).join("")}</tbody></table>`}
+function calcularGeneral(m1,m2){const map={};function add(arr,manga){arr.forEach((p,i)=>{const key=String(p.numero||p.nombre||i);if(!map[key])map[key]={numero:p.numero,nombre:p.nombre,p1:0,p2:0,total:0};const pts=p.puntos||puntosPorPos(p.posicion||i+1);map[key][manga]=pts;map[key].total+=pts})}add(m1,"p1");add(m2,"p2");return Object.values(map).sort((a,b)=>b.total-a.total||b.p2-a.p2)}
+function renderFinal(m1,m2){const panel=document.getElementById("panelFinal");const general=calcularGeneral(m1,m2);const ganador=general[0];panel.innerHTML=`<h2 class="finalTitle">🏁 COMPETENCIA FINALIZADA</h2>${ganador?`<div class="leader">GANADOR GENERAL<b>#${ganador.numero||""} ${ganador.nombre||""}</b><div class="small">${ganador.total} puntos</div></div>`:""}<h3 style="color:#facc15">GENERAL FINAL</h3><table><thead><tr><th>POS</th><th>N°</th><th>PILOTO</th><th>PTS</th></tr></thead><tbody>${general.map((p,i)=>`<tr><td>${i+1}</td><td class="num">${p.numero||""}</td><td>${p.nombre||""}</td><td class="vueltas">${p.total}</td></tr>`).join("")||`<tr><td colspan="4">Sin resultados.</td></tr>`}</tbody></table><h3 style="color:#facc15">MANGA 1</h3>${tablaHTML(m1)}<h3 style="color:#facc15">MANGA 2</h3>${tablaHTML(m2)}`}
+function renderMangaTerminada(m1,m2,mangaActual){document.getElementById("panelFinal").innerHTML="";const panel=document.getElementById("panelTerminada");let titulo="",lista=[];if(String(mangaActual)==="2"&&m1.length){titulo="🔴 MANGA 1 TERMINADA";lista=m1}else if(String(mangaActual)==="1"&&m2.length){titulo="🔴 MANGA 2 TERMINADA";lista=m2}else if(m1.length&&!m2.length){titulo="🔴 MANGA 1 TERMINADA";lista=m1}else if(m2.length&&!m1.length){titulo="🔴 MANGA 2 TERMINADA";lista=m2}panel.innerHTML=titulo?`<h2 class="finishedTitle">${titulo}</h2>${tablaHTML(lista)}`:`<h2 style="color:#facc15;margin-top:0">📊 Manga terminada</h2><p class="small">Aquí aparecerá la manga finalizada.</p>`}
+function render(c){competencia=c||{};const cerrado=!visualizadorAbierto||competencia.transmisionCerrada===true||competencia.visualizadorCerrado===true||competencia.visualizadorActivo===false;document.getElementById("closed").style.display=cerrado?"grid":"none";document.getElementById("app").style.display=cerrado?"none":"block";if(cerrado)return;const total=Number(competencia.vueltas||competencia.totalVueltas||0);const mangaActual=String(competencia.mangaActual||"1");const m1=normalizarResultadoArray(competencia.resultados?.manga1||[],total);const m2=normalizarResultadoArray(competencia.resultados?.manga2||[],total);const finalizada=competencia.competenciaFinalizada||(m1.length&&m2.length&&competencia.carreraIniciada===false);document.getElementById("nombreComp").textContent=competencia.nombre||"-";document.getElementById("categoriaComp").textContent=competencia.categoria||"-";document.getElementById("mangaComp").textContent="Manga "+mangaActual;document.getElementById("vueltasComp").textContent=total?String(total):"-";const st=document.getElementById("estadoManga");if(finalizada){st.className="status red";st.textContent="🏁 COMPETENCIA FINALIZADA"}else if(competencia.carreraIniciada){st.className="status green";st.textContent="🟢 MANGA "+mangaActual+" EN VIVO"}else{st.className="status";st.textContent=""}const pilotos=ordenarPilotos(competencia.pilotos||[]);const lider=pilotos[0];document.getElementById("lider").innerHTML=lider?`LÍDER DE CARRERA<b>#${lider.numero||""} ${lider.nombre||""}</b><div class="small">${Number(lider.vueltas||0)}/${total||"-"} vueltas</div>`:`LÍDER DE CARRERA<b>-</b><div class="small">Esperando datos...</div>`;document.getElementById("tablaRanking").innerHTML=pilotos.length?pilotos.map((p,i)=>`<tr><td>${i+1}</td><td class="num">${p.numero||""}</td><td>${p.nombre||""}</td><td class="vueltas">${Number(p.vueltas||0)}/${total||"-"}</td></tr>`).join(""):`<tr><td colspan="4">Sin pilotos cargados.</td></tr>`;if(finalizada){renderFinal(m1,m2)}else{renderMangaTerminada(m1,m2,mangaActual)}actualizarReloj()}
+async function escucharControlVisualizador(){db.collection("controlSistema").doc("visualizador").onSnapshot(doc=>{if(doc.exists){const d=doc.data()||{};visualizadorAbierto=d.abierto!==false&&d.estado!=="cerrado"}else{visualizadorAbierto=true}if(competencia)render(competencia)},()=>{visualizadorAbierto=true})}
+async function escucharCompetenciaActiva(){const snap=await db.collection("competencias").orderBy("actualizado","desc").limit(30).get();const doc=snap.docs.find(d=>{const data=d.data();return perteneceCliente(data)&&(data.carreraIniciada||data.competenciaFinalizada||(data.pilotos||[]).length)})||snap.docs.find(d=>perteneceCliente(d.data()));if(!doc){document.getElementById("tablaRanking").innerHTML=`<tr><td colspan="4">No hay competencia activa.</td></tr>`;return}if(unsubscribeCompetencia)unsubscribeCompetencia();unsubscribeCompetencia=db.collection("competencias").doc(doc.id).onSnapshot(s=>{if(s.exists)render(s.data())})}
+async function iniciar(){escucharControlVisualizador();await escucharCompetenciaActiva();if(timer)clearInterval(timer);timer=setInterval(actualizarReloj,500)}
+iniciar();
 </script>
-
 </body>
 </html>

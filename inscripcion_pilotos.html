@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Inscripción de Pilotos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<style>
+:root{--bg:#050505;--panel:#111;--panel2:#181818;--orange:#ff6a00;--orange2:#ff8a00;--yellow:#facc15;--red:#dc2626;--green:#22c55e;--muted:#cbd5e1;--line:rgba(255,106,0,.35)}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(255,106,0,.25),transparent 28%),linear-gradient(135deg,#020202,#0f172a 58%,#090909);color:white;min-height:100vh;padding:8px}body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.08;background-image:linear-gradient(45deg,rgba(255,255,255,.12) 25%,transparent 25%),linear-gradient(-45deg,rgba(255,255,255,.12) 25%,transparent 25%);background-size:34px 34px}.card{position:relative;width:100%;max-width:470px;margin:0 auto;background:linear-gradient(180deg,rgba(24,24,24,.96),rgba(8,8,8,.96));border:1px solid var(--line);border-top:4px solid var(--orange);border-radius:18px;padding:12px;box-shadow:0 16px 45px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.04)}.logo{text-align:center}.logo img{max-width:95px;max-height:75px;object-fit:contain;filter:drop-shadow(0 0 14px rgba(255,106,0,.55))}h1{text-align:center;font-size:21px;margin:5px 0;color:#fff;text-shadow:0 0 15px rgba(255,106,0,.65)}.sub{text-align:center;color:var(--muted);font-size:12px;margin:0 0 8px}.eventoBox{background:radial-gradient(circle at top left,rgba(255,106,0,.25),transparent 45%),#080808;border:1px solid var(--line);border-radius:14px;padding:9px;margin:8px 0;text-align:center}.eventoBox h2{font-size:16px;color:var(--orange2);margin:2px 0}.eventoBox p{font-size:12px;margin:3px 0;color:#e5e7eb}.sec{background:#0f172a;border:1px solid rgba(255,106,0,.25);border-radius:14px;padding:9px;margin:8px 0}.sec h2{font-size:14px;color:var(--orange2);margin:0 0 6px;text-align:center;text-transform:uppercase}label{display:block;font-weight:bold;font-size:12px;color:#e5e7eb;margin:5px 0 3px}input,select,button{width:100%;padding:10px;margin:0 0 7px;border:none;border-radius:11px;font-size:14px}input,select{background:#f8fafc;color:#111;outline:2px solid transparent}input:focus,select:focus{outline-color:var(--orange)}button{background:linear-gradient(180deg,#ff8a00,#ff5b00);color:white;font-weight:bold;border-bottom:4px solid rgba(0,0,0,.45);box-shadow:0 6px 0 rgba(0,0,0,.35),0 0 18px rgba(255,106,0,.22);cursor:pointer}.gris{background:linear-gradient(180deg,#475569,#334155)}.row{display:grid;grid-template-columns:1fr 1fr;gap:7px}.row3{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:6px}.edadBox{background:#050505;color:#facc15;border:1px solid rgba(250,204,21,.4);padding:7px;border-radius:10px;text-align:center;font-weight:bold;font-size:12px;margin-bottom:7px}.ok,.error{display:none;padding:9px;border-radius:10px;margin-top:7px;text-align:center;font-size:13px;font-weight:bold}.ok{background:#16a34a}.error{background:#dc2626}.nota{font-size:11px;color:#94a3b8;line-height:1.3;margin:4px 0}.footer{text-align:center;font-size:11px;color:#facc15;margin-top:8px;font-weight:bold}@media(max-width:380px){body{padding:4px}.card{padding:9px;border-radius:15px}h1{font-size:18px}input,select,button{padding:9px;font-size:13px}.row,.row3{gap:5px}.sec{padding:7px}}
+input[type="text"]{text-transform:uppercase}
+.estadoPagoBox{display:none;position:relative;overflow:hidden;background:#020617;border:3px solid #ff8a00;border-radius:18px;padding:16px 10px;margin:10px 0;text-align:center;box-shadow:0 0 22px rgba(255,106,0,.38);text-transform:uppercase}
+.estadoPagoBox .estadoTitulo{display:block;font-size:25px;line-height:1.05;font-weight:900;letter-spacing:.03em;text-shadow:0 0 18px currentColor}
+.estadoPagoBox .estadoSub{display:block;margin-top:7px;font-size:15px;font-weight:800;line-height:1.2}
+.estadoPagoBox:before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 35%);animation:brilloEstado 2.8s linear infinite;pointer-events:none}
+.estadoPagoBox.ok{border-color:#22c55e;color:#bbf7d0;background:linear-gradient(135deg,#052e16,#020617)}
+.estadoPagoBox.warn{border-color:#facc15;color:#fef3c7;background:linear-gradient(135deg,#422006,#020617)}
+.estadoPagoBox.debe{border-color:#ef4444;color:#fecaca;background:linear-gradient(135deg,#450a0a,#020617);animation:parpadeoDebe .75s infinite alternate;box-shadow:0 0 32px rgba(239,68,68,.9)}
+.estadoPagoBox.exonerado{border-color:#60a5fa;color:#dbeafe;background:linear-gradient(135deg,#1e3a8a,#020617)}
+@keyframes parpadeoDebe{0%{transform:scale(1);filter:brightness(.85);box-shadow:0 0 8px rgba(239,68,68,.35)}100%{transform:scale(1.015);filter:brightness(1.35);box-shadow:0 0 38px rgba(239,68,68,1)}}
+@keyframes brilloEstado{0%{transform:translateX(-50%) rotate(0deg)}100%{transform:translateX(50%) rotate(360deg)}}
+@media(max-width:380px){.estadoPagoBox .estadoTitulo{font-size:21px}.estadoPagoBox .estadoSub{font-size:13px}}
+
+.comprobanteBox{background:#080808;border:1px dashed rgba(255,106,0,.55);border-radius:14px;padding:10px;margin:8px 0}
+.fileBonito{position:relative;display:block;background:linear-gradient(180deg,#1f2937,#111827);border:1px solid rgba(255,106,0,.45);border-radius:12px;padding:12px;text-align:center;color:#facc15;font-weight:bold;cursor:pointer;margin-bottom:7px}
+.fileBonito input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.previewComprobante{display:none;width:100%;max-height:170px;object-fit:contain;border:1px solid rgba(255,106,0,.45);border-radius:12px;background:#020617;margin-top:6px}
+.estadoSub small{display:block;color:#e5e7eb;font-size:11px;margin-top:4px}
+
+
+.cumpleBox{display:none;position:relative;overflow:hidden;background:linear-gradient(135deg,#7c2d12,#ff6a00,#facc15);border:3px solid #fde68a;border-radius:18px;padding:14px 10px;margin:9px 0;text-align:center;color:white;box-shadow:0 0 30px rgba(250,204,21,.85);animation:cumplePulse 1s infinite alternate;text-transform:uppercase}
+.cumpleBox .cumpleTitulo{font-size:26px;font-weight:900;line-height:1.05;text-shadow:0 0 15px rgba(0,0,0,.7)}
+.cumpleBox .cumpleSub{font-size:14px;font-weight:800;margin-top:6px;color:#fff7ed}
+.cumpleBox:before{content:"🎉 🎊 ✨ 🎂 🎉";position:absolute;left:-20%;right:-20%;top:4px;font-size:18px;opacity:.35;animation:confetiMove 4s linear infinite}
+@keyframes cumplePulse{0%{transform:scale(1);filter:brightness(.95)}100%{transform:scale(1.015);filter:brightness(1.25)}}
+@keyframes confetiMove{0%{transform:translateX(-20%)}100%{transform:translateX(20%)}}
+.comprobanteBtns{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:6px}
+.comprobanteBtns button{font-size:13px;padding:10px;margin:0}
+.inputOculto{display:none}
+.whatsappBtn{background:linear-gradient(180deg,#22c55e,#15803d)!important}
+@media(max-width:380px){.cumpleBox .cumpleTitulo{font-size:22px}.comprobanteBtns{grid-template-columns:1fr}}
+.whatsappPosterior{display:none;background:#052e16;border:2px solid #22c55e;border-radius:14px;padding:10px;margin:9px 0;text-align:center}
+.whatsappPosterior h2{font-size:15px;color:#bbf7d0;margin:0 0 6px}
+.whatsappPosterior p{font-size:12px;color:#dcfce7;margin:3px 0 8px}
+.whatsappPosterior .botonesWhats{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+@media(max-width:380px){.whatsappPosterior .botonesWhats{grid-template-columns:1fr}}
+
+.eventoCerradoBox{display:none;background:linear-gradient(135deg,#450a0a,#020617);border:3px solid #ef4444;border-radius:18px;padding:18px 10px;margin:10px 0;text-align:center;color:#fecaca;box-shadow:0 0 35px rgba(239,68,68,.8);text-transform:uppercase}
+.eventoCerradoBox .cerradoTitulo{font-size:24px;font-weight:900;line-height:1.05;text-shadow:0 0 18px rgba(239,68,68,.8)}
+.eventoCerradoBox .cerradoSub{font-size:14px;font-weight:800;margin-top:7px;color:#fee2e2}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo"><img id="logoCliente" src="logo-inscripcion.png" alt="Logo" onerror="this.src='logo.png';this.onerror=null"></div>
+  <h1>🏁 INSCRIPCIÓN DE PILOTO 🏁</h1>
+  <p class="sub">Ficha oficial para evento deportivo</p>
+
+  <div class="eventoBox" id="eventoBox">
+    <h2 id="eventoNombre">Cargando evento...</h2>
+    <p id="eventoDatos">Espera un momento</p>
+  </div>
+  <div id="eventoCerradoBox" class="eventoCerradoBox"><div class="cerradoTitulo">⛔ EVENTO FINALIZADO</div><div class="cerradoSub">GRACIAS POR PARTICIPAR</div></div>
+
+  <div class="sec">
+    <h2>Evento</h2>
+    <label>Selecciona evento</label>
+    <select id="eventoSelect" onchange="seleccionarEvento()"><option value="">Cargando eventos...</option></select>
+  </div>
+
+  <div class="sec">
+    <h2>Datos del piloto</h2>
+    <div class="row">
+      <div><label>Número</label><input id="numero" type="number" placeholder="Ej: 77" oninput="consultarEstadoPagoPiloto()"></div>
+      <div><label>Categoría</label><select id="categoria" onchange="consultarEstadoPagoPiloto()"><option value="">Seleccione</option></select></div>
+    </div>
+    <label>Nombre completo</label><input id="nombre" type="text" placeholder="Nombre y apellido" oninput="consultarEstadoPagoPiloto()">
+    <label>Fecha de nacimiento</label>
+    <div class="row3">
+      <select id="diaNacimiento" onchange="calcularEdad()"><option value="">Día</option></select>
+      <select id="mesNacimiento" onchange="calcularEdad()"><option value="">Mes</option></select>
+      <select id="anioNacimiento" onchange="calcularEdad()"><option value="">Año</option></select>
+    </div>
+    <div id="edadBox" class="edadBox">Edad: - | Año: -</div>
+    <div id="cumpleBox" class="cumpleBox"><div class="cumpleTitulo">🎉 FELIZ CUMPLEAÑOS PILOTO 🎉</div><div class="cumpleSub">QUE DISFRUTES TU CARRERA</div></div>
+    <div class="row">
+      <div><label>Teléfono</label><input id="telefono" type="tel" placeholder="WhatsApp"></div>
+      <div><label>Ciudad / Equipo</label><input id="equipo" type="text" placeholder="Ciudad o team"></div>
+    </div>
+    <div class="sec" style="margin:8px 0;background:#08111f">
+      <h2>🏍️ Datos de la moto / quad</h2>
+      <label>Marca</label>
+      <select id="marca" onchange="toggleOtraMarca()">
+        <option value="">Seleccione marca</option>
+        <option>YAMAHA</option><option>HONDA</option><option>SUZUKI</option><option>KAWASAKI</option><option>KTM</option><option>CAN-AM</option><option>POLARIS</option><option>CFMOTO</option><option>OTRO</option>
+      </select>
+      <input id="otraMarca" type="text" placeholder="Escriba marca" style="display:none">
+      <label>Modelo</label>
+      <input id="modelo" type="text" placeholder="Ej: YFZ450R">
+      <label>Cilindraje</label>
+      <select id="cilindraje" onchange="toggleOtroCilindraje()">
+        <option value="">Seleccione cilindraje</option>
+        <option>50cc</option><option>70cc</option><option>90cc</option><option>125cc</option><option>200cc</option><option>250cc</option><option>300cc</option><option>350cc</option><option>400cc</option><option>450cc</option><option>500cc</option><option>525cc</option><option>700cc</option><option>850cc</option><option>1000cc</option><option>OPEN</option><option>OTRO</option>
+      </select>
+      <input id="otroCilindraje" type="text" placeholder="Escriba cilindraje" style="display:none">
+    </div>
+    <label>Observaciones</label><input id="observaciones" type="text" placeholder="Ej: MOTO PRESTADA / NÚMERO PROVISIONAL / NOTA">
+  </div>
+
+
+  <div class="sec comprobanteBox">
+    <h2>Comprobante opcional</h2>
+    <p class="nota">Puedes tomar foto o subir desde galería. También podrás enviar el comprobante por WhatsApp después de enviar la inscripción.</p>
+    <input id="comprobanteCamara" class="inputOculto" type="file" accept="image/*" capture="environment" onchange="seleccionarComprobante(this)">
+    <input id="comprobanteGaleria" class="inputOculto" type="file" accept="image/*" onchange="seleccionarComprobante(this)">
+    <div class="comprobanteBtns">
+      <button type="button" class="gris" onclick="document.getElementById('comprobanteCamara').click()">📷 TOMAR FOTO</button>
+      <button type="button" class="gris" onclick="document.getElementById('comprobanteGaleria').click()">🖼️ GALERÍA</button>
+    </div>
+    <input id="comprobantePago" class="inputOculto" type="file" accept="image/*">
+    <img id="previewComprobante" class="previewComprobante" alt="Comprobante">
+  </div>
+
+    <p class="nota">La solicitud queda pendiente hasta que la organización la apruebe. Si el piloto ya existe, se enviará como actualización y no se duplicará.</p>
+  <div id="estadoPagoPilotoBox" class="estadoPagoBox"></div>
+  <button onclick="enviarSolicitud()">ENVIAR INSCRIPCIÓN</button>
+  <div id="mensajeOk" class="ok">✅ Solicitud enviada correctamente.</div>
+  <div id="mensajeError" class="error"></div>
+  <div id="whatsappDespuesBox" class="whatsappPosterior">
+    <h2>📲 COMPROBANTE POR WHATSAPP</h2>
+    <p>La inscripción ya fue enviada. Si deseas, envía el comprobante por WhatsApp y adjunta la captura manualmente.</p>
+    <div class="botonesWhats">
+      <button type="button" class="whatsappBtn" onclick="compartirComprobanteWhatsApp('organizacion')">📲 ORGANIZACIÓN</button>
+      <button type="button" class="whatsappBtn" onclick="compartirComprobanteWhatsApp('tesorero')">📲 TESORERO</button>
+    </div>
+  </div>
+  <div class="footer">Sistema desarrollado por Eduardo Tinizaray</div>
+</div>
+
+<script>
+const firebaseConfig={apiKey:"AIzaSyCaoe6R_Qbjl7TACUGgLxPd5oWfKp8oW-o",authDomain:"cuenta-vueltas-59c99.firebaseapp.com",projectId:"cuenta-vueltas-59c99",storageBucket:"cuenta-vueltas-59c99.firebasestorage.app",messagingSenderId:"425422890967",appId:"1:425422890967:web:874535c5dc1e44c5c2cd92",measurementId:"G-F5EE9VRLHB"};
+firebase.initializeApp(firebaseConfig);const db=firebase.firestore();const storage=firebase.storage();
+const clienteIdActual=new URLSearchParams(location.search).get("cliente")||localStorage.getItem("clienteId")||"eduardo_tinizaray";
+let eventos=[],eventoActual=null;
+let ultimoEnvioWhatsApp=null;
+function normalizar(txt){return String(txt||"").trim().toUpperCase().replace(/\s+/g," ");}
+function idCategoria(categoria){return normalizar(categoria).replaceAll(" ","_");}
+function crearId(numero,categoria){return idCategoria(categoria)+"_"+String(numero).trim();}
+function toggleOtraMarca(){const sel=document.getElementById("marca");const inp=document.getElementById("otraMarca");if(inp&&sel)inp.style.display=sel.value==="OTRO"?"block":"none";}
+function toggleOtroCilindraje(){const sel=document.getElementById("cilindraje");const inp=document.getElementById("otroCilindraje");if(inp&&sel)inp.style.display=sel.value==="OTRO"?"block":"none";}
+function valorMarca(){const sel=document.getElementById("marca");const otro=document.getElementById("otraMarca");return normalizar(sel&&sel.value==="OTRO"?(otro?.value||""):(sel?.value||""));}
+function valorCilindraje(){const sel=document.getElementById("cilindraje");const otro=document.getElementById("otroCilindraje");return normalizar(sel&&sel.value==="OTRO"?(otro?.value||""):(sel?.value||""));}
+function perteneceCliente(data={}){return data.clienteId===clienteIdActual || (clienteIdActual==="eduardo_tinizaray"&&!data.clienteId);}
+function mostrarError(txt){document.getElementById("mensajeOk").style.display="none";const e=document.getElementById("mensajeError");e.textContent=txt;e.style.display="block";}
+function mostrarOk(txt){document.getElementById("mensajeError").style.display="none";const ok=document.getElementById("mensajeOk");ok.textContent=txt||"✅ Solicitud enviada correctamente.";ok.style.display="block";}
+function fechaHoy(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+async function cargarMarca(){try{const doc=await db.collection("clientes").doc(clienteIdActual).get();if(doc.exists){const d=doc.data();if(d.logoUrl)document.getElementById("logoCliente").src=d.logoUrl;}}catch(e){console.warn(e.message)}}
+async function cargarEventos(){const sel=document.getElementById("eventoSelect");try{let snap=await db.collection("eventos").orderBy("fecha","desc").limit(80).get();eventos=[];let eventosCerrados=[];snap.forEach(doc=>{const e=doc.data();if(!perteneceCliente(e))return;const estado=(e.estado||"abierto").toLowerCase();const cerrado=e.inscripcionesAbiertas===false || estado==="cerrado" || estado==="finalizado" || e.finalizado===true;if(cerrado){eventosCerrados.push({docId:doc.id,...e});return;}eventos.push({docId:doc.id,...e});});sel.innerHTML='<option value="">Seleccione evento</option>';eventos.forEach(e=>{sel.innerHTML+=`<option value="${e.docId}">${e.fecha||""} - ${e.nombre||"Evento"} - ${e.ciudad||""}</option>`;});if(eventos.length>0){document.getElementById("eventoCerradoBox").style.display="none";sel.disabled=false;sel.value=eventos[0].docId;seleccionarEvento();}else{document.getElementById("eventoNombre").textContent=eventosCerrados.length?"Evento finalizado":"No hay evento abierto";document.getElementById("eventoDatos").textContent=eventosCerrados.length?"Las inscripciones están cerradas. Gracias por participar.":"Comunícate con la organización.";document.getElementById("eventoCerradoBox").style.display=eventosCerrados.length?"block":"none";sel.innerHTML='<option value="">No hay eventos abiertos</option>';sel.disabled=true;await cargarCategoriasGenerales();}}catch(error){mostrarError("Error al cargar eventos: "+error.message);}}
+async function seleccionarEvento(){const id=document.getElementById("eventoSelect").value;eventoActual=eventos.find(e=>e.docId===id)||null;if(!eventoActual){document.getElementById("eventoNombre").textContent="Selecciona un evento";document.getElementById("eventoDatos").textContent="";await cargarCategoriasGenerales();return;}document.getElementById("eventoNombre").textContent="🏁 "+(eventoActual.nombre||"Evento");document.getElementById("eventoDatos").textContent=`📍 ${eventoActual.ciudad||""} | 🗓️ ${eventoActual.fecha||""} | 🏟️ ${eventoActual.pista||""} ${eventoActual.valorInscripcion?(" | 💵 $"+eventoActual.valorInscripcion):""}`;cargarCategoriasEvento();}
+async function cargarCategoriasEvento(){const select=document.getElementById("categoria");let cats=[];if(eventoActual && Array.isArray(eventoActual.categorias)){cats=eventoActual.categorias.map(normalizar).filter(Boolean);}if(cats.length===0){await cargarCategoriasGenerales();return;}select.innerHTML='<option value="">Seleccione</option>';[...new Set(cats)].sort().forEach(cat=>select.innerHTML+=`<option value="${cat}">${cat}</option>`);}
+async function cargarCategoriasGenerales(){const select=document.getElementById("categoria");try{let categorias=[];let snapCat=await db.collection("categorias").get();snapCat.forEach(doc=>{let d=doc.data();if(!perteneceCliente(d))return;let n=normalizar(d.nombre||"");if(n&&!categorias.includes(n))categorias.push(n);});let snapPil=await db.collection("pilotos").get();snapPil.forEach(doc=>{let d=doc.data();if(!perteneceCliente(d))return;let n=normalizar(d.categoria||"");if(n&&!categorias.includes(n))categorias.push(n);});select.innerHTML='<option value="">Seleccione</option>';categorias.sort().forEach(cat=>select.innerHTML+=`<option value="${cat}">${cat}</option>`);}catch(error){mostrarError("Error al cargar categorías: "+error.message);}}
+function llenarFechaNacimiento(){const dia=document.getElementById("diaNacimiento"),mes=document.getElementById("mesNacimiento"),anio=document.getElementById("anioNacimiento");for(let d=1;d<=31;d++)dia.innerHTML+=`<option value="${String(d).padStart(2,"0")}">${d}</option>`;["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"].forEach((m,i)=>mes.innerHTML+=`<option value="${String(i+1).padStart(2,"0")}">${m}</option>`);const actual=new Date().getFullYear();for(let y=actual-3;y>=actual-80;y--)anio.innerHTML+=`<option value="${y}">${y}</option>`;}
+function obtenerFechaNacimiento(){const d=document.getElementById("diaNacimiento").value,m=document.getElementById("mesNacimiento").value,y=document.getElementById("anioNacimiento").value;return d&&m&&y?`${y}-${m}-${d}`:"";}
+function calcularEdad(){
+  const f=obtenerFechaNacimiento();
+  const box=document.getElementById("edadBox");
+  const cumple=document.getElementById("cumpleBox");
+  if(cumple)cumple.style.display="none";
+  if(!f){box.textContent="Edad: - | Año: -";return {edad:"",anio:""};}
+  const n=new Date(f+"T00:00:00");
+  if(isNaN(n.getTime())){box.textContent="Fecha inválida";return {edad:"",anio:""};}
+  const h=new Date();
+  let edad=h.getFullYear()-n.getFullYear();
+  const dm=h.getMonth()-n.getMonth();
+  if(dm<0||(dm===0&&h.getDate()<n.getDate()))edad--;
+  box.textContent=`Edad: ${edad} años | Año: ${n.getFullYear()}`;
+  if(cumple){
+    const cumpleEsteAnio=new Date(h.getFullYear(), n.getMonth(), n.getDate());
+    const diffDias=Math.floor((new Date(h.getFullYear(),h.getMonth(),h.getDate())-cumpleEsteAnio)/(1000*60*60*24));
+    cumple.style.display=(diffDias>=0 && diffDias<=2)?"block":"none";
+  }
+  return {edad,anio:n.getFullYear()};
+}
+
+function fechaISOHoy(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+function membresiaActiva(p={}){if((p.tipoPago||"")!=="membresia")return false;const hasta=String(p.membresiaHasta||"").slice(0,10);const incluidos=Number(p.eventosIncluidos||0);const usados=Number(p.eventosUsados||0);if(hasta&&fechaISOHoy()>hasta)return false;if(incluidos>0&&usados>=incluidos)return false;return true;}
+function mostrarEstadoPagoConsulta(titulo,subtexto="",tipo="warn"){
+  const box=document.getElementById("estadoPagoPilotoBox");
+  if(!box)return;
+  box.innerHTML=`<span class="estadoTitulo">${titulo}</span>${subtexto?`<span class="estadoSub">${subtexto}</span>`:""}`;
+  box.className="estadoPagoBox "+tipo;
+  box.style.display="block";
+}
+async function consultarEstadoPagoPiloto(){
+  const numero=document.getElementById("numero")?.value.trim();
+  const categoria=document.getElementById("categoria")?.value||"";
+  const nombreIngresado=normalizar(document.getElementById("nombre")?.value||"");
+  if(!numero||!categoria){const box=document.getElementById("estadoPagoPilotoBox");if(box)box.style.display="none";return {estadoPago:"debe",tipoPago:"evento",alertaNombreDiferente:false};}
+  try{
+    const id=crearId(numero,categoria);
+    const doc=await db.collection("pilotos").doc(id).get();
+    if(doc.exists){
+      const p=doc.data()||{};
+      const nombreOficial=normalizar(p.nombre||"");
+      if(nombreIngresado && nombreOficial && nombreIngresado!==nombreOficial){
+        mostrarEstadoPagoConsulta("⚠️ NÚMERO REGISTRADO","PERTENECE A: "+nombreOficial+" • REVISAR CON ORGANIZACIÓN","debe");
+        return {estadoPago:"debe",tipoPago:"evento",alertaNombreDiferente:true,nombreOficial:nombreOficial};
+      }
+      if(membresiaActiva(p)){
+        mostrarEstadoPagoConsulta("🟢 MEMBRESÍA ACTIVA","NO DEBE INSCRIPCIÓN","ok");
+        return {estadoPago:"pagado_membresia",tipoPago:"membresia",alertaNombreDiferente:false,nombreOficial:nombreOficial};
+      }
+      const pago=p.estadoPago||"debe";
+      if(pago==="pagado"||pago==="exonerado"){
+        if(pago==="pagado")mostrarEstadoPagoConsulta("🟢 PAGADO","NO DEBE INSCRIPCIÓN","ok");
+        else mostrarEstadoPagoConsulta("🔵 EXONERADO","NO DEBE INSCRIPCIÓN","exonerado");
+        return {estadoPago:pago,tipoPago:p.tipoPago||"evento",alertaNombreDiferente:false,nombreOficial:nombreOficial};
+      }
+      mostrarEstadoPagoConsulta("🔴 DEBE INSCRIPCIÓN",(eventoActual&&eventoActual.valorInscripcion?("VALOR A PAGAR: $"+eventoActual.valorInscripcion+" | "):"")+"CANCELAR SU INSCRIPCIÓN","debe");
+      return {estadoPago:"debe",tipoPago:p.tipoPago||"evento",alertaNombreDiferente:false,nombreOficial:nombreOficial};
+    }
+    mostrarEstadoPagoConsulta("🔴 PILOTO",(eventoActual&&eventoActual.valorInscripcion?("VALOR A PAGAR: $"+eventoActual.valorInscripcion+" | "):"")+"DEBE INSCRIPCIÓN","debe");
+    return {estadoPago:"debe",tipoPago:"evento",alertaNombreDiferente:false};
+  }catch(e){return {estadoPago:"debe",tipoPago:"evento",alertaNombreDiferente:false};}
+}
+
+function seleccionarComprobante(input){
+  const file=input?.files?.[0];
+  const destino=document.getElementById("comprobantePago");
+  const img=document.getElementById("previewComprobante");
+  if(!file){if(img){img.style.display="none";img.src="";}return;}
+  try{
+    const dt=new DataTransfer();
+    dt.items.add(file);
+    destino.files=dt.files;
+  }catch(e){console.warn("No se pudo copiar archivo:",e.message);}
+  const reader=new FileReader();
+  reader.onload=e=>{if(img){img.src=e.target.result;img.style.display="block";}};
+  reader.readAsDataURL(file);
+}
+function previewComprobantePago(){seleccionarComprobante(document.getElementById("comprobantePago"));}
+function numeroWhatsAppLimpio(raw){
+  let n=String(raw||"").replace(/\D/g,"");
+  if(!n)return "";
+  if(n.startsWith("0"))n="593"+n.slice(1);
+  return n;
+}
+function compartirComprobanteWhatsApp(destino="organizacion"){
+  const datos=ultimoEnvioWhatsApp||{
+    numero:document.getElementById("numero")?.value.trim()||"",
+    nombre:normalizar(document.getElementById("nombre")?.value||""),
+    categoria:document.getElementById("categoria")?.value||"",
+    eventoNombre:eventoActual?.nombre||""
+  };
+  if(!eventoActual&&!ultimoEnvioWhatsApp){mostrarError("Primero selecciona un evento o envía la inscripción.");return;}
+  let numeroDestino="";
+  if(destino==="tesorero"){
+    numeroDestino=numeroWhatsAppLimpio(eventoActual?.whatsappTesorero||eventoActual?.tesoreroWhatsApp||eventoActual?.telefonoTesorero||"");
+  }else{
+    numeroDestino=numeroWhatsAppLimpio(eventoActual?.whatsappPagos||eventoActual?.whatsappOrganizacion||eventoActual?.whatsapp||eventoActual?.telefonoPagos||"");
+  }
+  const mensaje=`Hola, envío mi comprobante de inscripción.%0A%0APiloto: ${encodeURIComponent(datos.nombre||"-")}%0ANúmero: ${encodeURIComponent(datos.numero||"-")}%0ACategoría: ${encodeURIComponent(datos.categoria||"-")}%0AEvento: ${encodeURIComponent(datos.eventoNombre||"-")}%0A%0AAdjunto la captura del depósito.`;
+  if(numeroDestino)window.open(`https://wa.me/${numeroDestino}?text=${mensaje}`,"_blank");
+  else window.open(`https://wa.me/?text=${mensaje}`,"_blank");
+}
+function mostrarWhatsAppOpcional(data){
+  ultimoEnvioWhatsApp=data;
+  const box=document.getElementById("whatsappDespuesBox");
+  if(box)box.style.display="block";
+}
+
+function comprimirImagen(file,maxW=900,calidad=.68){
+  return new Promise(resolve=>{
+    if(!file){resolve(null);return;}
+    const img=new Image();
+    const reader=new FileReader();
+    reader.onload=e=>{img.src=e.target.result;};
+    img.onload=()=>{
+      const canvas=document.createElement("canvas");
+      let w=img.width,h=img.height;
+      if(w>maxW){h=Math.round(h*(maxW/w));w=maxW;}
+      canvas.width=w;canvas.height=h;
+      const ctx=canvas.getContext("2d");
+      ctx.drawImage(img,0,0,w,h);
+      canvas.toBlob(blob=>resolve(blob), "image/jpeg", calidad);
+    };
+    reader.onerror=()=>resolve(null);
+    reader.readAsDataURL(file);
+  });
+}
+
+function conTiempoLimite(promesa,ms){
+  return Promise.race([promesa,new Promise(resolve=>setTimeout(()=>resolve(null),ms))]);
+}
+async function subirComprobanteOpcional(docId){
+  try{
+    const input=document.getElementById("comprobantePago");
+    const file=input?.files?.[0];
+    if(!file)return "";
+    const blob=await comprimirImagen(file);
+    if(!blob)return "";
+    const ruta=`comprobantes/${clienteIdActual}/${eventoActual.docId}/${docId}_${Date.now()}.jpg`;
+    const ref=storage.ref().child(ruta);
+    const subida=await conTiempoLimite(ref.put(blob,{contentType:"image/jpeg"}),12000);
+    if(!subida){console.warn("Tiempo agotado al subir comprobante. Se enviará inscripción sin bloquear.");return "";}
+    const url=await conTiempoLimite(ref.getDownloadURL(),8000);
+    return url||"";
+  }catch(error){
+    console.warn("No se pudo subir comprobante:",error.message);
+    return "";
+  }
+}
+
+async function enviarSolicitud(){
+  if(eventoActual){
+    const estado=(eventoActual.estado||"abierto").toLowerCase();
+    if(eventoActual.inscripcionesAbiertas===false || estado==="cerrado" || estado==="finalizado" || eventoActual.finalizado===true){
+      mostrarError("⛔ EVENTO FINALIZADO. LAS INSCRIPCIONES ESTÁN CERRADAS.");
+      const box=document.getElementById("eventoCerradoBox"); if(box)box.style.display="block";
+      return;
+    }
+  }
+
+const numero=document.getElementById("numero").value.trim();
+const nombre=normalizar(document.getElementById("nombre").value);
+const categoria=document.getElementById("categoria").value;
+const telefono=document.getElementById("telefono").value.trim();
+const equipo=normalizar(document.getElementById("equipo").value);
+const marca=valorMarca();
+const modelo=normalizar(document.getElementById("modelo")?.value||"");
+const cilindraje=valorCilindraje();
+const observaciones=normalizar(document.getElementById("observaciones").value);
+const fechaNacimiento=obtenerFechaNacimiento();
+const datosEdad=calcularEdad();
+if(!eventoActual){mostrarError("Selecciona un evento abierto.");return;}
+if(!numero||!nombre||!categoria||!telefono){mostrarError("Completa número, nombre, categoría y teléfono.");return;}
+try{
+const id=crearId(numero,categoria);
+const docId=eventoActual.docId+"_"+id;
+const oficial=await db.collection("pilotos").doc(id).get();
+const pagoInfo=await consultarEstadoPagoPiloto();
+const boxWhats=document.getElementById("whatsappDespuesBox");if(boxWhats)boxWhats.style.display="none";
+mostrarOk("⏳ Enviando inscripción...");
+const comprobantePagoUrl=await subirComprobanteOpcional(docId);
+const data={id,docId,clienteId:clienteIdActual,eventoId:eventoActual.docId,eventoNombre:eventoActual.nombre||"",eventoFecha:eventoActual.fecha||"",eventoCiudad:eventoActual.ciudad||"",eventoPista:eventoActual.pista||"",numero,nombre,categoria,telefono,equipo,marca,modelo,cilindraje,observaciones,fechaNacimiento,edad:datosEdad.edad,anioNacimiento:datosEdad.anio,estado:"pendiente",estadoPago:pagoInfo.estadoPago||"debe",tipoPago:pagoInfo.tipoPago||"evento",comprobantePagoUrl,comprobantePago:comprobantePagoUrl,tieneComprobante:!!comprobantePagoUrl,alertaNombreDiferente:!!pagoInfo.alertaNombreDiferente,nombreOficial:pagoInfo.nombreOficial||"",tipoSolicitud:(oficial.exists&&!pagoInfo.alertaNombreDiferente)?"actualizacion":"nuevo",existeOficial:oficial.exists,actualizado:new Date().toISOString(),creado:new Date().toISOString()};
+await db.collection("solicitudesPilotos").doc(docId).set(data,{merge:true});
+await db.collection("eventos").doc(eventoActual.docId).collection("inscritos").doc(id).set(data,{merge:true});
+const datosWhats={numero,nombre,categoria,eventoNombre:eventoActual.nombre||""};
+limpiarFormulario();
+let extra=comprobantePagoUrl?" Comprobante recibido.":"";
+if(pagoInfo.alertaNombreDiferente){
+  mostrarOk("⚠️ Inscripción enviada para revisión. Ese número ya pertenece a otro piloto. Estado de pago: DEBE."+extra);
+  mostrarWhatsAppOpcional(datosWhats);
+}else{
+  mostrarOk((pagoInfo.estadoPago==="pagado_membresia"?"✅ Inscripción enviada. Pago: MEMBRESÍA ACTIVA / NO DEBE.":(oficial.exists?"✅ Actualización enviada. Estado de pago: "+(pagoInfo.estadoPago||"debe").toUpperCase()+".":"✅ Inscripción enviada. Estado de pago: DEBE."))+extra);
+  mostrarWhatsAppOpcional(datosWhats);
+}
+}catch(error){mostrarError("Error al enviar solicitud: "+error.message);}
+}
+function limpiarFormulario(){
+  ["numero","nombre","telefono","equipo","marca","otraMarca","modelo","cilindraje","otroCilindraje","observaciones"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});toggleOtraMarca();toggleOtroCilindraje();
+  ["comprobantePago","comprobanteCamara","comprobanteGaleria"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  const prev=document.getElementById("previewComprobante");if(prev){prev.style.display="none";prev.src="";}
+  const estado=document.getElementById("estadoPagoPilotoBox");if(estado)estado.style.display="none";
+  document.getElementById("categoria").value="";document.getElementById("diaNacimiento").value="";document.getElementById("mesNacimiento").value="";document.getElementById("anioNacimiento").value="";calcularEdad();
+}
+function activarMayusculas(){
+  ["nombre","equipo","otraMarca","modelo","otroCilindraje","observaciones"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.addEventListener("input",()=>{el.value=el.value.toUpperCase();});}
+  });
+}
+activarMayusculas();
+llenarFechaNacimiento();cargarMarca();cargarEventos();calcularEdad();
+</script>
+</body>
+</html>
