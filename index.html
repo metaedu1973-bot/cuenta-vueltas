@@ -418,7 +418,7 @@ th{background:#090909;color:white;border-color:#333}.nota{font-size:12px;color:#
     flex-direction:column;
     align-items:stretch;
     overflow-y:auto;
-    padding:122px 10px 12px;
+    padding:122px 10px 20px;
     border-right:1px solid rgba(255,106,0,.35);
     border-bottom:none;
     background:
@@ -437,18 +437,7 @@ th{background:#090909;color:white;border-color:#333}.nota{font-size:12px;color:#
     letter-spacing:.02em;
     text-shadow:0 0 18px rgba(255,106,0,.7);
   }
-  .tabs::after{
-    content:"Sistema desarrollado por Eduardo Tinizaray";
-    position:absolute;
-    bottom:14px;
-    left:14px;
-    right:14px;
-    color:var(--orange2);
-    font-weight:bold;
-    font-size:12px;
-    border-top:1px solid rgba(255,106,0,.25);
-    padding-top:12px;
-  }
+  .tabs::after{display:none!important;}
   .tabs button{max-width:none!important;min-width:0!important;text-align:left;padding:14px 14px;margin:2px 0}
   .tabContenido{padding:6px 10px 20px}
   #tabCarrera.activo{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
@@ -494,11 +483,14 @@ th{background:#090909;color:white;border-color:#333}.nota{font-size:12px;color:#
 @media(max-width:520px){.estadoMangasPro{grid-template-columns:1fr}.relojCarreraPro{min-width:130px}.relojCarreraPro .time{font-size:22px}}
 
 
-/* ===== PATROCINADORES ===== */
-.gridPatrocinadoresAdmin{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px}
-.logoPreviewPatro{height:58px;background:#020617;border:1px solid rgba(255,106,0,.35);border-radius:12px;display:flex;align-items:center;justify-content:center;padding:6px;overflow:hidden}
-.logoPreviewPatro img{max-width:100%;max-height:48px;object-fit:contain}
-.logoPreviewPatro span{font-size:11px;color:#94a3b8}
+
+
+/* Menú lateral sin texto superpuesto */
+@media(min-width:980px){
+  .tabs{padding-bottom:20px!important;}
+  .tabs::after{display:none!important;}
+  #btnConfigTab{display:block!important;}
+}
 
 @media print{button,input,select,.tabs{display:none}body{background:white;color:black}.panel{background:white;color:black;border:1px solid #ccc}}
 </style>
@@ -516,7 +508,7 @@ th{background:#090909;color:white;border-color:#333}.nota{font-size:12px;color:#
 <div id="sistemaPanel" style="display:none">
 <header><img id="logoSistema" src="logo.png" alt="Logo"><h1>🏁 SISTEMA DE CRONOMETRAJE DEPORTIVO 🏁</h1><h2>Sistema desarrollado por Eduardo Tinizaray</h2><div style="font-size:12px;color:#22c55e;font-weight:bold">● Tiempo real Firebase</div><div id="estadoConexion" style="margin-top:8px;display:inline-block;background:#052e16;border:1px solid #22c55e;color:#bbf7d0;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:bold">🟢 Online - sincronizando</div><div id="estadoUsuario" style="margin-top:8px;display:inline-block;background:#020617;border:1px solid #facc15;color:#facc15;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:bold">Usuario: - | Rol: -</div></header>
 <div class="tabs"><button class="rojo" style="max-width:160px;min-width:140px" onclick="cerrarSesion()">🚪 Cerrar Sesión</button><button class="tabBtn activo" onclick="abrirTab('tabCarrera',this)">🏁 Carrera</button><button class="tabBtn" onclick="abrirTab('tabPilotos',this)">👨 Pilotos</button><button class="tabBtn" onclick="abrirTab('tabMangas',this)">📊 Mangas</button><button class="tabBtn" onclick="abrirTab('tabGeneral',this)">🏆 General</button><button class="tabBtn" onclick="abrirTab('tabCampeonato',this)">📅 Campeonato</button>
-<button class="tabBtn" onclick="abrirTab('tabEventos',this);cargarEventos();">📅 Eventos</button><button id="btnSolicitudesTab" class="tabBtn" onclick="abrirTab('tabSolicitudes',this);cargarSolicitudesPilotos();">📝 Solicitudes</button><button class="tabBtn" onclick="abrirTab('tabConfig',this)">⚙️ Configuración</button></div>
+<button class="tabBtn" onclick="abrirTab('tabEventos',this);cargarEventos();">📅 Eventos</button><button id="btnSolicitudesTab" class="tabBtn" onclick="abrirTab('tabSolicitudes',this);cargarSolicitudesPilotos();">📝 Solicitudes</button><button id="btnConfigTab" class="tabBtn" onclick="abrirTab('tabConfig',this)">⚙️ Configuración</button></div>
 <section id="tabCarrera" class="tabContenido activo"><div id="relojCarreraPro" class="relojCarreraPro"><div class="lbl">⏱️ TIEMPO EN VIVO</div><div id="tiempoCarreraGrande" class="time">00:00:00</div></div><div class="panel"><h2>Nueva Competencia</h2><label style="font-weight:bold;color:#facc15">📅 Evento</label><select id="eventoCarrera" onchange="seleccionarEventoCarrera()"><option value="">Sin evento / carrera manual</option></select><input type="text" id="nombreCompetencia" placeholder="Nombre de competencia"><input type="date" id="fechaCompetencia"><select id="categoriaCarrera"><option value="">Seleccione categoría</option></select><button class="gris" onclick="refrescarCategoriasCarrera()">🔄 ACTUALIZAR CATEGORÍAS</button><input type="number" id="totalVueltas" placeholder="Cantidad de vueltas"><select id="mangaActual"><option value="1">Manga 1</option><option value="2">Manga 2</option></select><button class="azul" onclick="cargarPilotosCategoria()">CARGAR PILOTOS DE ESTA CATEGORÍA</button></div><div class="panel"><h2>Control de carrera</h2><div class="controlCarreraPro"><button class="azul" onclick="empezarCarrera()">🟢 EMPEZAR CARRERA</button><button class="rojo" onclick="finalizarCarrera()">🔴 FINALIZAR CARRERA</button><button class="amarillo" onclick="guardarManga()">💾 GUARDAR MANGA</button><button class="morado" onclick="guardarCompetencia()">🏁 FINALIZAR COMPETENCIA</button><button id="btnReabrirCarreraPro" class="gris" onclick="reabrirCarreraPro()">🔓 REABRIR CARRERA</button></div><div class="estadoMangasPro"><div id="estadoManga1Badge" class="estadoMangaBadge"></div><div id="estadoManga2Badge" class="estadoMangaBadge"></div></div><div id="estadoCompetenciaBadge" class="estadoCompetenciaPro"></div></div><div class="panel"><h2>PASO POR META</h2><div id="botonesPaso" class="grid"></div></div><div class="panel"><h2>POSICIONES EN VIVO</h2><div id="rankingVivo"></div></div><div class="panel"><h2>PILOTOS EN CARRERA</h2><div id="listaPilotos"></div></div><div class="panel"><button class="gris" onclick="limpiarSoloVueltas()">LIMPIAR VUELTAS</button><button class="morado" onclick="nuevaCarrera()">NUEVA CARRERA</button>
 <button class="rojo" onclick="reiniciarLocal()">BORRAR LOCAL</button></div></section>
 <section id="tabPilotos" class="tabContenido">
@@ -685,17 +677,7 @@ th{background:#090909;color:white;border-color:#333}.nota{font-size:12px;color:#
 <div id="estadoVisualizadorAdmin" class="nota" style="background:#020617;border:1px solid rgba(250,204,21,.35);border-radius:12px;padding:8px;text-align:center;font-weight:bold;color:#facc15;margin-top:8px">👁️ Estado visualizador: pendiente</div>
 </div>
 
-<div class="panel" id="panelPatrocinadoresAdmin">
-<h2>🏢 Patrocinadores del evento</h2>
-<p class="nota">Puedes colocar hasta 20 logos por URL. Los logos aparecerán automáticamente en el visualizador público como franja/carrusel.</p>
-<div class="gridPatrocinadoresAdmin" id="gridPatrocinadoresAdmin"></div>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px">
-<button class="morado" onclick="guardarPatrocinadoresAdmin()">💾 GUARDAR PATROCINADORES</button>
-<button class="gris" onclick="cargarPatrocinadoresAdmin()">🔄 CARGAR PATROCINADORES</button>
-<button class="rojo" onclick="quitarPatrocinadoresAdmin()">🗑️ QUITAR LOGOS</button>
-</div>
-<div id="estadoPatrocinadoresAdmin" class="nota" style="background:#020617;border:1px solid rgba(250,204,21,.35);border-radius:12px;padding:8px;text-align:center;font-weight:bold;color:#facc15;margin-top:8px">Patrocinadores: pendiente</div>
-</div>
+
 <div class="panel" id="panelMarcaCliente">
 <h2>🏢 Marca del Cliente</h2>
 <p class="nota">Para vender el sistema, cada cliente puede tener su propio nombre y logo. Tu crédito como desarrollador se mantiene fijo.</p>
@@ -761,11 +743,13 @@ let usuarioRol="admin";let clienteIdActual=localStorage.getItem("clienteId")||"e
 actualizarEstadoConexion();
 window.addEventListener("online",actualizarEstadoConexion);
 window.addEventListener("offline",actualizarEstadoConexion);
-if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").then(()=>console.log("PWA offline activa")).catch(// ===== LOGIN ACTIVO CON FIREBASE =====
-// El sistema ya NO entra solo. Primero debe iniciar sesión con correo y contraseña.
-
-tch(e){}},600);
-});
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("sw.js")
+      .then(()=>console.log("PWA offline activa"))
+      .catch(console.error);
+  });
+}
 
 function datosConCliente(data={}){
   return {...data, clienteId: clienteIdActual || "eduardo_tinizaray"};
@@ -3930,93 +3914,6 @@ window.addEventListener("DOMContentLoaded",()=>{
 });
 </script>
 
-<script>
-// ===== PATROCINADORES ADMIN =====
-function crearCamposPatrocinadoresAdmin(){
-  const cont=document.getElementById("gridPatrocinadoresAdmin");
-  if(!cont || cont.dataset.creado==="SI") return;
-  cont.dataset.creado="SI";
-  let html="";
-  for(let i=1;i<=20;i++){
-    html += `<div>
-      <label class="nota" style="font-weight:bold;color:#facc15">Logo ${i}</label>
-      <input type="text" id="patroLogo${i}" placeholder="URL del logo ${i}" oninput="previewPatrocinadorAdmin(${i})">
-      <div class="logoPreviewPatro" id="patroPreview${i}"><span>Vista previa</span></div>
-    </div>`;
-  }
-  cont.innerHTML=html;
-}
-
-function previewPatrocinadorAdmin(i){
-  const url=(document.getElementById("patroLogo"+i)?.value||"").trim();
-  const prev=document.getElementById("patroPreview"+i);
-  if(!prev) return;
-  prev.innerHTML=url?`<img src="${url}" onerror="this.parentNode.innerHTML='<span>Logo no carga</span>'">`:`<span>Vista previa</span>`;
-}
-
-async function guardarPatrocinadoresAdmin(){
-  try{
-    crearCamposPatrocinadoresAdmin();
-    const logos=[];
-    for(let i=1;i<=20;i++){
-      const url=(document.getElementById("patroLogo"+i)?.value||"").trim();
-      if(url) logos.push(url);
-    }
-    await db.collection("controlSistema").doc("patrocinadores").set({
-      logos,
-      clienteId: clienteIdActual || "eduardo_tinizaray",
-      actualizado: new Date().toISOString()
-    },{merge:true});
-    const box=document.getElementById("estadoPatrocinadoresAdmin");
-    if(box) box.textContent=`✅ ${logos.length} logo(s) guardado(s) para el visualizador`;
-    alert("✅ Patrocinadores guardados.");
-  }catch(error){
-    alert("Error al guardar patrocinadores: "+error.message);
-  }
-}
-
-async function cargarPatrocinadoresAdmin(){
-  try{
-    crearCamposPatrocinadoresAdmin();
-    const doc=await db.collection("controlSistema").doc("patrocinadores").get();
-    const logos=doc.exists?(doc.data().logos||[]):[];
-    for(let i=1;i<=20;i++){
-      const inp=document.getElementById("patroLogo"+i);
-      if(inp) inp.value=logos[i-1]||"";
-      previewPatrocinadorAdmin(i);
-    }
-    const box=document.getElementById("estadoPatrocinadoresAdmin");
-    if(box) box.textContent=`📌 ${logos.length} logo(s) cargado(s)`;
-  }catch(error){
-    console.warn("No se pudieron cargar patrocinadores",error);
-  }
-}
-
-async function quitarPatrocinadoresAdmin(){
-  if(!confirm("¿Seguro que deseas quitar todos los logos de patrocinadores?")) return;
-  try{
-    await db.collection("controlSistema").doc("patrocinadores").set({
-      logos:[],
-      clienteId: clienteIdActual || "eduardo_tinizaray",
-      actualizado:new Date().toISOString()
-    },{merge:true});
-    for(let i=1;i<=20;i++){
-      const inp=document.getElementById("patroLogo"+i);
-      if(inp) inp.value="";
-      previewPatrocinadorAdmin(i);
-    }
-    const box=document.getElementById("estadoPatrocinadoresAdmin");
-    if(box) box.textContent="🗑️ Logos quitados";
-    alert("🗑️ Logos quitados del visualizador.");
-  }catch(error){
-    alert("Error al quitar logos: "+error.message);
-  }
-}
-
-window.addEventListener("DOMContentLoaded",()=>{
-  setTimeout(()=>{crearCamposPatrocinadoresAdmin(); cargarPatrocinadoresAdmin();},1200);
-});
-</script>
 
 </body>
 </html>
