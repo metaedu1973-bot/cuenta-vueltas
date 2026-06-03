@@ -587,9 +587,9 @@ window.descargarRespaldoSistema = async function(){
 </div>
 <div id="sistemaPanel" style="display:none">
 <header><img id="logoSistema" src="logo.png" alt="Logo"><h1>🏁 SISTEMA DE CRONOMETRAJE DEPORTIVO 🏁</h1><h2>Sistema desarrollado por Eduardo Tinizaray</h2><div style="font-size:12px;color:#22c55e;font-weight:bold">● Tiempo real Firebase</div><div id="estadoConexion" style="margin-top:8px;display:inline-block;background:#052e16;border:1px solid #22c55e;color:#bbf7d0;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:bold">🟢 Online - sincronizando</div><div id="estadoUsuario" style="margin-top:8px;display:inline-block;background:#020617;border:1px solid #facc15;color:#facc15;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:bold">Usuario: - | Rol: -</div></header>
-<div class="tabs"><button class="rojo" style="max-width:160px;min-width:140px" onclick="cerrarSesion()">🚪 Cerrar Sesión</button><button class="tabBtn activo" onclick="abrirTab('tabCarrera',this)">🏁 Carrera</button><button class="tabBtn" onclick="abrirTab('tabPilotos',this)">👨 Pilotos</button><button class="tabBtn" onclick="abrirTab('tabMangas',this)">📊 Mangas</button><button class="tabBtn" onclick="abrirTab('tabGeneral',this)">🏆 General</button><button class="tabBtn" onclick="abrirTab('tabCampeonato',this)">📅 Campeonato</button>
-<button class="tabBtn" onclick="abrirTab('tabEventos',this);cargarEventos();">📅 Eventos</button><button id="btnSolicitudesTab" class="tabBtn" onclick="abrirTab('tabSolicitudes',this);cargarSolicitudesPilotos();">📝 Solicitudes</button><button id="btnConfigTab" class="tabBtn" onclick="abrirTab('tabConfig',this)">⚙️ Configuración</button></div>
-<section id="tabCarrera" class="tabContenido activo"><div class="panel" id="panelRespaldoInicio" style="grid-column:span 12;border:2px solid #22c55e;background:linear-gradient(135deg,#052e16,#020617)"><h2 style="color:#bbf7d0;margin-bottom:6px">💾 Respaldo del sistema</h2><button type="button" onclick="descargarRespaldoSistema()" style="background:linear-gradient(180deg,#22c55e,#15803d);border:2px solid #facc15;color:white;font-size:15px;font-weight:900">💾 Descargar respaldo</button><p class="nota">Se guardará en Descargas del navegador.</p></div><div id="relojCarreraPro" class="relojCarreraPro"><div class="lbl">⏱️ TIEMPO EN VIVO</div><div id="tiempoCarreraGrande" class="time">00:00:00</div></div><div class="panel"><h2>Nueva Competencia</h2><label style="font-weight:bold;color:#facc15">📅 Evento</label><select id="eventoCarrera" onchange="seleccionarEventoCarrera()"><option value="">Sin evento / carrera manual</option></select><input type="text" id="nombreCompetencia" placeholder="Nombre de competencia"><input type="date" id="fechaCompetencia"><select id="categoriaCarrera"><option value="">Seleccione categoría</option></select><button class="gris" onclick="refrescarCategoriasCarrera()">🔄 ACTUALIZAR CATEGORÍAS</button><input type="number" id="totalVueltas" placeholder="Cantidad de vueltas"><select id="mangaActual"><option value="1">Manga 1</option><option value="2">Manga 2</option></select><button class="azul" onclick="cargarPilotosCategoria()">CARGAR PILOTOS DE ESTA CATEGORÍA</button></div><div class="panel"><h2>Control de carrera</h2><div class="controlCarreraPro"><button class="azul" onclick="empezarCarrera()">🟢 EMPEZAR CARRERA</button><button class="rojo" onclick="finalizarCarrera()">🔴 FINALIZAR CARRERA</button><button class="amarillo" onclick="guardarManga()">💾 GUARDAR MANGA</button><button class="morado" onclick="guardarCompetencia()">🏁 FINALIZAR COMPETENCIA</button><button id="btnReabrirCarreraPro" class="gris" onclick="reabrirCarreraPro()">🔓 REABRIR CARRERA</button></div><div class="estadoMangasPro"><div id="estadoManga1Badge" class="estadoMangaBadge"></div><div id="estadoManga2Badge" class="estadoMangaBadge"></div></div><div id="estadoCompetenciaBadge" class="estadoCompetenciaPro"></div></div><div class="panel"><h2>PASO POR META</h2><div id="botonesPaso" class="grid"></div></div><div class="panel"><h2>POSICIONES EN VIVO</h2><div id="rankingVivo"></div></div><div class="panel"><h2>PILOTOS EN CARRERA</h2><div id="listaPilotos"></div></div><div class="panel"><button class="gris" onclick="limpiarSoloVueltas()">LIMPIAR VUELTAS</button><button class="morado" onclick="nuevaCarrera()">NUEVA CARRERA</button>
+<div class="tabs"><button class="tabBtn activo" onclick="abrirTab('tabCarrera',this)">🏁 Carrera</button><button class="tabBtn" onclick="abrirTab('tabPilotos',this)">👨 Pilotos</button><button class="tabBtn" onclick="abrirTab('tabMangas',this)">📊 Mangas</button><button class="tabBtn" onclick="abrirTab('tabGeneral',this)">🏆 General</button><button class="tabBtn" onclick="abrirTab('tabCampeonato',this)">📅 Campeonato</button>
+<button class="tabBtn" onclick="abrirTab('tabEventos',this);cargarEventos();">📅 Eventos</button><button id="btnSolicitudesTab" class="tabBtn" onclick="abrirTab('tabSolicitudes',this);cargarSolicitudesPilotos();">📝 Solicitudes</button><button id="btnConfigTab" class="tabBtn" onclick="abrirTab('tabConfig',this)">⚙️ Configuración</button><button class="rojo" style="max-width:160px;min-width:140px;margin-top:22px" onclick="cerrarSesion()">🚪 Cerrar Sesión</button></div>
+<section id="tabCarrera" class="tabContenido activo"><div id="relojCarreraPro" class="relojCarreraPro"><div class="lbl">⏱️ TIEMPO EN VIVO</div><div id="tiempoCarreraGrande" class="time">00:00:00</div></div><div class="panel"><h2>Nueva Competencia</h2><label style="font-weight:bold;color:#facc15">📅 Evento</label><select id="eventoCarrera" onchange="seleccionarEventoCarrera()"><option value="">Sin evento / carrera manual</option></select><input type="text" id="nombreCompetencia" placeholder="Nombre de competencia"><input type="date" id="fechaCompetencia"><select id="categoriaCarrera"><option value="">Seleccione categoría</option></select><button class="gris" onclick="refrescarCategoriasCarrera()">🔄 ACTUALIZAR CATEGORÍAS</button><input type="number" id="totalVueltas" placeholder="Cantidad de vueltas"><select id="mangaActual"><option value="1">Manga 1</option><option value="2">Manga 2</option></select><button class="azul" onclick="cargarPilotosCategoria()">CARGAR PILOTOS DE ESTA CATEGORÍA</button></div><div class="panel"><h2>Control de carrera</h2><div class="controlCarreraPro"><button class="azul" onclick="empezarCarrera()">🟢 EMPEZAR CARRERA</button><button class="rojo" onclick="finalizarCarrera()">🔴 FINALIZAR CARRERA</button><button class="amarillo" onclick="guardarManga()">💾 GUARDAR MANGA</button><button class="morado" onclick="guardarCompetencia()">🏁 FINALIZAR COMPETENCIA</button><button id="btnReabrirCarreraPro" class="gris" onclick="reabrirCarreraPro()">🔓 REABRIR CARRERA</button></div><div class="estadoMangasPro"><div id="estadoManga1Badge" class="estadoMangaBadge"></div><div id="estadoManga2Badge" class="estadoMangaBadge"></div></div><div id="estadoCompetenciaBadge" class="estadoCompetenciaPro"></div></div><div class="panel"><h2>PASO POR META</h2><div id="botonesPaso" class="grid"></div></div><div class="panel"><h2>POSICIONES EN VIVO</h2><div id="rankingVivo"></div></div><div class="panel"><h2>PILOTOS EN CARRERA</h2><div id="listaPilotos"></div></div><div class="panel"><button class="gris" onclick="limpiarSoloVueltas()">LIMPIAR VUELTAS</button><button class="morado" onclick="nuevaCarrera()">NUEVA CARRERA</button>
 <button class="rojo" onclick="reiniciarLocal()">BORRAR LOCAL</button></div></section>
 <section id="tabPilotos" class="tabContenido">
 <div class="panel"><h2>➕ Agregar Piloto Manual</h2><p class="nota">Para pilotos que llegan atrasados a la pista. Después aparecerán en la lista y podrán cargarse a la carrera por categoría.</p><input type="number" id="numeroPiloto" placeholder="Número"><input type="text" id="nombrePiloto" placeholder="Nombre del piloto"><select id="categoriaPiloto"><option value="">Seleccione categoría</option></select><input type="tel" id="telefonoPiloto" placeholder="Teléfono / WhatsApp"><input type="text" id="equipoPiloto" placeholder="Ciudad / Equipo"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><select id="marcaPiloto" onchange="toggleOtraMarcaPiloto()"><option value="">Marca</option><option>YAMAHA</option><option>HONDA</option><option>SUZUKI</option><option>KAWASAKI</option><option>KTM</option><option>CAN-AM</option><option>POLARIS</option><option>CFMOTO</option><option>OTRO</option></select><input type="text" id="modeloPiloto" placeholder="Modelo. Ej: YFZ450R"><select id="cilindrajePiloto" onchange="toggleOtroCilindrajePiloto()"><option value="">Cilindraje</option><option>50cc</option><option>70cc</option><option>90cc</option><option>125cc</option><option>200cc</option><option>250cc</option><option>300cc</option><option>350cc</option><option>400cc</option><option>450cc</option><option>500cc</option><option>525cc</option><option>700cc</option><option>850cc</option><option>1000cc</option><option>OPEN</option><option>OTRO</option></select></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input type="text" id="otraMarcaPiloto" placeholder="Escriba marca" style="display:none;text-transform:uppercase"><input type="text" id="otroCilindrajePiloto" placeholder="Escriba cilindraje" style="display:none;text-transform:uppercase"></div><select id="estadoPagoPiloto"><option value="debe">Debe</option><option value="pagado">Pagado</option><option value="exonerado">Exonerado</option></select><button onclick="guardarPilotoBase()">GUARDAR PILOTO</button><button class="gris" onclick="cargarCategorias();cargarListaPilotosAdmin();">ACTUALIZAR CATEGORÍAS</button></div>
@@ -601,15 +601,17 @@ window.descargarRespaldoSistema = async function(){
 <div class="panel">
 <h2>REPORTE GENERAL</h2>
 <div id="controlesGeneral" style="background:#0f172a;padding:8px;border-radius:8px;margin-bottom:8px">
-  <label style="font-weight:bold;color:#facc15">📅 Seleccionar fecha para ver mangas/carreras:</label>
-  <input type="date" id="fechaGeneral" onchange="mostrarTablaGeneral()">
+  <label style="font-weight:bold;color:#facc15">📅 Seleccionar evento para ver mangas/carreras:</label>
+  <select id="eventoGeneral" onchange="mostrarTablaGeneral()">
+    <option value="">Cargando eventos...</option>
+  </select>
 
   <label style="font-weight:bold;color:#facc15">🏁 Ver por categoría:</label>
   <select id="categoriaGeneral" onchange="mostrarTablaGeneral()">
     <option value="TODAS">TODAS LAS CATEGORÍAS</option>
   </select>
 
-  <button id="btnVerGeneral" class="gris" onclick="mostrarTablaGeneral()">VER RESULTADOS</button>
+  <button id="btnVerGeneral" class="gris" onclick="mostrarTablaGeneral()">VER RESULTADOS DEL EVENTO</button>
 </div>
 <div id="tablaGeneral"></div>
 
@@ -801,17 +803,25 @@ window.descargarRespaldoSistema = async function(){
   <button class="gris" onclick="cargarListaCategoriasAdmin()">🔄 ACTUALIZAR CATEGORÍAS</button>
 </div>
 <div id="tablaCategoriasAdmin"></div>
-<p class="nota">Editar categoría cambia también los pilotos que tienen esa categoría. Eliminar categoría no borra pilotos, pero sí quita la categoría del listado.</p>
+<p class="nota">Puedes editar el nombre directo en la tabla y presionar 💾 Guardar. El cambio también actualiza los pilotos de esa categoría. Eliminar categoría no borra pilotos.</p>
 </div>
 
 <div class="panel" id="panelAdminCarreras">
 <h2>🗑️ Administración de Carreras</h2>
 <p class="nota">Solo ADMIN. Esto borra competencias, mangas, vueltas y resultados. NO borra pilotos, categorías ni usuarios.</p>
-<label style="font-weight:bold;color:#facc15">Borrar carreras por fecha:</label>
-<input type="date" id="fechaBorrarCarreras">
-<button class="rojo" onclick="borrarCarrerasPorFecha()">BORRAR CARRERAS DE ESTA FECHA</button>
+<label style="font-weight:bold;color:#facc15">Borrar carreras por evento:</label>
+<select id="eventoBorrarCarreras">
+  <option value="">Cargando eventos...</option>
+</select>
+<button class="rojo" onclick="borrarCarrerasPorEvento()">BORRAR CARRERAS DE ESTE EVENTO</button>
 <button class="rojo" onclick="borrarTodasLasCarreras()">BORRAR TODAS LAS CARRERAS</button>
-<p class="nota">Usa “BORRAR TODAS” solo cuando quieras dejar el sistema limpio para un nuevo evento.</p>
+<p class="nota">Usa “BORRAR CARRERAS DE ESTE EVENTO” para limpiar solo los resultados de un evento. Los pilotos, categorías e inscripciones quedan guardados.</p>
+</div>
+
+<div class="panel" id="panelDescargasAdmin">
+<h2>💾 Respaldo del Sistema</h2>
+<p class="nota">Descarga una copia completa del sistema. El archivo se guarda en la carpeta Descargas del navegador.</p>
+<button class="morado" type="button" onclick="descargarRespaldoSistema()">💾 DESCARGAR RESPALDO JSON</button>
 </div>
 </section>
 <script>
@@ -1299,7 +1309,218 @@ function imprimirListaPilotosAdmin(){
   const cont=document.getElementById("tablaListaPilotosAdmin");
   if(!cont||!cont.innerHTML.trim()){alert("Primero carga la lista de pilotos.");return;}
   const win=window.open("","_blank");
-  win.document.write(`<!DOCTYPE html><html><head><title>Lista de pilotos</title><style>body{font-family:Arial;padding:20px}h1{text-align:center}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #555;padding:6px;text-align:center}th{background:#111;color:white}input,select,button{border:none;background:transparent;font-size:12px}button{display:none}</style></head><body><h1>LISTA DE PILOTOS</h1><p>Sistema desarrollado por Eduardo Tinizaray</p>${cont.innerHTML}</body></html>`);
+  win.document.write(`<!DOCTYPE html><html><head><title>Lista de pilotos</title><style>body{font-family:Arial;padding:20px}h1{text-align:center}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #555;padding:6px;text-align:center}th{background:#111;color:white}input,select,button{border:none;background:transparent;font-size:12px}button{display:none}</style></head><body><h1>LISTA DE PILOTOS</h1><p>Sistema desarrollado por Eduardo Tinizaray</p>${cont.innerHTML}
+<script>
+/* ===== CAMBIOS FINALES: GENERAL Y BORRADO POR EVENTO ===== */
+(function(){
+  function esc(txt){return String(txt??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));}
+  function nombreEventoOption(id,e){
+    const fecha=e.fecha?e.fecha+" - ":"";
+    const nombre=e.nombre||"Evento";
+    const ciudad=e.ciudad?" - "+e.ciudad:"";
+    return `${fecha}${nombre}${ciudad}`;
+  }
+  window.cargarEventosReportesYBorrado=async function(){
+    try{
+      const selects=[document.getElementById("eventoGeneral"),document.getElementById("eventoBorrarCarreras")].filter(Boolean);
+      if(selects.length===0)return;
+      selects.forEach(sel=>sel.innerHTML='<option value="">Seleccione evento</option>');
+      const snap=await db.collection("eventos").orderBy("fecha","desc").limit(120).get();
+      let eventos=[];
+      snap.forEach(doc=>{const e=doc.data()||{}; if(!perteneceCliente(e))return; eventos.push({id:doc.id,...e});});
+      eventos.forEach(e=>{
+        const label=nombreEventoOption(e.id,e);
+        selects.forEach(sel=>{sel.innerHTML+=`<option value="${esc(e.id)}">${esc(label)}</option>`;});
+      });
+      const gen=document.getElementById("eventoGeneral");
+      if(gen && !gen.value && eventos.length>0){gen.value=eventos[0].id;}
+    }catch(error){console.warn("No se pudieron cargar eventos para reportes:",error.message);}
+  };
+
+  window.eventoGeneralSeleccionado=function(){
+    const sel=document.getElementById("eventoGeneral");
+    return sel?sel.value:"";
+  };
+
+  window.obtenerCompetenciasEvento=async function(){
+    const eventoId=eventoGeneralSeleccionado();
+    let competencias=[];
+    if(!eventoId)return competencias;
+    try{
+      const evDoc=await db.collection("eventos").doc(eventoId).get().catch(()=>null);
+      const evento=evDoc && evDoc.exists ? (evDoc.data()||{}) : {};
+      const snap=await db.collection("competencias").orderBy("actualizado","desc").limit(500).get();
+      snap.forEach(doc=>{
+        const c=doc.data()||{};
+        if(!perteneceCliente(c))return;
+        const coincideEvento = c.eventoId===eventoId || c.idEvento===eventoId;
+        const coincideFallback = !c.eventoId && evento.nombre && c.nombre===evento.nombre && (!evento.fecha || c.fecha===evento.fecha);
+        if(!coincideEvento && !coincideFallback)return;
+        competencias.push({
+          id:doc.id,
+          eventoId:eventoId,
+          eventoNombre:c.eventoNombre||evento.nombre||"",
+          fecha:c.fecha||evento.fecha||"",
+          nombre:c.nombre||"Competencia sin nombre",
+          categoria:c.categoria||"SIN CATEGORÍA",
+          vueltas:c.vueltas||"",
+          resultados:c.resultados||{manga1:[],manga2:[]},
+          pilotos:c.pilotos||[],
+          actualizado:c.actualizado||""
+        });
+      });
+    }catch(error){console.error("Error obteniendo competencias por evento:",error);}
+    return competencias;
+  };
+
+  window.obtenerTablaGeneral=async function(){
+    try{
+      const total={};
+      const competencias=await obtenerCompetenciasEvento();
+      competencias.forEach(c=>{
+        const categoriaCompetencia=c.categoria||"SIN CATEGORÍA";
+        const r=c.resultados||{manga1:[],manga2:[]};
+        function agregar(p,manga){
+          const categoria=p.categoria||categoriaCompetencia||"SIN CATEGORÍA";
+          const id=(p.id||("P_"+(p.numero||"")+"_"+(p.nombre||"")))+"_"+categoria;
+          if(!total[id]){
+            total[id]={id:p.id||id,numero:p.numero||"",nombre:p.nombre||"",categoria,manga1:0,manga2:0,posManga1:999,posManga2:999,puntos:0,competencias:0,mangas:0,_competencias:{},mejorPos:999};
+          }
+          if(manga===1){total[id].manga1+=p.puntos||0; total[id].posManga1=Math.min(total[id].posManga1,p.posicion||999);} 
+          else {total[id].manga2+=p.puntos||0; total[id].posManga2=Math.min(total[id].posManga2,p.posicion||999);} 
+          total[id].puntos+=p.puntos||0;
+          total[id].mejorPos=Math.min(total[id].mejorPos,p.posicion||999);
+          total[id]._competencias[c.id]=true;
+          total[id].competencias=Object.keys(total[id]._competencias).length;
+          total[id].mangas++;
+        }
+        (r.manga1||[]).forEach(p=>agregar(p,1));
+        (r.manga2||[]).forEach(p=>agregar(p,2));
+      });
+      return Object.values(total).sort((a,b)=>{
+        const cat=(a.categoria||"").localeCompare(b.categoria||""); if(cat!==0)return cat;
+        if(b.puntos!==a.puntos)return b.puntos-a.puntos;
+        if((b.manga2||0)!==(a.manga2||0))return (b.manga2||0)-(a.manga2||0);
+        return (a.mejorPos||999)-(b.mejorPos||999);
+      });
+    }catch(error){console.error("Error general por evento:",error); return [];}
+  };
+
+  window.actualizarSelectCategoriaGeneral=function(competencias,tabla){
+    const select=document.getElementById("categoriaGeneral"); if(!select)return;
+    const valorActual=select.value||"TODAS";
+    const set=new Set();
+    (competencias||[]).forEach(c=>set.add(c.categoria||"SIN CATEGORÍA"));
+    (tabla||[]).forEach(p=>set.add(p.categoria||"SIN CATEGORÍA"));
+    const cats=[...set].filter(Boolean).sort();
+    select.innerHTML='<option value="TODAS">TODAS LAS CATEGORÍAS</option>'+cats.map(cat=>`<option value="${esc(cat)}">${esc(cat)}</option>`).join("");
+    select.value=cats.includes(valorActual)?valorActual:"TODAS";
+  };
+
+  window.mostrarTablaGeneral=async function(){
+    const cont=document.getElementById("tablaGeneral"); if(!cont)return;
+    await cargarEventosReportesYBorrado();
+    const eventoId=eventoGeneralSeleccionado();
+    if(!eventoId){cont.innerHTML='<p class="nota">Seleccione un evento para ver reportes.</p>';return;}
+    const sel=document.getElementById("eventoGeneral");
+    const nombreEvento=sel?.options[sel.selectedIndex]?.text||"Evento";
+    cont.innerHTML="<p>Cargando reportes del evento seleccionado...</p>";
+    let competencias=await obtenerCompetenciasEvento();
+    let tabla=await obtenerTablaGeneral();
+    actualizarSelectCategoriaGeneral(competencias,tabla);
+    const categoriaFiltro=categoriaGeneralSeleccionada();
+    if(categoriaFiltro!=="TODAS"){
+      competencias=competencias.filter(c=>(c.categoria||"SIN CATEGORÍA")===categoriaFiltro);
+      tabla=tabla.filter(p=>(p.categoria||"SIN CATEGORÍA")===categoriaFiltro);
+    }
+    const tituloCategoria=categoriaFiltro==="TODAS"?"TODAS LAS CATEGORÍAS":categoriaFiltro;
+    let html=`<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">📅 REPORTE DEL EVENTO: ${esc(nombreEvento)} — ${esc(tituloCategoria)}</h2>`;
+    if(competencias.length>0){
+      html+='<table><tr><th>#</th><th>Fecha</th><th>Carrera</th><th>Categoría</th><th>Vueltas</th><th>Manga 1</th><th>Manga 2</th></tr>';
+      competencias.forEach((c,i)=>{const r=c.resultados||{manga1:[],manga2:[]}; html+=`<tr><td>${i+1}</td><td>${esc(c.fecha)}</td><td>${esc(c.nombre)}</td><td>${esc(c.categoria)}</td><td>${esc(c.vueltas||"-")}</td><td>${topTresManga(r.manga1)}</td><td>${topTresManga(r.manga2)}</td></tr>`;});
+      html+='</table><br>';
+    }else{
+      html+='<p>No hay carreras guardadas para este evento. Revisa que seleccionaste el evento al crear la competencia y que presionaste 💾 GUARDAR MANGA y 🏁 FINALIZAR COMPETENCIA.</p>';
+    }
+    if(tabla.length===0){html+='<p class="nota">La tabla general se llena cuando hay resultados guardados en Manga 1 o Manga 2.</p>'; cont.innerHTML=html; return;}
+    const grupos={}; tabla.forEach(p=>{const cat=p.categoria||"SIN CATEGORÍA"; (grupos[cat]||(grupos[cat]=[])).push(p);});
+    html+='<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">🏆 GENERAL POR CATEGORÍAS DEL EVENTO</h2>';
+    Object.keys(grupos).sort().forEach(cat=>{
+      const lista=grupos[cat].sort((a,b)=>b.puntos!==a.puntos?b.puntos-a.puntos:((b.manga2||0)!==(a.manga2||0)?(b.manga2||0)-(a.manga2||0):(a.mejorPos||999)-(b.mejorPos||999)));
+      const lider=lista[0];
+      html+=`<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">🏆 ${esc(cat)}</h2>`;
+      if(lider)html+=`<div style="background:#14532d;color:white;padding:8px;border-radius:8px;margin-bottom:6px"><b>🥇 Líder del evento:</b> #${esc(lider.numero)} ${esc(lider.nombre)} — ${lider.puntos} pts</div>`;
+      html+='<table><tr><th>Pos</th><th>N°</th><th>Piloto</th><th>M1 pts</th><th>M2 pts</th><th>Total pts</th><th>Mangas</th><th>Mejor pos</th></tr>';
+      lista.forEach((p,i)=>{const med=i===0?"🥇":i===1?"🥈":i===2?"🥉":""; html+=`<tr><td>${med} ${i+1}</td><td>${esc(p.numero)}</td><td>${esc(p.nombre)}</td><td>${p.manga1||0}</td><td>${p.manga2||0}</td><td><b>${p.puntos||0}</b></td><td>${p.mangas||0}</td><td>${p.mejorPos===999?"-":p.mejorPos}</td></tr>`;});
+      html+='</table><br>';
+    });
+    cont.innerHTML=html;
+  };
+
+  const oldGuardarCompetenciaFirebase=window.guardarCompetenciaFirebase;
+  if(typeof oldGuardarCompetenciaFirebase==="function"){
+    window.guardarCompetenciaFirebase=async function(){
+      await oldGuardarCompetenciaFirebase.apply(this,arguments);
+      await guardarEventoEnCompetenciaActual();
+    };
+  }
+  const oldGuardarCompetenciaFinal=window.guardarCompetencia;
+  if(typeof oldGuardarCompetenciaFinal==="function"){
+    window.guardarCompetencia=async function(){
+      const r=await oldGuardarCompetenciaFinal.apply(this,arguments);
+      await guardarEventoEnCompetenciaActual();
+      return r;
+    };
+  }
+
+  async function guardarEventoEnCompetenciaActual(){
+    try{
+      if(!competenciaId)return;
+      const sel=document.getElementById("eventoCarrera");
+      const eventoId=sel?.value||"";
+      if(!eventoId)return;
+      const evDoc=await db.collection("eventos").doc(eventoId).get().catch(()=>null);
+      const ev=evDoc&&evDoc.exists?(evDoc.data()||{}):{};
+      await db.collection("competencias").doc(competenciaId).set(datosConCliente({eventoId,eventoNombre:ev.nombre||document.getElementById("nombreCompetencia")?.value||"",eventoFecha:ev.fecha||document.getElementById("fechaCompetencia")?.value||"",actualizado:new Date().toISOString()}),{merge:true});
+    }catch(error){console.warn("No se pudo guardar evento en competencia:",error.message);}
+  }
+
+  window.borrarCarrerasPorEvento=async function(){
+    try{
+      if(usuarioRol!=="admin"){alert("Solo el administrador puede borrar carreras.");return;}
+      const eventoId=document.getElementById("eventoBorrarCarreras")?.value||"";
+      if(!eventoId){alert("Selecciona un evento para borrar sus carreras.");return;}
+      const texto=document.getElementById("eventoBorrarCarreras")?.selectedOptions?.[0]?.text||eventoId;
+      if(!confirm("¿Borrar TODAS las carreras guardadas del evento?\n\n"+texto+"\n\nEsto NO borra pilotos, categorías ni inscripciones."))return;
+      if(!confirm("Confirmación final: se borrarán competencias, mangas, vueltas y resultados de este evento."))return;
+      const snap=await db.collection("competencias").get();
+      const docs=[];
+      snap.forEach(doc=>{const c=doc.data()||{}; if(!perteneceCliente(c))return; if(c.eventoId===eventoId || c.idEvento===eventoId)docs.push(doc);});
+      if(docs.length===0){alert("No hay carreras guardadas para ese evento.");return;}
+      for(let i=0;i<docs.length;i+=400){const batch=db.batch(); docs.slice(i,i+400).forEach(d=>batch.delete(d.ref)); await batch.commit();}
+      if(competenciaId && docs.some(d=>d.id===competenciaId)){limpiarPantallaCarreraSinBorrarBase();}
+      await cargarCompetencias();
+      await mostrarTablaGeneral();
+      alert("✅ Carreras borradas del evento. Pilotos, categorías e inscripciones siguen guardados.");
+    }catch(error){alert("Error al borrar carreras por evento: "+error.message);}
+  };
+
+  // Para que el reporte por evento cargue al abrir General o Configuración.
+  const oldAbrirTab=window.abrirTab;
+  if(typeof oldAbrirTab==="function"){
+    window.abrirTab=function(id,btn){
+      const r=oldAbrirTab.apply(this,arguments);
+      if(id==="tabGeneral"){cargarEventosReportesYBorrado().then(()=>mostrarTablaGeneral());}
+      if(id==="tabConfig"){cargarEventosReportesYBorrado(); if(typeof cargarListaCategoriasAdmin==="function")cargarListaCategoriasAdmin();}
+      return r;
+    };
+  }
+  document.addEventListener("DOMContentLoaded",()=>{cargarEventosReportesYBorrado().then(()=>{if(document.getElementById("tabGeneral")?.classList.contains("activo"))mostrarTablaGeneral();});});
+  setTimeout(()=>cargarEventosReportesYBorrado(),1200);
+})();
+</script>
+
+</body></html>`);
   win.document.close();
   win.focus();
   setTimeout(()=>win.print(),400);
@@ -2646,7 +2867,218 @@ async function imprimirHojaInscritos(){
       <table><tr><th>#</th><th>Número</th><th>Piloto</th><th>Categoría</th><th>Teléfono</th><th>Edad</th><th>Equipo/Ciudad</th><th>Emergencia</th><th>Estado</th><th>Pago</th></tr>${filas}</table>
       <div class="credit">Sistema desarrollado por Eduardo Tinizaray</div>
       <script>window.print()<\/script>
-    </body></html>`;
+    
+<script>
+/* ===== CAMBIOS FINALES: GENERAL Y BORRADO POR EVENTO ===== */
+(function(){
+  function esc(txt){return String(txt??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));}
+  function nombreEventoOption(id,e){
+    const fecha=e.fecha?e.fecha+" - ":"";
+    const nombre=e.nombre||"Evento";
+    const ciudad=e.ciudad?" - "+e.ciudad:"";
+    return `${fecha}${nombre}${ciudad}`;
+  }
+  window.cargarEventosReportesYBorrado=async function(){
+    try{
+      const selects=[document.getElementById("eventoGeneral"),document.getElementById("eventoBorrarCarreras")].filter(Boolean);
+      if(selects.length===0)return;
+      selects.forEach(sel=>sel.innerHTML='<option value="">Seleccione evento</option>');
+      const snap=await db.collection("eventos").orderBy("fecha","desc").limit(120).get();
+      let eventos=[];
+      snap.forEach(doc=>{const e=doc.data()||{}; if(!perteneceCliente(e))return; eventos.push({id:doc.id,...e});});
+      eventos.forEach(e=>{
+        const label=nombreEventoOption(e.id,e);
+        selects.forEach(sel=>{sel.innerHTML+=`<option value="${esc(e.id)}">${esc(label)}</option>`;});
+      });
+      const gen=document.getElementById("eventoGeneral");
+      if(gen && !gen.value && eventos.length>0){gen.value=eventos[0].id;}
+    }catch(error){console.warn("No se pudieron cargar eventos para reportes:",error.message);}
+  };
+
+  window.eventoGeneralSeleccionado=function(){
+    const sel=document.getElementById("eventoGeneral");
+    return sel?sel.value:"";
+  };
+
+  window.obtenerCompetenciasEvento=async function(){
+    const eventoId=eventoGeneralSeleccionado();
+    let competencias=[];
+    if(!eventoId)return competencias;
+    try{
+      const evDoc=await db.collection("eventos").doc(eventoId).get().catch(()=>null);
+      const evento=evDoc && evDoc.exists ? (evDoc.data()||{}) : {};
+      const snap=await db.collection("competencias").orderBy("actualizado","desc").limit(500).get();
+      snap.forEach(doc=>{
+        const c=doc.data()||{};
+        if(!perteneceCliente(c))return;
+        const coincideEvento = c.eventoId===eventoId || c.idEvento===eventoId;
+        const coincideFallback = !c.eventoId && evento.nombre && c.nombre===evento.nombre && (!evento.fecha || c.fecha===evento.fecha);
+        if(!coincideEvento && !coincideFallback)return;
+        competencias.push({
+          id:doc.id,
+          eventoId:eventoId,
+          eventoNombre:c.eventoNombre||evento.nombre||"",
+          fecha:c.fecha||evento.fecha||"",
+          nombre:c.nombre||"Competencia sin nombre",
+          categoria:c.categoria||"SIN CATEGORÍA",
+          vueltas:c.vueltas||"",
+          resultados:c.resultados||{manga1:[],manga2:[]},
+          pilotos:c.pilotos||[],
+          actualizado:c.actualizado||""
+        });
+      });
+    }catch(error){console.error("Error obteniendo competencias por evento:",error);}
+    return competencias;
+  };
+
+  window.obtenerTablaGeneral=async function(){
+    try{
+      const total={};
+      const competencias=await obtenerCompetenciasEvento();
+      competencias.forEach(c=>{
+        const categoriaCompetencia=c.categoria||"SIN CATEGORÍA";
+        const r=c.resultados||{manga1:[],manga2:[]};
+        function agregar(p,manga){
+          const categoria=p.categoria||categoriaCompetencia||"SIN CATEGORÍA";
+          const id=(p.id||("P_"+(p.numero||"")+"_"+(p.nombre||"")))+"_"+categoria;
+          if(!total[id]){
+            total[id]={id:p.id||id,numero:p.numero||"",nombre:p.nombre||"",categoria,manga1:0,manga2:0,posManga1:999,posManga2:999,puntos:0,competencias:0,mangas:0,_competencias:{},mejorPos:999};
+          }
+          if(manga===1){total[id].manga1+=p.puntos||0; total[id].posManga1=Math.min(total[id].posManga1,p.posicion||999);} 
+          else {total[id].manga2+=p.puntos||0; total[id].posManga2=Math.min(total[id].posManga2,p.posicion||999);} 
+          total[id].puntos+=p.puntos||0;
+          total[id].mejorPos=Math.min(total[id].mejorPos,p.posicion||999);
+          total[id]._competencias[c.id]=true;
+          total[id].competencias=Object.keys(total[id]._competencias).length;
+          total[id].mangas++;
+        }
+        (r.manga1||[]).forEach(p=>agregar(p,1));
+        (r.manga2||[]).forEach(p=>agregar(p,2));
+      });
+      return Object.values(total).sort((a,b)=>{
+        const cat=(a.categoria||"").localeCompare(b.categoria||""); if(cat!==0)return cat;
+        if(b.puntos!==a.puntos)return b.puntos-a.puntos;
+        if((b.manga2||0)!==(a.manga2||0))return (b.manga2||0)-(a.manga2||0);
+        return (a.mejorPos||999)-(b.mejorPos||999);
+      });
+    }catch(error){console.error("Error general por evento:",error); return [];}
+  };
+
+  window.actualizarSelectCategoriaGeneral=function(competencias,tabla){
+    const select=document.getElementById("categoriaGeneral"); if(!select)return;
+    const valorActual=select.value||"TODAS";
+    const set=new Set();
+    (competencias||[]).forEach(c=>set.add(c.categoria||"SIN CATEGORÍA"));
+    (tabla||[]).forEach(p=>set.add(p.categoria||"SIN CATEGORÍA"));
+    const cats=[...set].filter(Boolean).sort();
+    select.innerHTML='<option value="TODAS">TODAS LAS CATEGORÍAS</option>'+cats.map(cat=>`<option value="${esc(cat)}">${esc(cat)}</option>`).join("");
+    select.value=cats.includes(valorActual)?valorActual:"TODAS";
+  };
+
+  window.mostrarTablaGeneral=async function(){
+    const cont=document.getElementById("tablaGeneral"); if(!cont)return;
+    await cargarEventosReportesYBorrado();
+    const eventoId=eventoGeneralSeleccionado();
+    if(!eventoId){cont.innerHTML='<p class="nota">Seleccione un evento para ver reportes.</p>';return;}
+    const sel=document.getElementById("eventoGeneral");
+    const nombreEvento=sel?.options[sel.selectedIndex]?.text||"Evento";
+    cont.innerHTML="<p>Cargando reportes del evento seleccionado...</p>";
+    let competencias=await obtenerCompetenciasEvento();
+    let tabla=await obtenerTablaGeneral();
+    actualizarSelectCategoriaGeneral(competencias,tabla);
+    const categoriaFiltro=categoriaGeneralSeleccionada();
+    if(categoriaFiltro!=="TODAS"){
+      competencias=competencias.filter(c=>(c.categoria||"SIN CATEGORÍA")===categoriaFiltro);
+      tabla=tabla.filter(p=>(p.categoria||"SIN CATEGORÍA")===categoriaFiltro);
+    }
+    const tituloCategoria=categoriaFiltro==="TODAS"?"TODAS LAS CATEGORÍAS":categoriaFiltro;
+    let html=`<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">📅 REPORTE DEL EVENTO: ${esc(nombreEvento)} — ${esc(tituloCategoria)}</h2>`;
+    if(competencias.length>0){
+      html+='<table><tr><th>#</th><th>Fecha</th><th>Carrera</th><th>Categoría</th><th>Vueltas</th><th>Manga 1</th><th>Manga 2</th></tr>';
+      competencias.forEach((c,i)=>{const r=c.resultados||{manga1:[],manga2:[]}; html+=`<tr><td>${i+1}</td><td>${esc(c.fecha)}</td><td>${esc(c.nombre)}</td><td>${esc(c.categoria)}</td><td>${esc(c.vueltas||"-")}</td><td>${topTresManga(r.manga1)}</td><td>${topTresManga(r.manga2)}</td></tr>`;});
+      html+='</table><br>';
+    }else{
+      html+='<p>No hay carreras guardadas para este evento. Revisa que seleccionaste el evento al crear la competencia y que presionaste 💾 GUARDAR MANGA y 🏁 FINALIZAR COMPETENCIA.</p>';
+    }
+    if(tabla.length===0){html+='<p class="nota">La tabla general se llena cuando hay resultados guardados en Manga 1 o Manga 2.</p>'; cont.innerHTML=html; return;}
+    const grupos={}; tabla.forEach(p=>{const cat=p.categoria||"SIN CATEGORÍA"; (grupos[cat]||(grupos[cat]=[])).push(p);});
+    html+='<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">🏆 GENERAL POR CATEGORÍAS DEL EVENTO</h2>';
+    Object.keys(grupos).sort().forEach(cat=>{
+      const lista=grupos[cat].sort((a,b)=>b.puntos!==a.puntos?b.puntos-a.puntos:((b.manga2||0)!==(a.manga2||0)?(b.manga2||0)-(a.manga2||0):(a.mejorPos||999)-(b.mejorPos||999)));
+      const lider=lista[0];
+      html+=`<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">🏆 ${esc(cat)}</h2>`;
+      if(lider)html+=`<div style="background:#14532d;color:white;padding:8px;border-radius:8px;margin-bottom:6px"><b>🥇 Líder del evento:</b> #${esc(lider.numero)} ${esc(lider.nombre)} — ${lider.puntos} pts</div>`;
+      html+='<table><tr><th>Pos</th><th>N°</th><th>Piloto</th><th>M1 pts</th><th>M2 pts</th><th>Total pts</th><th>Mangas</th><th>Mejor pos</th></tr>';
+      lista.forEach((p,i)=>{const med=i===0?"🥇":i===1?"🥈":i===2?"🥉":""; html+=`<tr><td>${med} ${i+1}</td><td>${esc(p.numero)}</td><td>${esc(p.nombre)}</td><td>${p.manga1||0}</td><td>${p.manga2||0}</td><td><b>${p.puntos||0}</b></td><td>${p.mangas||0}</td><td>${p.mejorPos===999?"-":p.mejorPos}</td></tr>`;});
+      html+='</table><br>';
+    });
+    cont.innerHTML=html;
+  };
+
+  const oldGuardarCompetenciaFirebase=window.guardarCompetenciaFirebase;
+  if(typeof oldGuardarCompetenciaFirebase==="function"){
+    window.guardarCompetenciaFirebase=async function(){
+      await oldGuardarCompetenciaFirebase.apply(this,arguments);
+      await guardarEventoEnCompetenciaActual();
+    };
+  }
+  const oldGuardarCompetenciaFinal=window.guardarCompetencia;
+  if(typeof oldGuardarCompetenciaFinal==="function"){
+    window.guardarCompetencia=async function(){
+      const r=await oldGuardarCompetenciaFinal.apply(this,arguments);
+      await guardarEventoEnCompetenciaActual();
+      return r;
+    };
+  }
+
+  async function guardarEventoEnCompetenciaActual(){
+    try{
+      if(!competenciaId)return;
+      const sel=document.getElementById("eventoCarrera");
+      const eventoId=sel?.value||"";
+      if(!eventoId)return;
+      const evDoc=await db.collection("eventos").doc(eventoId).get().catch(()=>null);
+      const ev=evDoc&&evDoc.exists?(evDoc.data()||{}):{};
+      await db.collection("competencias").doc(competenciaId).set(datosConCliente({eventoId,eventoNombre:ev.nombre||document.getElementById("nombreCompetencia")?.value||"",eventoFecha:ev.fecha||document.getElementById("fechaCompetencia")?.value||"",actualizado:new Date().toISOString()}),{merge:true});
+    }catch(error){console.warn("No se pudo guardar evento en competencia:",error.message);}
+  }
+
+  window.borrarCarrerasPorEvento=async function(){
+    try{
+      if(usuarioRol!=="admin"){alert("Solo el administrador puede borrar carreras.");return;}
+      const eventoId=document.getElementById("eventoBorrarCarreras")?.value||"";
+      if(!eventoId){alert("Selecciona un evento para borrar sus carreras.");return;}
+      const texto=document.getElementById("eventoBorrarCarreras")?.selectedOptions?.[0]?.text||eventoId;
+      if(!confirm("¿Borrar TODAS las carreras guardadas del evento?\n\n"+texto+"\n\nEsto NO borra pilotos, categorías ni inscripciones."))return;
+      if(!confirm("Confirmación final: se borrarán competencias, mangas, vueltas y resultados de este evento."))return;
+      const snap=await db.collection("competencias").get();
+      const docs=[];
+      snap.forEach(doc=>{const c=doc.data()||{}; if(!perteneceCliente(c))return; if(c.eventoId===eventoId || c.idEvento===eventoId)docs.push(doc);});
+      if(docs.length===0){alert("No hay carreras guardadas para ese evento.");return;}
+      for(let i=0;i<docs.length;i+=400){const batch=db.batch(); docs.slice(i,i+400).forEach(d=>batch.delete(d.ref)); await batch.commit();}
+      if(competenciaId && docs.some(d=>d.id===competenciaId)){limpiarPantallaCarreraSinBorrarBase();}
+      await cargarCompetencias();
+      await mostrarTablaGeneral();
+      alert("✅ Carreras borradas del evento. Pilotos, categorías e inscripciones siguen guardados.");
+    }catch(error){alert("Error al borrar carreras por evento: "+error.message);}
+  };
+
+  // Para que el reporte por evento cargue al abrir General o Configuración.
+  const oldAbrirTab=window.abrirTab;
+  if(typeof oldAbrirTab==="function"){
+    window.abrirTab=function(id,btn){
+      const r=oldAbrirTab.apply(this,arguments);
+      if(id==="tabGeneral"){cargarEventosReportesYBorrado().then(()=>mostrarTablaGeneral());}
+      if(id==="tabConfig"){cargarEventosReportesYBorrado(); if(typeof cargarListaCategoriasAdmin==="function")cargarListaCategoriasAdmin();}
+      return r;
+    };
+  }
+  document.addEventListener("DOMContentLoaded",()=>{cargarEventosReportesYBorrado().then(()=>{if(document.getElementById("tabGeneral")?.classList.contains("activo"))mostrarTablaGeneral();});});
+  setTimeout(()=>cargarEventosReportesYBorrado(),1200);
+})();
+</script>
+
+</body></html>`;
     const w=window.open("","_blank");
     w.document.open();w.document.write(html);w.document.close();
   }catch(error){alert("Error al imprimir hoja: "+error.message);}
@@ -4133,7 +4565,218 @@ async function imprimirHojaInscritos(){
     const {evento,lista}=datos; if(lista.length===0){alert("No hay inscritos para imprimir.");return;}
     let filas=""; lista.forEach((s,i)=>{filas+=`<tr><td>${i+1}</td><td>${s.numero||""}</td><td>${s.nombre||""}</td><td>${s.categoria||""}</td><td>${s.telefono||""}</td><td>${s.edad||""}</td><td>${s.equipo||""}</td><td>${s.estado||"pendiente"}</td><td>${s.estadoPago||"debe"}</td><td>$${s.valorInscripcion||evento.valorInscripcion||""}</td></tr>`;});
     const pagoHTML=textoCuentaEvento(evento)||"Sin datos de pago configurados";
-    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Hoja de inscritos</title><style>body{font-family:Arial;margin:20px;color:#111}h1{text-align:center;margin:0}h2{text-align:center;margin:5px 0 15px}.info{margin:8px 0;font-size:14px}.pago{border:2px solid #111;background:#fff7ed;padding:10px;margin:12px 0;font-size:14px;font-weight:bold}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #444;padding:6px;text-align:center}th{background:#111;color:white}.credit{text-align:center;margin-top:15px;font-size:11px;color:#555}</style></head><body><h1>🏁 HOJA DE INSCRITOS</h1><h2>${evento.nombre||"Evento"}</h2><div class="info"><b>Ciudad:</b> ${evento.ciudad||""} &nbsp; <b>Fecha:</b> ${evento.fecha||""} &nbsp; <b>Pista:</b> ${evento.pista||""}</div><div class="info"><b>Total inscritos:</b> ${lista.length}</div><div class="pago">💵 ${pagoHTML}</div><table><tr><th>#</th><th>Número</th><th>Piloto</th><th>Categoría</th><th>Teléfono</th><th>Edad</th><th>Equipo/Ciudad</th><th>Estado</th><th>Pago</th><th>Valor</th></tr>${filas}</table><div class="credit">Sistema desarrollado por Eduardo Tinizaray</div><script>window.print()<\/script></body></html>`;
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Hoja de inscritos</title><style>body{font-family:Arial;margin:20px;color:#111}h1{text-align:center;margin:0}h2{text-align:center;margin:5px 0 15px}.info{margin:8px 0;font-size:14px}.pago{border:2px solid #111;background:#fff7ed;padding:10px;margin:12px 0;font-size:14px;font-weight:bold}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #444;padding:6px;text-align:center}th{background:#111;color:white}.credit{text-align:center;margin-top:15px;font-size:11px;color:#555}</style></head><body><h1>🏁 HOJA DE INSCRITOS</h1><h2>${evento.nombre||"Evento"}</h2><div class="info"><b>Ciudad:</b> ${evento.ciudad||""} &nbsp; <b>Fecha:</b> ${evento.fecha||""} &nbsp; <b>Pista:</b> ${evento.pista||""}</div><div class="info"><b>Total inscritos:</b> ${lista.length}</div><div class="pago">💵 ${pagoHTML}</div><table><tr><th>#</th><th>Número</th><th>Piloto</th><th>Categoría</th><th>Teléfono</th><th>Edad</th><th>Equipo/Ciudad</th><th>Estado</th><th>Pago</th><th>Valor</th></tr>${filas}</table><div class="credit">Sistema desarrollado por Eduardo Tinizaray</div><script>window.print()<\/script>
+<script>
+/* ===== CAMBIOS FINALES: GENERAL Y BORRADO POR EVENTO ===== */
+(function(){
+  function esc(txt){return String(txt??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));}
+  function nombreEventoOption(id,e){
+    const fecha=e.fecha?e.fecha+" - ":"";
+    const nombre=e.nombre||"Evento";
+    const ciudad=e.ciudad?" - "+e.ciudad:"";
+    return `${fecha}${nombre}${ciudad}`;
+  }
+  window.cargarEventosReportesYBorrado=async function(){
+    try{
+      const selects=[document.getElementById("eventoGeneral"),document.getElementById("eventoBorrarCarreras")].filter(Boolean);
+      if(selects.length===0)return;
+      selects.forEach(sel=>sel.innerHTML='<option value="">Seleccione evento</option>');
+      const snap=await db.collection("eventos").orderBy("fecha","desc").limit(120).get();
+      let eventos=[];
+      snap.forEach(doc=>{const e=doc.data()||{}; if(!perteneceCliente(e))return; eventos.push({id:doc.id,...e});});
+      eventos.forEach(e=>{
+        const label=nombreEventoOption(e.id,e);
+        selects.forEach(sel=>{sel.innerHTML+=`<option value="${esc(e.id)}">${esc(label)}</option>`;});
+      });
+      const gen=document.getElementById("eventoGeneral");
+      if(gen && !gen.value && eventos.length>0){gen.value=eventos[0].id;}
+    }catch(error){console.warn("No se pudieron cargar eventos para reportes:",error.message);}
+  };
+
+  window.eventoGeneralSeleccionado=function(){
+    const sel=document.getElementById("eventoGeneral");
+    return sel?sel.value:"";
+  };
+
+  window.obtenerCompetenciasEvento=async function(){
+    const eventoId=eventoGeneralSeleccionado();
+    let competencias=[];
+    if(!eventoId)return competencias;
+    try{
+      const evDoc=await db.collection("eventos").doc(eventoId).get().catch(()=>null);
+      const evento=evDoc && evDoc.exists ? (evDoc.data()||{}) : {};
+      const snap=await db.collection("competencias").orderBy("actualizado","desc").limit(500).get();
+      snap.forEach(doc=>{
+        const c=doc.data()||{};
+        if(!perteneceCliente(c))return;
+        const coincideEvento = c.eventoId===eventoId || c.idEvento===eventoId;
+        const coincideFallback = !c.eventoId && evento.nombre && c.nombre===evento.nombre && (!evento.fecha || c.fecha===evento.fecha);
+        if(!coincideEvento && !coincideFallback)return;
+        competencias.push({
+          id:doc.id,
+          eventoId:eventoId,
+          eventoNombre:c.eventoNombre||evento.nombre||"",
+          fecha:c.fecha||evento.fecha||"",
+          nombre:c.nombre||"Competencia sin nombre",
+          categoria:c.categoria||"SIN CATEGORÍA",
+          vueltas:c.vueltas||"",
+          resultados:c.resultados||{manga1:[],manga2:[]},
+          pilotos:c.pilotos||[],
+          actualizado:c.actualizado||""
+        });
+      });
+    }catch(error){console.error("Error obteniendo competencias por evento:",error);}
+    return competencias;
+  };
+
+  window.obtenerTablaGeneral=async function(){
+    try{
+      const total={};
+      const competencias=await obtenerCompetenciasEvento();
+      competencias.forEach(c=>{
+        const categoriaCompetencia=c.categoria||"SIN CATEGORÍA";
+        const r=c.resultados||{manga1:[],manga2:[]};
+        function agregar(p,manga){
+          const categoria=p.categoria||categoriaCompetencia||"SIN CATEGORÍA";
+          const id=(p.id||("P_"+(p.numero||"")+"_"+(p.nombre||"")))+"_"+categoria;
+          if(!total[id]){
+            total[id]={id:p.id||id,numero:p.numero||"",nombre:p.nombre||"",categoria,manga1:0,manga2:0,posManga1:999,posManga2:999,puntos:0,competencias:0,mangas:0,_competencias:{},mejorPos:999};
+          }
+          if(manga===1){total[id].manga1+=p.puntos||0; total[id].posManga1=Math.min(total[id].posManga1,p.posicion||999);} 
+          else {total[id].manga2+=p.puntos||0; total[id].posManga2=Math.min(total[id].posManga2,p.posicion||999);} 
+          total[id].puntos+=p.puntos||0;
+          total[id].mejorPos=Math.min(total[id].mejorPos,p.posicion||999);
+          total[id]._competencias[c.id]=true;
+          total[id].competencias=Object.keys(total[id]._competencias).length;
+          total[id].mangas++;
+        }
+        (r.manga1||[]).forEach(p=>agregar(p,1));
+        (r.manga2||[]).forEach(p=>agregar(p,2));
+      });
+      return Object.values(total).sort((a,b)=>{
+        const cat=(a.categoria||"").localeCompare(b.categoria||""); if(cat!==0)return cat;
+        if(b.puntos!==a.puntos)return b.puntos-a.puntos;
+        if((b.manga2||0)!==(a.manga2||0))return (b.manga2||0)-(a.manga2||0);
+        return (a.mejorPos||999)-(b.mejorPos||999);
+      });
+    }catch(error){console.error("Error general por evento:",error); return [];}
+  };
+
+  window.actualizarSelectCategoriaGeneral=function(competencias,tabla){
+    const select=document.getElementById("categoriaGeneral"); if(!select)return;
+    const valorActual=select.value||"TODAS";
+    const set=new Set();
+    (competencias||[]).forEach(c=>set.add(c.categoria||"SIN CATEGORÍA"));
+    (tabla||[]).forEach(p=>set.add(p.categoria||"SIN CATEGORÍA"));
+    const cats=[...set].filter(Boolean).sort();
+    select.innerHTML='<option value="TODAS">TODAS LAS CATEGORÍAS</option>'+cats.map(cat=>`<option value="${esc(cat)}">${esc(cat)}</option>`).join("");
+    select.value=cats.includes(valorActual)?valorActual:"TODAS";
+  };
+
+  window.mostrarTablaGeneral=async function(){
+    const cont=document.getElementById("tablaGeneral"); if(!cont)return;
+    await cargarEventosReportesYBorrado();
+    const eventoId=eventoGeneralSeleccionado();
+    if(!eventoId){cont.innerHTML='<p class="nota">Seleccione un evento para ver reportes.</p>';return;}
+    const sel=document.getElementById("eventoGeneral");
+    const nombreEvento=sel?.options[sel.selectedIndex]?.text||"Evento";
+    cont.innerHTML="<p>Cargando reportes del evento seleccionado...</p>";
+    let competencias=await obtenerCompetenciasEvento();
+    let tabla=await obtenerTablaGeneral();
+    actualizarSelectCategoriaGeneral(competencias,tabla);
+    const categoriaFiltro=categoriaGeneralSeleccionada();
+    if(categoriaFiltro!=="TODAS"){
+      competencias=competencias.filter(c=>(c.categoria||"SIN CATEGORÍA")===categoriaFiltro);
+      tabla=tabla.filter(p=>(p.categoria||"SIN CATEGORÍA")===categoriaFiltro);
+    }
+    const tituloCategoria=categoriaFiltro==="TODAS"?"TODAS LAS CATEGORÍAS":categoriaFiltro;
+    let html=`<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">📅 REPORTE DEL EVENTO: ${esc(nombreEvento)} — ${esc(tituloCategoria)}</h2>`;
+    if(competencias.length>0){
+      html+='<table><tr><th>#</th><th>Fecha</th><th>Carrera</th><th>Categoría</th><th>Vueltas</th><th>Manga 1</th><th>Manga 2</th></tr>';
+      competencias.forEach((c,i)=>{const r=c.resultados||{manga1:[],manga2:[]}; html+=`<tr><td>${i+1}</td><td>${esc(c.fecha)}</td><td>${esc(c.nombre)}</td><td>${esc(c.categoria)}</td><td>${esc(c.vueltas||"-")}</td><td>${topTresManga(r.manga1)}</td><td>${topTresManga(r.manga2)}</td></tr>`;});
+      html+='</table><br>';
+    }else{
+      html+='<p>No hay carreras guardadas para este evento. Revisa que seleccionaste el evento al crear la competencia y que presionaste 💾 GUARDAR MANGA y 🏁 FINALIZAR COMPETENCIA.</p>';
+    }
+    if(tabla.length===0){html+='<p class="nota">La tabla general se llena cuando hay resultados guardados en Manga 1 o Manga 2.</p>'; cont.innerHTML=html; return;}
+    const grupos={}; tabla.forEach(p=>{const cat=p.categoria||"SIN CATEGORÍA"; (grupos[cat]||(grupos[cat]=[])).push(p);});
+    html+='<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">🏆 GENERAL POR CATEGORÍAS DEL EVENTO</h2>';
+    Object.keys(grupos).sort().forEach(cat=>{
+      const lista=grupos[cat].sort((a,b)=>b.puntos!==a.puntos?b.puntos-a.puntos:((b.manga2||0)!==(a.manga2||0)?(b.manga2||0)-(a.manga2||0):(a.mejorPos||999)-(b.mejorPos||999)));
+      const lider=lista[0];
+      html+=`<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">🏆 ${esc(cat)}</h2>`;
+      if(lider)html+=`<div style="background:#14532d;color:white;padding:8px;border-radius:8px;margin-bottom:6px"><b>🥇 Líder del evento:</b> #${esc(lider.numero)} ${esc(lider.nombre)} — ${lider.puntos} pts</div>`;
+      html+='<table><tr><th>Pos</th><th>N°</th><th>Piloto</th><th>M1 pts</th><th>M2 pts</th><th>Total pts</th><th>Mangas</th><th>Mejor pos</th></tr>';
+      lista.forEach((p,i)=>{const med=i===0?"🥇":i===1?"🥈":i===2?"🥉":""; html+=`<tr><td>${med} ${i+1}</td><td>${esc(p.numero)}</td><td>${esc(p.nombre)}</td><td>${p.manga1||0}</td><td>${p.manga2||0}</td><td><b>${p.puntos||0}</b></td><td>${p.mangas||0}</td><td>${p.mejorPos===999?"-":p.mejorPos}</td></tr>`;});
+      html+='</table><br>';
+    });
+    cont.innerHTML=html;
+  };
+
+  const oldGuardarCompetenciaFirebase=window.guardarCompetenciaFirebase;
+  if(typeof oldGuardarCompetenciaFirebase==="function"){
+    window.guardarCompetenciaFirebase=async function(){
+      await oldGuardarCompetenciaFirebase.apply(this,arguments);
+      await guardarEventoEnCompetenciaActual();
+    };
+  }
+  const oldGuardarCompetenciaFinal=window.guardarCompetencia;
+  if(typeof oldGuardarCompetenciaFinal==="function"){
+    window.guardarCompetencia=async function(){
+      const r=await oldGuardarCompetenciaFinal.apply(this,arguments);
+      await guardarEventoEnCompetenciaActual();
+      return r;
+    };
+  }
+
+  async function guardarEventoEnCompetenciaActual(){
+    try{
+      if(!competenciaId)return;
+      const sel=document.getElementById("eventoCarrera");
+      const eventoId=sel?.value||"";
+      if(!eventoId)return;
+      const evDoc=await db.collection("eventos").doc(eventoId).get().catch(()=>null);
+      const ev=evDoc&&evDoc.exists?(evDoc.data()||{}):{};
+      await db.collection("competencias").doc(competenciaId).set(datosConCliente({eventoId,eventoNombre:ev.nombre||document.getElementById("nombreCompetencia")?.value||"",eventoFecha:ev.fecha||document.getElementById("fechaCompetencia")?.value||"",actualizado:new Date().toISOString()}),{merge:true});
+    }catch(error){console.warn("No se pudo guardar evento en competencia:",error.message);}
+  }
+
+  window.borrarCarrerasPorEvento=async function(){
+    try{
+      if(usuarioRol!=="admin"){alert("Solo el administrador puede borrar carreras.");return;}
+      const eventoId=document.getElementById("eventoBorrarCarreras")?.value||"";
+      if(!eventoId){alert("Selecciona un evento para borrar sus carreras.");return;}
+      const texto=document.getElementById("eventoBorrarCarreras")?.selectedOptions?.[0]?.text||eventoId;
+      if(!confirm("¿Borrar TODAS las carreras guardadas del evento?\n\n"+texto+"\n\nEsto NO borra pilotos, categorías ni inscripciones."))return;
+      if(!confirm("Confirmación final: se borrarán competencias, mangas, vueltas y resultados de este evento."))return;
+      const snap=await db.collection("competencias").get();
+      const docs=[];
+      snap.forEach(doc=>{const c=doc.data()||{}; if(!perteneceCliente(c))return; if(c.eventoId===eventoId || c.idEvento===eventoId)docs.push(doc);});
+      if(docs.length===0){alert("No hay carreras guardadas para ese evento.");return;}
+      for(let i=0;i<docs.length;i+=400){const batch=db.batch(); docs.slice(i,i+400).forEach(d=>batch.delete(d.ref)); await batch.commit();}
+      if(competenciaId && docs.some(d=>d.id===competenciaId)){limpiarPantallaCarreraSinBorrarBase();}
+      await cargarCompetencias();
+      await mostrarTablaGeneral();
+      alert("✅ Carreras borradas del evento. Pilotos, categorías e inscripciones siguen guardados.");
+    }catch(error){alert("Error al borrar carreras por evento: "+error.message);}
+  };
+
+  // Para que el reporte por evento cargue al abrir General o Configuración.
+  const oldAbrirTab=window.abrirTab;
+  if(typeof oldAbrirTab==="function"){
+    window.abrirTab=function(id,btn){
+      const r=oldAbrirTab.apply(this,arguments);
+      if(id==="tabGeneral"){cargarEventosReportesYBorrado().then(()=>mostrarTablaGeneral());}
+      if(id==="tabConfig"){cargarEventosReportesYBorrado(); if(typeof cargarListaCategoriasAdmin==="function")cargarListaCategoriasAdmin();}
+      return r;
+    };
+  }
+  document.addEventListener("DOMContentLoaded",()=>{cargarEventosReportesYBorrado().then(()=>{if(document.getElementById("tabGeneral")?.classList.contains("activo"))mostrarTablaGeneral();});});
+  setTimeout(()=>cargarEventosReportesYBorrado(),1200);
+})();
+</script>
+
+</body></html>`;
     const w=window.open("","_blank"); w.document.open(); w.document.write(html); w.document.close();
   }catch(error){alert("Error al imprimir hoja: "+error.message);}
 }
@@ -4149,6 +4792,217 @@ async function descargarCSVInscritosEvento(){
 }
 </script>
 
+
+
+<script>
+/* ===== CAMBIOS FINALES: GENERAL Y BORRADO POR EVENTO ===== */
+(function(){
+  function esc(txt){return String(txt??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));}
+  function nombreEventoOption(id,e){
+    const fecha=e.fecha?e.fecha+" - ":"";
+    const nombre=e.nombre||"Evento";
+    const ciudad=e.ciudad?" - "+e.ciudad:"";
+    return `${fecha}${nombre}${ciudad}`;
+  }
+  window.cargarEventosReportesYBorrado=async function(){
+    try{
+      const selects=[document.getElementById("eventoGeneral"),document.getElementById("eventoBorrarCarreras")].filter(Boolean);
+      if(selects.length===0)return;
+      selects.forEach(sel=>sel.innerHTML='<option value="">Seleccione evento</option>');
+      const snap=await db.collection("eventos").orderBy("fecha","desc").limit(120).get();
+      let eventos=[];
+      snap.forEach(doc=>{const e=doc.data()||{}; if(!perteneceCliente(e))return; eventos.push({id:doc.id,...e});});
+      eventos.forEach(e=>{
+        const label=nombreEventoOption(e.id,e);
+        selects.forEach(sel=>{sel.innerHTML+=`<option value="${esc(e.id)}">${esc(label)}</option>`;});
+      });
+      const gen=document.getElementById("eventoGeneral");
+      if(gen && !gen.value && eventos.length>0){gen.value=eventos[0].id;}
+    }catch(error){console.warn("No se pudieron cargar eventos para reportes:",error.message);}
+  };
+
+  window.eventoGeneralSeleccionado=function(){
+    const sel=document.getElementById("eventoGeneral");
+    return sel?sel.value:"";
+  };
+
+  window.obtenerCompetenciasEvento=async function(){
+    const eventoId=eventoGeneralSeleccionado();
+    let competencias=[];
+    if(!eventoId)return competencias;
+    try{
+      const evDoc=await db.collection("eventos").doc(eventoId).get().catch(()=>null);
+      const evento=evDoc && evDoc.exists ? (evDoc.data()||{}) : {};
+      const snap=await db.collection("competencias").orderBy("actualizado","desc").limit(500).get();
+      snap.forEach(doc=>{
+        const c=doc.data()||{};
+        if(!perteneceCliente(c))return;
+        const coincideEvento = c.eventoId===eventoId || c.idEvento===eventoId;
+        const coincideFallback = !c.eventoId && evento.nombre && c.nombre===evento.nombre && (!evento.fecha || c.fecha===evento.fecha);
+        if(!coincideEvento && !coincideFallback)return;
+        competencias.push({
+          id:doc.id,
+          eventoId:eventoId,
+          eventoNombre:c.eventoNombre||evento.nombre||"",
+          fecha:c.fecha||evento.fecha||"",
+          nombre:c.nombre||"Competencia sin nombre",
+          categoria:c.categoria||"SIN CATEGORÍA",
+          vueltas:c.vueltas||"",
+          resultados:c.resultados||{manga1:[],manga2:[]},
+          pilotos:c.pilotos||[],
+          actualizado:c.actualizado||""
+        });
+      });
+    }catch(error){console.error("Error obteniendo competencias por evento:",error);}
+    return competencias;
+  };
+
+  window.obtenerTablaGeneral=async function(){
+    try{
+      const total={};
+      const competencias=await obtenerCompetenciasEvento();
+      competencias.forEach(c=>{
+        const categoriaCompetencia=c.categoria||"SIN CATEGORÍA";
+        const r=c.resultados||{manga1:[],manga2:[]};
+        function agregar(p,manga){
+          const categoria=p.categoria||categoriaCompetencia||"SIN CATEGORÍA";
+          const id=(p.id||("P_"+(p.numero||"")+"_"+(p.nombre||"")))+"_"+categoria;
+          if(!total[id]){
+            total[id]={id:p.id||id,numero:p.numero||"",nombre:p.nombre||"",categoria,manga1:0,manga2:0,posManga1:999,posManga2:999,puntos:0,competencias:0,mangas:0,_competencias:{},mejorPos:999};
+          }
+          if(manga===1){total[id].manga1+=p.puntos||0; total[id].posManga1=Math.min(total[id].posManga1,p.posicion||999);} 
+          else {total[id].manga2+=p.puntos||0; total[id].posManga2=Math.min(total[id].posManga2,p.posicion||999);} 
+          total[id].puntos+=p.puntos||0;
+          total[id].mejorPos=Math.min(total[id].mejorPos,p.posicion||999);
+          total[id]._competencias[c.id]=true;
+          total[id].competencias=Object.keys(total[id]._competencias).length;
+          total[id].mangas++;
+        }
+        (r.manga1||[]).forEach(p=>agregar(p,1));
+        (r.manga2||[]).forEach(p=>agregar(p,2));
+      });
+      return Object.values(total).sort((a,b)=>{
+        const cat=(a.categoria||"").localeCompare(b.categoria||""); if(cat!==0)return cat;
+        if(b.puntos!==a.puntos)return b.puntos-a.puntos;
+        if((b.manga2||0)!==(a.manga2||0))return (b.manga2||0)-(a.manga2||0);
+        return (a.mejorPos||999)-(b.mejorPos||999);
+      });
+    }catch(error){console.error("Error general por evento:",error); return [];}
+  };
+
+  window.actualizarSelectCategoriaGeneral=function(competencias,tabla){
+    const select=document.getElementById("categoriaGeneral"); if(!select)return;
+    const valorActual=select.value||"TODAS";
+    const set=new Set();
+    (competencias||[]).forEach(c=>set.add(c.categoria||"SIN CATEGORÍA"));
+    (tabla||[]).forEach(p=>set.add(p.categoria||"SIN CATEGORÍA"));
+    const cats=[...set].filter(Boolean).sort();
+    select.innerHTML='<option value="TODAS">TODAS LAS CATEGORÍAS</option>'+cats.map(cat=>`<option value="${esc(cat)}">${esc(cat)}</option>`).join("");
+    select.value=cats.includes(valorActual)?valorActual:"TODAS";
+  };
+
+  window.mostrarTablaGeneral=async function(){
+    const cont=document.getElementById("tablaGeneral"); if(!cont)return;
+    await cargarEventosReportesYBorrado();
+    const eventoId=eventoGeneralSeleccionado();
+    if(!eventoId){cont.innerHTML='<p class="nota">Seleccione un evento para ver reportes.</p>';return;}
+    const sel=document.getElementById("eventoGeneral");
+    const nombreEvento=sel?.options[sel.selectedIndex]?.text||"Evento";
+    cont.innerHTML="<p>Cargando reportes del evento seleccionado...</p>";
+    let competencias=await obtenerCompetenciasEvento();
+    let tabla=await obtenerTablaGeneral();
+    actualizarSelectCategoriaGeneral(competencias,tabla);
+    const categoriaFiltro=categoriaGeneralSeleccionada();
+    if(categoriaFiltro!=="TODAS"){
+      competencias=competencias.filter(c=>(c.categoria||"SIN CATEGORÍA")===categoriaFiltro);
+      tabla=tabla.filter(p=>(p.categoria||"SIN CATEGORÍA")===categoriaFiltro);
+    }
+    const tituloCategoria=categoriaFiltro==="TODAS"?"TODAS LAS CATEGORÍAS":categoriaFiltro;
+    let html=`<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">📅 REPORTE DEL EVENTO: ${esc(nombreEvento)} — ${esc(tituloCategoria)}</h2>`;
+    if(competencias.length>0){
+      html+='<table><tr><th>#</th><th>Fecha</th><th>Carrera</th><th>Categoría</th><th>Vueltas</th><th>Manga 1</th><th>Manga 2</th></tr>';
+      competencias.forEach((c,i)=>{const r=c.resultados||{manga1:[],manga2:[]}; html+=`<tr><td>${i+1}</td><td>${esc(c.fecha)}</td><td>${esc(c.nombre)}</td><td>${esc(c.categoria)}</td><td>${esc(c.vueltas||"-")}</td><td>${topTresManga(r.manga1)}</td><td>${topTresManga(r.manga2)}</td></tr>`;});
+      html+='</table><br>';
+    }else{
+      html+='<p>No hay carreras guardadas para este evento. Revisa que seleccionaste el evento al crear la competencia y que presionaste 💾 GUARDAR MANGA y 🏁 FINALIZAR COMPETENCIA.</p>';
+    }
+    if(tabla.length===0){html+='<p class="nota">La tabla general se llena cuando hay resultados guardados en Manga 1 o Manga 2.</p>'; cont.innerHTML=html; return;}
+    const grupos={}; tabla.forEach(p=>{const cat=p.categoria||"SIN CATEGORÍA"; (grupos[cat]||(grupos[cat]=[])).push(p);});
+    html+='<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">🏆 GENERAL POR CATEGORÍAS DEL EVENTO</h2>';
+    Object.keys(grupos).sort().forEach(cat=>{
+      const lista=grupos[cat].sort((a,b)=>b.puntos!==a.puntos?b.puntos-a.puntos:((b.manga2||0)!==(a.manga2||0)?(b.manga2||0)-(a.manga2||0):(a.mejorPos||999)-(b.mejorPos||999)));
+      const lider=lista[0];
+      html+=`<h2 style="background:#020617;color:#facc15;padding:8px;border-radius:8px">🏆 ${esc(cat)}</h2>`;
+      if(lider)html+=`<div style="background:#14532d;color:white;padding:8px;border-radius:8px;margin-bottom:6px"><b>🥇 Líder del evento:</b> #${esc(lider.numero)} ${esc(lider.nombre)} — ${lider.puntos} pts</div>`;
+      html+='<table><tr><th>Pos</th><th>N°</th><th>Piloto</th><th>M1 pts</th><th>M2 pts</th><th>Total pts</th><th>Mangas</th><th>Mejor pos</th></tr>';
+      lista.forEach((p,i)=>{const med=i===0?"🥇":i===1?"🥈":i===2?"🥉":""; html+=`<tr><td>${med} ${i+1}</td><td>${esc(p.numero)}</td><td>${esc(p.nombre)}</td><td>${p.manga1||0}</td><td>${p.manga2||0}</td><td><b>${p.puntos||0}</b></td><td>${p.mangas||0}</td><td>${p.mejorPos===999?"-":p.mejorPos}</td></tr>`;});
+      html+='</table><br>';
+    });
+    cont.innerHTML=html;
+  };
+
+  const oldGuardarCompetenciaFirebase=window.guardarCompetenciaFirebase;
+  if(typeof oldGuardarCompetenciaFirebase==="function"){
+    window.guardarCompetenciaFirebase=async function(){
+      await oldGuardarCompetenciaFirebase.apply(this,arguments);
+      await guardarEventoEnCompetenciaActual();
+    };
+  }
+  const oldGuardarCompetenciaFinal=window.guardarCompetencia;
+  if(typeof oldGuardarCompetenciaFinal==="function"){
+    window.guardarCompetencia=async function(){
+      const r=await oldGuardarCompetenciaFinal.apply(this,arguments);
+      await guardarEventoEnCompetenciaActual();
+      return r;
+    };
+  }
+
+  async function guardarEventoEnCompetenciaActual(){
+    try{
+      if(!competenciaId)return;
+      const sel=document.getElementById("eventoCarrera");
+      const eventoId=sel?.value||"";
+      if(!eventoId)return;
+      const evDoc=await db.collection("eventos").doc(eventoId).get().catch(()=>null);
+      const ev=evDoc&&evDoc.exists?(evDoc.data()||{}):{};
+      await db.collection("competencias").doc(competenciaId).set(datosConCliente({eventoId,eventoNombre:ev.nombre||document.getElementById("nombreCompetencia")?.value||"",eventoFecha:ev.fecha||document.getElementById("fechaCompetencia")?.value||"",actualizado:new Date().toISOString()}),{merge:true});
+    }catch(error){console.warn("No se pudo guardar evento en competencia:",error.message);}
+  }
+
+  window.borrarCarrerasPorEvento=async function(){
+    try{
+      if(usuarioRol!=="admin"){alert("Solo el administrador puede borrar carreras.");return;}
+      const eventoId=document.getElementById("eventoBorrarCarreras")?.value||"";
+      if(!eventoId){alert("Selecciona un evento para borrar sus carreras.");return;}
+      const texto=document.getElementById("eventoBorrarCarreras")?.selectedOptions?.[0]?.text||eventoId;
+      if(!confirm("¿Borrar TODAS las carreras guardadas del evento?\n\n"+texto+"\n\nEsto NO borra pilotos, categorías ni inscripciones."))return;
+      if(!confirm("Confirmación final: se borrarán competencias, mangas, vueltas y resultados de este evento."))return;
+      const snap=await db.collection("competencias").get();
+      const docs=[];
+      snap.forEach(doc=>{const c=doc.data()||{}; if(!perteneceCliente(c))return; if(c.eventoId===eventoId || c.idEvento===eventoId)docs.push(doc);});
+      if(docs.length===0){alert("No hay carreras guardadas para ese evento.");return;}
+      for(let i=0;i<docs.length;i+=400){const batch=db.batch(); docs.slice(i,i+400).forEach(d=>batch.delete(d.ref)); await batch.commit();}
+      if(competenciaId && docs.some(d=>d.id===competenciaId)){limpiarPantallaCarreraSinBorrarBase();}
+      await cargarCompetencias();
+      await mostrarTablaGeneral();
+      alert("✅ Carreras borradas del evento. Pilotos, categorías e inscripciones siguen guardados.");
+    }catch(error){alert("Error al borrar carreras por evento: "+error.message);}
+  };
+
+  // Para que el reporte por evento cargue al abrir General o Configuración.
+  const oldAbrirTab=window.abrirTab;
+  if(typeof oldAbrirTab==="function"){
+    window.abrirTab=function(id,btn){
+      const r=oldAbrirTab.apply(this,arguments);
+      if(id==="tabGeneral"){cargarEventosReportesYBorrado().then(()=>mostrarTablaGeneral());}
+      if(id==="tabConfig"){cargarEventosReportesYBorrado(); if(typeof cargarListaCategoriasAdmin==="function")cargarListaCategoriasAdmin();}
+      return r;
+    };
+  }
+  document.addEventListener("DOMContentLoaded",()=>{cargarEventosReportesYBorrado().then(()=>{if(document.getElementById("tabGeneral")?.classList.contains("activo"))mostrarTablaGeneral();});});
+  setTimeout(()=>cargarEventosReportesYBorrado(),1200);
+})();
+</script>
 
 </body>
 </html>
