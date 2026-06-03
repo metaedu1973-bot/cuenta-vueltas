@@ -660,6 +660,17 @@ th{background:#090909;color:white;border-color:#333}.nota{font-size:12px;color:#
 
 <section id="tabConfig" class="tabContenido">
 
+<div class="panel" id="panelDescargasAdmin">
+<h2>⬇️ Descargas / Respaldo</h2>
+<p class="nota">Desde aquí descargas la hoja de inscripciones del evento seleccionado y un respaldo completo del sistema.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px">
+  <button class="amarillo" onclick="imprimirHojaInscritos()">🖨️ IMPRIMIR HOJA INSCRITOS</button>
+  <button class="azul" onclick="descargarCSVInscritosEvento()">⬇️ DESCARGAR INSCRITOS CSV</button>
+  <button class="morado" onclick="descargarRespaldoSistema()">💾 DESCARGAR RESPALDO JSON</button>
+</div>
+<p class="nota">Primero selecciona el evento en la pestaña Eventos → Inscritos por Evento.</p>
+</div>
+
 <div class="panel" id="panelLinksSistema">
 <h2>🔗 Enlaces del Sistema</h2>
 <p class="nota">Usa estos botones para compartir por WhatsApp el link de inscripción, el link del sistema o el visualizador.</p>
@@ -2261,7 +2272,7 @@ async function cargarEventos(){
 
     let html=`<p class="nota">Edita el evento directamente en la tabla. Si está repetido, elimina el duplicado desde aquí.</p>
     <table><tr>
-      <th>#</th><th>Evento</th><th>Ciudad</th><th>Fecha</th><th>Pista</th><th>Estado</th><th>Categorías</th><th>Valor</th><th>WhatsApp Org.</th><th>WhatsApp Tesorero</th><th>Cuenta</th><th>Acciones</th>
+      <th>#</th><th>Evento</th><th>Ciudad</th><th>Fecha</th><th>Pista</th><th>Estado</th><th>Categorías</th><th>Valor</th><th>WhatsApp Org.</th><th>WhatsApp Tesorero</th><th>Datos de cuenta</th><th>Acciones</th>
     </tr>`;
 
     eventos.forEach((e,i)=>{
@@ -2279,7 +2290,13 @@ async function cargarEventos(){
         <td><input id="ev_val_${e.docId}" type="number" value="${e.valorInscripcion||""}" style="width:80px;padding:6px;margin:0;font-size:12px"></td>
         <td><input id="ev_worg_${e.docId}" type="text" value="${e.whatsappPagos||e.whatsappOrganizador||""}" placeholder="593..." style="min-width:125px;padding:6px;margin:0;font-size:12px"></td>
         <td><input id="ev_wtes_${e.docId}" type="text" value="${e.whatsappTesorero||e.tesoreroWhatsApp||e.telefonoTesorero||""}" placeholder="593..." style="min-width:125px;padding:6px;margin:0;font-size:12px"></td>
-        <td><input id="ev_cue_${e.docId}" type="text" value="${e.numeroCuenta||""}" style="min-width:130px;padding:6px;margin:0;font-size:12px"></td>
+        <td>
+          <input id="ev_ban_${e.docId}" type="text" value="${e.banco||""}" placeholder="Banco" style="min-width:150px;padding:6px;margin:0 0 4px;font-size:12px">
+          <input id="ev_ben_${e.docId}" type="text" value="${e.beneficiario||""}" placeholder="Titular" style="min-width:150px;padding:6px;margin:0 0 4px;font-size:12px">
+          <input id="ev_tip_${e.docId}" type="text" value="${e.tipoCuenta||""}" placeholder="Tipo cuenta" style="min-width:120px;padding:6px;margin:0 0 4px;font-size:12px">
+          <input id="ev_cue_${e.docId}" type="text" value="${e.numeroCuenta||""}" placeholder="N° cuenta" style="min-width:130px;padding:6px;margin:0 0 4px;font-size:12px">
+          <input id="ev_not_${e.docId}" type="text" value="${e.notaPago||""}" placeholder="Nota pago" style="min-width:170px;padding:6px;margin:0;font-size:12px">
+        </td>
         <td><div class="accionesSolicitud">
           <button class="gris btnMini" onclick='editarEventoFormulario(${JSON.stringify(e.docId)})'>✏️ Editar</button>
           <button class="amarillo btnMini" onclick='guardarEventoFila(${JSON.stringify(e.docId)})'>💾 Guardar</button>
@@ -2312,9 +2329,13 @@ async function guardarEventoFila(id){
     const valorInscripcion=document.getElementById("ev_val_"+id)?.value||"";
     const whatsappPagos=(document.getElementById("ev_worg_"+id)?.value||"").trim();
     const whatsappTesorero=(document.getElementById("ev_wtes_"+id)?.value||"").trim();
+    const banco=(document.getElementById("ev_ban_"+id)?.value||"").trim();
+    const beneficiario=(document.getElementById("ev_ben_"+id)?.value||"").trim();
+    const tipoCuenta=(document.getElementById("ev_tip_"+id)?.value||"").trim();
     const numeroCuenta=(document.getElementById("ev_cue_"+id)?.value||"").trim();
+    const notaPago=(document.getElementById("ev_not_"+id)?.value||"").trim();
     if(!nombre||!ciudad||!fecha){alert("Nombre, ciudad y fecha son obligatorios.");return;}
-    await db.collection("eventos").doc(id).set(datosConCliente({nombre,ciudad,fecha,pista,estado,categorias,inscripcionesAbiertas:estado==="abierto",visualizadorActivo:estado!=="finalizado",valorInscripcion,whatsappPagos,whatsappOrganizador:whatsappPagos,whatsappTesorero,numeroCuenta,actualizado:new Date().toISOString()}),{merge:true});
+    await db.collection("eventos").doc(id).set(datosConCliente({nombre,ciudad,fecha,pista,estado,categorias,inscripcionesAbiertas:estado==="abierto",visualizadorActivo:estado!=="finalizado",valorInscripcion,whatsappPagos,whatsappOrganizador:whatsappPagos,whatsappTesorero,banco,beneficiario,tipoCuenta,numeroCuenta,notaPago,actualizado:new Date().toISOString()}),{merge:true});
     for(const cat of categorias){
       await db.collection("categorias").doc(idCategoria(cat)).set(datosConCliente({id:idCategoria(cat),nombre:cat,actualizado:new Date().toISOString()}),{merge:true});
     }
@@ -3912,6 +3933,103 @@ async function cargarEstadoVisualizadorAdmin(){
 window.addEventListener("DOMContentLoaded",()=>{
   setTimeout(cargarEstadoVisualizadorAdmin,900);
 });
+
+
+/* ===== MEJORAS INSCRIPCIONES / RESPALDO - 2026 ===== */
+function escapeCSV(valor){return String(valor??"").replaceAll(";",",").replaceAll("\n"," ").replaceAll("\r"," ");}
+function textoCuentaEvento(evento={}){
+  const partes=[];
+  if(evento.valorInscripcion)partes.push("Valor inscripción: $"+evento.valorInscripcion);
+  if(evento.banco)partes.push("Banco: "+evento.banco);
+  if(evento.beneficiario)partes.push("Titular: "+evento.beneficiario);
+  if(evento.tipoCuenta)partes.push("Tipo: "+evento.tipoCuenta);
+  if(evento.numeroCuenta)partes.push("Cuenta: "+evento.numeroCuenta);
+  if(evento.whatsappPagos)partes.push("WhatsApp pagos: "+evento.whatsappPagos);
+  if(evento.whatsappTesorero)partes.push("WhatsApp tesorero: "+evento.whatsappTesorero);
+  if(evento.notaPago)partes.push("Nota: "+evento.notaPago);
+  return partes.join(" | ");
+}
+
+async function descargarRespaldoSistema(){
+  try{
+    if(usuarioRol!=="admin"){alert("Solo ADMIN puede descargar respaldo.");return;}
+    const colecciones=["clientes","eventos","solicitudesPilotos","pilotos","categorias","competencias","penalizaciones","configuracion"];
+    const respaldo={clienteId:clienteIdActual||"eduardo_tinizaray",generado:new Date().toISOString(),colecciones:{}};
+    for(const col of colecciones){
+      respaldo.colecciones[col]=[];
+      try{
+        const snap=await db.collection(col).get();
+        snap.forEach(doc=>{const data=doc.data()||{}; if(col==="clientes" || perteneceCliente(data)) respaldo.colecciones[col].push({id:doc.id,...data});});
+      }catch(e){respaldo.colecciones[col+"_error"]=e.message;}
+    }
+    const blob=new Blob([JSON.stringify(respaldo,null,2)],{type:"application/json;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="respaldo_cuenta_vueltas_"+(clienteIdActual||"cliente")+"_"+new Date().toISOString().slice(0,10)+".json";
+    a.click();
+    URL.revokeObjectURL(url);
+    alert("✅ Respaldo descargado correctamente.");
+  }catch(error){alert("Error al descargar respaldo: "+error.message);}
+}
+
+// Ya no se solicita foto ni comprobante en la ficha de admin.
+function obtenerComprobanteSolicitud(s={}){return "";}
+function botonComprobanteSolicitud(s={}){return '<span style="color:#64748b;font-weight:bold">No se solicita</span>';}
+function verComprobantePago(src){alert("Ahora no se solicita comprobante ni foto en la inscripción.");}
+
+async function mostrarInscritosEvento(){
+  const select=document.getElementById("eventoSeleccionadoInscritos");
+  const cont=document.getElementById("tablaInscritosEvento");
+  const resumen=document.getElementById("resumenInscritosEvento");
+  if(!select||!cont)return;
+  const eventoId=select.value;
+  if(!eventoId){cont.innerHTML="<p>Seleccione un evento.</p>";if(resumen)resumen.innerHTML="";return;}
+  try{
+    cont.innerHTML="<p>Cargando inscritos...</p>";
+    const evDoc=await db.collection("eventos").doc(eventoId).get();
+    const evento=evDoc.exists?evDoc.data():{};
+    const snap=await db.collection("solicitudesPilotos").where("eventoId","==",eventoId).get();
+    let lista=[];
+    snap.forEach(doc=>{const s=doc.data(); if(!perteneceCliente(s))return; if(["pendiente","aprobado","actualizado"].includes(s.estado||"pendiente"))lista.push({docId:doc.id,...s});});
+    const conteo={}; lista.forEach(s=>{const cat=normalizar(s.categoria||"SIN CATEGORÍA");conteo[cat]=(conteo[cat]||0)+1;});
+    if(resumen){
+      let boxes=`<div class="contadorGrid"><div class="contadorBox"><b>${lista.length}</b>Total inscritos</div><div class="contadorBox"><b>$${evento.valorInscripcion||"0"}</b>Valor inscripción</div><div class="contadorBox"><b>${evento.numeroCuenta||"-"}</b>Cuenta depósito</div>`;
+      Object.keys(conteo).sort().forEach(cat=>{boxes+=`<div class="contadorBox"><b>${conteo[cat]}</b>${cat}</div>`;}); boxes+="</div>";
+      boxes+=`<div style="background:#020617;border:1px solid rgba(250,204,21,.35);border-radius:12px;padding:10px;margin-top:8px;color:#facc15;font-weight:bold">💵 ${textoCuentaEvento(evento)||"Sin datos de pago configurados"}</div>`;
+      resumen.innerHTML=boxes;
+    }
+    if(lista.length===0){cont.innerHTML="<p>No hay inscritos para este evento todavía.</p>";return;}
+    let html=`<table><tr><th>#</th><th>Número</th><th>Piloto</th><th>Categoría</th><th>Teléfono</th><th>Edad</th><th>Equipo/Ciudad</th><th>Marca</th><th>Modelo</th><th>Cilindraje</th><th>Valor</th><th>Cuenta depósito</th><th>Estado</th><th>Pago</th><th>Acciones pago</th></tr>`;
+    lista.sort((a,b)=>(a.categoria||"").localeCompare(b.categoria||"") || Number(a.numero||0)-Number(b.numero||0));
+    lista.forEach((s,i)=>{
+      const pago=s.estadoPago||"debe"; const colorPago=pago==="pagado"?"#16a34a":pago==="exonerado"?"#2563eb":"#f59e0b";
+      html+=`<tr><td>${i+1}</td><td>${s.numero||""}</td><td>${s.nombre||""}</td><td>${s.categoria||""}</td><td>${s.telefono||""}</td><td>${s.edad||""}</td><td>${s.equipo||""}</td><td>${s.marca||""}</td><td>${s.modelo||""}</td><td>${s.cilindraje||""}</td><td>$${s.valorInscripcion||evento.valorInscripcion||""}</td><td>${evento.banco||""}<br>${evento.tipoCuenta||""} ${evento.numeroCuenta||""}<br>${evento.beneficiario||""}</td><td>${s.estado||"pendiente"}</td><td><b style="color:${colorPago}">${pago.toUpperCase()}</b></td><td><button class="btnMini azul" onclick="marcarPagoInscrito('${s.docId}','pagado')">Pagado</button><button class="btnMini amarillo" onclick="marcarPagoInscrito('${s.docId}','debe')">Debe</button><button class="btnMini morado" onclick="marcarPagoInscrito('${s.docId}','exonerado')">Exonerar</button></td></tr>`;
+    });
+    html+="</table>"; cont.innerHTML=html;
+  }catch(error){cont.innerHTML="<p>Error al cargar inscritos: "+error.message+"</p>";}
+}
+
+async function imprimirHojaInscritos(){
+  try{
+    const datos=await obtenerDatosInscritosEvento(); if(!datos)return;
+    const {evento,lista}=datos; if(lista.length===0){alert("No hay inscritos para imprimir.");return;}
+    let filas=""; lista.forEach((s,i)=>{filas+=`<tr><td>${i+1}</td><td>${s.numero||""}</td><td>${s.nombre||""}</td><td>${s.categoria||""}</td><td>${s.telefono||""}</td><td>${s.edad||""}</td><td>${s.equipo||""}</td><td>${s.estado||"pendiente"}</td><td>${s.estadoPago||"debe"}</td><td>$${s.valorInscripcion||evento.valorInscripcion||""}</td></tr>`;});
+    const pagoHTML=textoCuentaEvento(evento)||"Sin datos de pago configurados";
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Hoja de inscritos</title><style>body{font-family:Arial;margin:20px;color:#111}h1{text-align:center;margin:0}h2{text-align:center;margin:5px 0 15px}.info{margin:8px 0;font-size:14px}.pago{border:2px solid #111;background:#fff7ed;padding:10px;margin:12px 0;font-size:14px;font-weight:bold}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #444;padding:6px;text-align:center}th{background:#111;color:white}.credit{text-align:center;margin-top:15px;font-size:11px;color:#555}</style></head><body><h1>🏁 HOJA DE INSCRITOS</h1><h2>${evento.nombre||"Evento"}</h2><div class="info"><b>Ciudad:</b> ${evento.ciudad||""} &nbsp; <b>Fecha:</b> ${evento.fecha||""} &nbsp; <b>Pista:</b> ${evento.pista||""}</div><div class="info"><b>Total inscritos:</b> ${lista.length}</div><div class="pago">💵 ${pagoHTML}</div><table><tr><th>#</th><th>Número</th><th>Piloto</th><th>Categoría</th><th>Teléfono</th><th>Edad</th><th>Equipo/Ciudad</th><th>Estado</th><th>Pago</th><th>Valor</th></tr>${filas}</table><div class="credit">Sistema desarrollado por Eduardo Tinizaray</div><script>window.print()<\/script></body></html>`;
+    const w=window.open("","_blank"); w.document.open(); w.document.write(html); w.document.close();
+  }catch(error){alert("Error al imprimir hoja: "+error.message);}
+}
+
+async function descargarCSVInscritosEvento(){
+  try{
+    const datos=await obtenerDatosInscritosEvento(); if(!datos)return;
+    const {evento,lista}=datos; if(lista.length===0){alert("No hay inscritos para descargar.");return;}
+    let csv="Evento;Ciudad;Fecha;Pista;Valor Inscripcion;Banco;Titular;Tipo Cuenta;Numero Cuenta;WhatsApp Pagos;Numero;Piloto;Categoria;Telefono;Edad;Equipo/Ciudad;Estado;Pago\n";
+    lista.forEach(s=>{const fila=[evento.nombre||"",evento.ciudad||"",evento.fecha||"",evento.pista||"",s.valorInscripcion||evento.valorInscripcion||"",evento.banco||"",evento.beneficiario||"",evento.tipoCuenta||"",evento.numeroCuenta||"",evento.whatsappPagos||"",s.numero||"",s.nombre||"",s.categoria||"",s.telefono||"",s.edad||"",s.equipo||"",s.estado||"pendiente",s.estadoPago||"debe"]; csv+=fila.map(escapeCSV).join(";")+"\n";});
+    const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download="inscritos_"+String(evento.nombre||"evento").replace(/[^a-z0-9]/gi,"_")+".csv"; a.click(); URL.revokeObjectURL(url);
+  }catch(error){alert("Error al descargar CSV: "+error.message);}
+}
 </script>
 
 
