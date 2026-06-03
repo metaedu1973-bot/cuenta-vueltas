@@ -746,6 +746,52 @@ th{background:#090909;color:white;border-color:#333}.nota{font-size:12px;color:#
 </div>
 </section>
 <script>
+  async function descargarRespaldoSistema(){
+  try{
+
+    const respaldo={
+      pilotos:[],
+      competencias:[],
+      eventos:[],
+      solicitudes:[]
+    };
+
+    const pilotosSnap=await db.collection("pilotos").get();
+    pilotosSnap.forEach(doc=>{
+      respaldo.pilotos.push(doc.data());
+    });
+
+    const compSnap=await db.collection("competencias").get();
+    compSnap.forEach(doc=>{
+      respaldo.competencias.push(doc.data());
+    });
+
+    const eventosSnap=await db.collection("eventos").get();
+    eventosSnap.forEach(doc=>{
+      respaldo.eventos.push(doc.data());
+    });
+
+    const solicitudesSnap=await db.collection("solicitudesPilotos").get();
+    solicitudesSnap.forEach(doc=>{
+      respaldo.solicitudes.push(doc.data());
+    });
+
+    const blob=new Blob(
+      [JSON.stringify(respaldo,null,2)],
+      {type:"application/json"}
+    );
+
+    const link=document.createElement("a");
+    link.href=URL.createObjectURL(blob);
+    link.download="respaldo_campeonato.json";
+    link.click();
+
+    alert("✅ Respaldo descargado correctamente");
+
+  }catch(error){
+    alert("❌ Error creando respaldo: "+error.message);
+  }
+}
 const firebaseConfig={apiKey:"AIzaSyCaoe6R_Qbjl7TACUGgLxPd5oWfKp8oW-o",authDomain:"cuenta-vueltas-59c99.firebaseapp.com",projectId:"cuenta-vueltas-59c99",storageBucket:"cuenta-vueltas-59c99.firebasestorage.app",messagingSenderId:"425422890967",appId:"1:425422890967:web:874535c5dc1e44c5c2cd92",measurementId:"G-F5EE9VRLHB"};
 firebase.initializeApp(firebaseConfig);const db=firebase.firestore();const auth=firebase.auth();
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
@@ -1365,6 +1411,56 @@ function copiarLinkSistema(){
 }
 
 function copiarLinkVisualizador(){
+  async function descargarRespaldoSistema(){
+  try{
+
+    const respaldo={
+      pilotos:[],
+      competencias:[],
+      eventos:[],
+      solicitudes:[]
+    };
+
+    const pilotosSnap=await db.collection("pilotos").get();
+    pilotosSnap.forEach(doc=>{
+      respaldo.pilotos.push(doc.data());
+    });
+
+    const competenciasSnap=await db.collection("competencias").get();
+    competenciasSnap.forEach(doc=>{
+      respaldo.competencias.push(doc.data());
+    });
+
+    const eventosSnap=await db.collection("eventos").get();
+    eventosSnap.forEach(doc=>{
+      respaldo.eventos.push(doc.data());
+    });
+
+    const solicitudesSnap=await db.collection("solicitudesPilotos").get();
+    solicitudesSnap.forEach(doc=>{
+      respaldo.solicitudes.push(doc.data());
+    });
+
+    const blob=new Blob(
+      [JSON.stringify(respaldo,null,2)],
+      {type:"application/json"}
+    );
+
+    const link=document.createElement("a");
+    link.href=URL.createObjectURL(blob);
+    link.download="respaldo_campeonato.json";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    alert("✅ Respaldo descargado correctamente");
+
+  }catch(error){
+    console.error(error);
+    alert("❌ Error creando respaldo: " + error.message);
+  }
+}
   const link = window.location.origin + "/publico.html";
   navigator.clipboard.writeText(link).then(()=>{
     alert("✅ Link del visualizador copiado:\n" + link);
@@ -3952,73 +4048,25 @@ function textoCuentaEvento(evento={}){
 
 async function descargarRespaldoSistema(){
   try{
-    const cliente=rutaCliente ? rutaCliente() : (clienteIdActual || "eduardo_tinizaray");
-    const respaldo={
-      sistema:"Cuenta Vueltas",
-      clienteId:cliente,
-      generado:new Date().toISOString(),
-      pilotos:[],
-      categorias:[],
-      eventos:[],
-      solicitudesPilotos:[],
-      competencias:[],
-      penalizaciones:[],
-      clientes:[],
-      localStorage:{}
-    };
-
-    const colecciones=[
-      {nombre:"pilotos", destino:"pilotos"},
-      {nombre:"categorias", destino:"categorias"},
-      {nombre:"eventos", destino:"eventos"},
-      {nombre:"solicitudesPilotos", destino:"solicitudesPilotos"},
-      {nombre:"competencias", destino:"competencias"},
-      {nombre:"penalizaciones", destino:"penalizaciones"},
-      {nombre:"clientes", destino:"clientes"}
-    ];
-
-    for(const item of colecciones){
+    if(usuarioRol!=="admin"){alert("Solo ADMIN puede descargar respaldo.");return;}
+    const colecciones=["clientes","eventos","solicitudesPilotos","pilotos","categorias","competencias","penalizaciones","configuracion"];
+    const respaldo={clienteId:clienteIdActual||"eduardo_tinizaray",generado:new Date().toISOString(),colecciones:{}};
+    for(const col of colecciones){
+      respaldo.colecciones[col]=[];
       try{
-        const snap=await db.collection(item.nombre).get();
-        snap.forEach(doc=>{
-          const data=doc.data()||{};
-          if(item.nombre==="clientes"){
-            if(doc.id===cliente || data.id===cliente || data.clienteId===cliente){
-              respaldo[item.destino].push({id:doc.id,...data});
-            }
-          }else{
-            if(!data.clienteId || data.clienteId===cliente || cliente==="eduardo_tinizaray"){
-              respaldo[item.destino].push({id:doc.id,...data});
-            }
-          }
-        });
-      }catch(e){
-        respaldo[item.destino+"_error"]=e.message;
-      }
+        const snap=await db.collection(col).get();
+        snap.forEach(doc=>{const data=doc.data()||{}; if(col==="clientes" || perteneceCliente(data)) respaldo.colecciones[col].push({id:doc.id,...data});});
+      }catch(e){respaldo.colecciones[col+"_error"]=e.message;}
     }
-
-    try{
-      for(let i=0;i<localStorage.length;i++){
-        const key=localStorage.key(i);
-        respaldo.localStorage[key]=localStorage.getItem(key);
-      }
-    }catch(e){}
-
-    const texto=JSON.stringify(respaldo,null,2);
-    const blob=new Blob([texto],{type:"application/json;charset=utf-8"});
+    const blob=new Blob([JSON.stringify(respaldo,null,2)],{type:"application/json;charset=utf-8"});
     const url=URL.createObjectURL(blob);
     const a=document.createElement("a");
-    const fecha=new Date().toISOString().slice(0,10);
     a.href=url;
-    a.download="respaldo_cuenta_vueltas_"+cliente+"_"+fecha+".json";
-    document.body.appendChild(a);
+    a.download="respaldo_cuenta_vueltas_"+(clienteIdActual||"cliente")+"_"+new Date().toISOString().slice(0,10)+".json";
     a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),1000);
-    alert("✅ Respaldo descargado correctamente. Revisa tu carpeta de Descargas.");
-  }catch(error){
-    alert("❌ Error creando respaldo: "+error.message);
-  }
+    URL.revokeObjectURL(url);
+    alert("✅ Respaldo descargado correctamente.");
+  }catch(error){alert("Error al descargar respaldo: "+error.message);}
 }
 
 // Ya no se solicita foto ni comprobante en la ficha de admin.
