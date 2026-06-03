@@ -496,6 +496,9 @@ th{background:#090909;color:white;border-color:#333}.nota{font-size:12px;color:#
 </style>
 </head>
 <body>
+<!-- BOTÓN RESPALDO SIEMPRE VISIBLE -->
+<button id="btnRespaldoSiempreVisible" onclick="descargarRespaldoSistema()" title="Descarga el respaldo en la carpeta Descargas" style="position:fixed;right:10px;bottom:10px;z-index:2147483647;width:auto;min-width:220px;background:linear-gradient(180deg,#facc15,#f59e0b);color:#111;border:3px solid #ffffff;border-radius:999px;padding:14px 18px;font-size:16px;font-weight:900;box-shadow:0 0 30px rgba(250,204,21,.95),0 8px 18px rgba(0,0,0,.55);cursor:pointer">💾 RESPALDO A DESCARGAS</button>
+
 <div id="loginPanel" style="display:none;background:white;color:#111;padding:20px;border:3px solid red;position:fixed;top:20px;left:20px;z-index:9999;border-radius:12px;box-shadow:0 8px 25px rgba(0,0,0,.45);width:280px">
   <h2 style="color:#111;margin-top:0">Ingreso al Sistema</h2>
   <input id="correo" type="email" placeholder="Usuario / correo">
@@ -507,6 +510,12 @@ th{background:#090909;color:white;border-color:#333}.nota{font-size:12px;color:#
 </div>
 <div id="sistemaPanel" style="display:none">
 <header><img id="logoSistema" src="logo.png" alt="Logo"><h1>🏁 SISTEMA DE CRONOMETRAJE DEPORTIVO 🏁</h1><h2>Sistema desarrollado por Eduardo Tinizaray</h2><div style="font-size:12px;color:#22c55e;font-weight:bold">● Tiempo real Firebase</div><div id="estadoConexion" style="margin-top:8px;display:inline-block;background:#052e16;border:1px solid #22c55e;color:#bbf7d0;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:bold">🟢 Online - sincronizando</div><div id="estadoUsuario" style="margin-top:8px;display:inline-block;background:#020617;border:1px solid #facc15;color:#facc15;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:bold">Usuario: - | Rol: -</div></header>
+<div id="panelRespaldoArriba" style="margin:10px;background:linear-gradient(135deg,#facc15,#f59e0b);color:#111;border:3px solid #fff;border-radius:16px;padding:12px;text-align:center;box-shadow:0 0 25px rgba(250,204,21,.7)">
+  <div style="font-weight:900;font-size:18px;margin-bottom:6px">💾 RESPALDO DEL SISTEMA</div>
+  <div style="font-size:12px;font-weight:bold;margin-bottom:8px">Se descarga automáticamente en la carpeta DESCARGAS del navegador.</div>
+  <button type="button" onclick="descargarRespaldoSistema()" style="background:#111;color:#facc15;border:2px solid #fff;border-radius:12px;padding:13px;font-size:16px;font-weight:900;width:100%;max-width:420px;box-shadow:0 5px 0 rgba(0,0,0,.45)">💾 DESCARGAR RESPALDO AHORA</button>
+</div>
+
 <div class="tabs"><button class="rojo" style="max-width:160px;min-width:140px" onclick="cerrarSesion()">🚪 Cerrar Sesión</button><button class="tabBtn activo" onclick="abrirTab('tabCarrera',this)">🏁 Carrera</button><button class="tabBtn" onclick="abrirTab('tabPilotos',this)">👨 Pilotos</button><button class="tabBtn" onclick="abrirTab('tabMangas',this)">📊 Mangas</button><button class="tabBtn" onclick="abrirTab('tabGeneral',this)">🏆 General</button><button class="tabBtn" onclick="abrirTab('tabCampeonato',this)">📅 Campeonato</button>
 <button class="tabBtn" onclick="abrirTab('tabEventos',this);cargarEventos();">📅 Eventos</button><button id="btnSolicitudesTab" class="tabBtn" onclick="abrirTab('tabSolicitudes',this);cargarSolicitudesPilotos();">📝 Solicitudes</button><button id="btnConfigTab" class="tabBtn" onclick="abrirTab('tabConfig',this)">⚙️ Configuración</button></div>
 <section id="tabCarrera" class="tabContenido activo"><div id="relojCarreraPro" class="relojCarreraPro"><div class="lbl">⏱️ TIEMPO EN VIVO</div><div id="tiempoCarreraGrande" class="time">00:00:00</div></div><div class="panel"><h2>Nueva Competencia</h2><label style="font-weight:bold;color:#facc15">📅 Evento</label><select id="eventoCarrera" onchange="seleccionarEventoCarrera()"><option value="">Sin evento / carrera manual</option></select><input type="text" id="nombreCompetencia" placeholder="Nombre de competencia"><input type="date" id="fechaCompetencia"><select id="categoriaCarrera"><option value="">Seleccione categoría</option></select><button class="gris" onclick="refrescarCategoriasCarrera()">🔄 ACTUALIZAR CATEGORÍAS</button><input type="number" id="totalVueltas" placeholder="Cantidad de vueltas"><select id="mangaActual"><option value="1">Manga 1</option><option value="2">Manga 2</option></select><button class="azul" onclick="cargarPilotosCategoria()">CARGAR PILOTOS DE ESTA CATEGORÍA</button></div><div class="panel"><h2>Control de carrera</h2><div class="controlCarreraPro"><button class="azul" onclick="empezarCarrera()">🟢 EMPEZAR CARRERA</button><button class="rojo" onclick="finalizarCarrera()">🔴 FINALIZAR CARRERA</button><button class="amarillo" onclick="guardarManga()">💾 GUARDAR MANGA</button><button class="morado" onclick="guardarCompetencia()">🏁 FINALIZAR COMPETENCIA</button><button id="btnReabrirCarreraPro" class="gris" onclick="reabrirCarreraPro()">🔓 REABRIR CARRERA</button></div><div class="estadoMangasPro"><div id="estadoManga1Badge" class="estadoMangaBadge"></div><div id="estadoManga2Badge" class="estadoMangaBadge"></div></div><div id="estadoCompetenciaBadge" class="estadoCompetenciaPro"></div></div><div class="panel"><h2>PASO POR META</h2><div id="botonesPaso" class="grid"></div></div><div class="panel"><h2>POSICIONES EN VIVO</h2><div id="rankingVivo"></div></div><div class="panel"><h2>PILOTOS EN CARRERA</h2><div id="listaPilotos"></div></div><div class="panel"><button class="gris" onclick="limpiarSoloVueltas()">LIMPIAR VUELTAS</button><button class="morado" onclick="nuevaCarrera()">NUEVA CARRERA</button>
@@ -746,52 +755,6 @@ th{background:#090909;color:white;border-color:#333}.nota{font-size:12px;color:#
 </div>
 </section>
 <script>
-  async function descargarRespaldoSistema(){
-  try{
-
-    const respaldo={
-      pilotos:[],
-      competencias:[],
-      eventos:[],
-      solicitudes:[]
-    };
-
-    const pilotosSnap=await db.collection("pilotos").get();
-    pilotosSnap.forEach(doc=>{
-      respaldo.pilotos.push(doc.data());
-    });
-
-    const compSnap=await db.collection("competencias").get();
-    compSnap.forEach(doc=>{
-      respaldo.competencias.push(doc.data());
-    });
-
-    const eventosSnap=await db.collection("eventos").get();
-    eventosSnap.forEach(doc=>{
-      respaldo.eventos.push(doc.data());
-    });
-
-    const solicitudesSnap=await db.collection("solicitudesPilotos").get();
-    solicitudesSnap.forEach(doc=>{
-      respaldo.solicitudes.push(doc.data());
-    });
-
-    const blob=new Blob(
-      [JSON.stringify(respaldo,null,2)],
-      {type:"application/json"}
-    );
-
-    const link=document.createElement("a");
-    link.href=URL.createObjectURL(blob);
-    link.download="respaldo_campeonato.json";
-    link.click();
-
-    alert("✅ Respaldo descargado correctamente");
-
-  }catch(error){
-    alert("❌ Error creando respaldo: "+error.message);
-  }
-}
 const firebaseConfig={apiKey:"AIzaSyCaoe6R_Qbjl7TACUGgLxPd5oWfKp8oW-o",authDomain:"cuenta-vueltas-59c99.firebaseapp.com",projectId:"cuenta-vueltas-59c99",storageBucket:"cuenta-vueltas-59c99.firebasestorage.app",messagingSenderId:"425422890967",appId:"1:425422890967:web:874535c5dc1e44c5c2cd92",measurementId:"G-F5EE9VRLHB"};
 firebase.initializeApp(firebaseConfig);const db=firebase.firestore();const auth=firebase.auth();
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
@@ -1411,56 +1374,6 @@ function copiarLinkSistema(){
 }
 
 function copiarLinkVisualizador(){
-  async function descargarRespaldoSistema(){
-  try{
-
-    const respaldo={
-      pilotos:[],
-      competencias:[],
-      eventos:[],
-      solicitudes:[]
-    };
-
-    const pilotosSnap=await db.collection("pilotos").get();
-    pilotosSnap.forEach(doc=>{
-      respaldo.pilotos.push(doc.data());
-    });
-
-    const competenciasSnap=await db.collection("competencias").get();
-    competenciasSnap.forEach(doc=>{
-      respaldo.competencias.push(doc.data());
-    });
-
-    const eventosSnap=await db.collection("eventos").get();
-    eventosSnap.forEach(doc=>{
-      respaldo.eventos.push(doc.data());
-    });
-
-    const solicitudesSnap=await db.collection("solicitudesPilotos").get();
-    solicitudesSnap.forEach(doc=>{
-      respaldo.solicitudes.push(doc.data());
-    });
-
-    const blob=new Blob(
-      [JSON.stringify(respaldo,null,2)],
-      {type:"application/json"}
-    );
-
-    const link=document.createElement("a");
-    link.href=URL.createObjectURL(blob);
-    link.download="respaldo_campeonato.json";
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    alert("✅ Respaldo descargado correctamente");
-
-  }catch(error){
-    console.error(error);
-    alert("❌ Error creando respaldo: " + error.message);
-  }
-}
   const link = window.location.origin + "/publico.html";
   navigator.clipboard.writeText(link).then(()=>{
     alert("✅ Link del visualizador copiado:\n" + link);
@@ -4048,25 +3961,73 @@ function textoCuentaEvento(evento={}){
 
 async function descargarRespaldoSistema(){
   try{
-    if(usuarioRol!=="admin"){alert("Solo ADMIN puede descargar respaldo.");return;}
-    const colecciones=["clientes","eventos","solicitudesPilotos","pilotos","categorias","competencias","penalizaciones","configuracion"];
-    const respaldo={clienteId:clienteIdActual||"eduardo_tinizaray",generado:new Date().toISOString(),colecciones:{}};
-    for(const col of colecciones){
-      respaldo.colecciones[col]=[];
+    const cliente=rutaCliente ? rutaCliente() : (clienteIdActual || "eduardo_tinizaray");
+    const respaldo={
+      sistema:"Cuenta Vueltas",
+      clienteId:cliente,
+      generado:new Date().toISOString(),
+      pilotos:[],
+      categorias:[],
+      eventos:[],
+      solicitudesPilotos:[],
+      competencias:[],
+      penalizaciones:[],
+      clientes:[],
+      localStorage:{}
+    };
+
+    const colecciones=[
+      {nombre:"pilotos", destino:"pilotos"},
+      {nombre:"categorias", destino:"categorias"},
+      {nombre:"eventos", destino:"eventos"},
+      {nombre:"solicitudesPilotos", destino:"solicitudesPilotos"},
+      {nombre:"competencias", destino:"competencias"},
+      {nombre:"penalizaciones", destino:"penalizaciones"},
+      {nombre:"clientes", destino:"clientes"}
+    ];
+
+    for(const item of colecciones){
       try{
-        const snap=await db.collection(col).get();
-        snap.forEach(doc=>{const data=doc.data()||{}; if(col==="clientes" || perteneceCliente(data)) respaldo.colecciones[col].push({id:doc.id,...data});});
-      }catch(e){respaldo.colecciones[col+"_error"]=e.message;}
+        const snap=await db.collection(item.nombre).get();
+        snap.forEach(doc=>{
+          const data=doc.data()||{};
+          if(item.nombre==="clientes"){
+            if(doc.id===cliente || data.id===cliente || data.clienteId===cliente){
+              respaldo[item.destino].push({id:doc.id,...data});
+            }
+          }else{
+            if(!data.clienteId || data.clienteId===cliente || cliente==="eduardo_tinizaray"){
+              respaldo[item.destino].push({id:doc.id,...data});
+            }
+          }
+        });
+      }catch(e){
+        respaldo[item.destino+"_error"]=e.message;
+      }
     }
-    const blob=new Blob([JSON.stringify(respaldo,null,2)],{type:"application/json;charset=utf-8"});
+
+    try{
+      for(let i=0;i<localStorage.length;i++){
+        const key=localStorage.key(i);
+        respaldo.localStorage[key]=localStorage.getItem(key);
+      }
+    }catch(e){}
+
+    const texto=JSON.stringify(respaldo,null,2);
+    const blob=new Blob([texto],{type:"application/json;charset=utf-8"});
     const url=URL.createObjectURL(blob);
     const a=document.createElement("a");
+    const fecha=new Date().toISOString().slice(0,10);
     a.href=url;
-    a.download="respaldo_cuenta_vueltas_"+(clienteIdActual||"cliente")+"_"+new Date().toISOString().slice(0,10)+".json";
+    a.download="respaldo_cuenta_vueltas_"+cliente+"_"+fecha+".json";
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
-    alert("✅ Respaldo descargado correctamente.");
-  }catch(error){alert("Error al descargar respaldo: "+error.message);}
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    alert("✅ Respaldo descargado correctamente. Revisa tu carpeta de Descargas.");
+  }catch(error){
+    alert("❌ Error creando respaldo: "+error.message);
+  }
 }
 
 // Ya no se solicita foto ni comprobante en la ficha de admin.
@@ -4125,6 +4086,58 @@ async function descargarCSVInscritosEvento(){
     lista.forEach(s=>{const fila=[evento.nombre||"",evento.ciudad||"",evento.fecha||"",evento.pista||"",s.valorInscripcion||evento.valorInscripcion||"",evento.banco||"",evento.beneficiario||"",evento.tipoCuenta||"",evento.numeroCuenta||"",evento.whatsappPagos||"",s.numero||"",s.nombre||"",s.categoria||"",s.telefono||"",s.edad||"",s.equipo||"",s.estado||"pendiente",s.estadoPago||"debe"]; csv+=fila.map(escapeCSV).join(";")+"\n";});
     const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download="inscritos_"+String(evento.nombre||"evento").replace(/[^a-z0-9]/gi,"_")+".csv"; a.click(); URL.revokeObjectURL(url);
   }catch(error){alert("Error al descargar CSV: "+error.message);}
+}
+async function descargarRespaldoSistema(){
+  try{
+    const fecha=new Date().toISOString().slice(0,10);
+    const cliente=rutaCliente ? rutaCliente() : (clienteIdActual || "eduardo_tinizaray");
+
+    const respaldo={
+      fechaRespaldo:new Date().toISOString(),
+      clienteId:cliente,
+      pilotos:[],
+      competencias:[],
+      eventos:[],
+      solicitudesPilotos:[],
+      categorias:[],
+      clientes:[]
+    };
+
+    async function leerColeccion(nombre,destino){
+      const snap=await db.collection(nombre).get();
+      snap.forEach(doc=>{
+        const data=doc.data()||{};
+        if(typeof perteneceCliente==="function" && !perteneceCliente(data) && nombre!=="clientes") return;
+        destino.push({id:doc.id,...data});
+      });
+    }
+
+    await leerColeccion("pilotos",respaldo.pilotos);
+    await leerColeccion("competencias",respaldo.competencias);
+    await leerColeccion("eventos",respaldo.eventos);
+    await leerColeccion("solicitudesPilotos",respaldo.solicitudesPilotos);
+    await leerColeccion("categorias",respaldo.categorias);
+
+    try{
+      const clienteDoc=await db.collection("clientes").doc(cliente).get();
+      if(clienteDoc.exists)respaldo.clientes.push({id:clienteDoc.id,...clienteDoc.data()});
+    }catch(e){console.warn("Cliente no incluido en respaldo",e.message);}
+
+    const contenido=JSON.stringify(respaldo,null,2);
+    const blob=new Blob([contenido],{type:"application/json;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement("a");
+    link.href=url;
+    link.download="respaldo_cuenta_vuelta_"+cliente+"_"+fecha+".json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+    alert("✅ Respaldo descargado. Revise la carpeta DESCARGAS de su equipo.");
+  }catch(error){
+    console.error(error);
+    alert("❌ Error creando respaldo: "+error.message);
+  }
 }
 </script>
 
