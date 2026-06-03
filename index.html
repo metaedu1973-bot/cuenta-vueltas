@@ -496,6 +496,86 @@ th{background:#090909;color:white;border-color:#333}.nota{font-size:12px;color:#
 </style>
 </head>
 <body>
+<!-- RESPALDO_CARGA_SEGURA -->
+
+<script>
+window.descargarRespaldoSistema = async function(){
+  try{
+    const cliente = (typeof rutaCliente==="function" ? rutaCliente() : (typeof clienteIdActual!=="undefined" ? clienteIdActual : (localStorage.getItem("clienteId") || "eduardo_tinizaray")));
+    const respaldo = {
+      sistema:"Cuenta Vueltas",
+      clienteId:cliente,
+      generado:new Date().toISOString(),
+      pilotos:[],
+      categorias:[],
+      eventos:[],
+      solicitudesPilotos:[],
+      competencias:[],
+      penalizaciones:[],
+      clientes:[],
+      localStorage:{}
+    };
+
+    if(typeof db==="undefined"){
+      alert("⏳ Firebase todavía está cargando. Espera 3 segundos y vuelve a presionar RESPALDO.");
+      return;
+    }
+
+    const colecciones = [
+      ["pilotos","pilotos"],
+      ["categorias","categorias"],
+      ["eventos","eventos"],
+      ["solicitudesPilotos","solicitudesPilotos"],
+      ["competencias","competencias"],
+      ["penalizaciones","penalizaciones"],
+      ["clientes","clientes"]
+    ];
+
+    for(const [col,dest] of colecciones){
+      try{
+        const snap = await db.collection(col).get();
+        snap.forEach(doc=>{
+          const data = doc.data() || {};
+          if(col==="clientes"){
+            if(doc.id===cliente || data.id===cliente || data.clienteId===cliente){
+              respaldo[dest].push({id:doc.id,...data});
+            }
+          }else{
+            if(!data.clienteId || data.clienteId===cliente || cliente==="eduardo_tinizaray"){
+              respaldo[dest].push({id:doc.id,...data});
+            }
+          }
+        });
+      }catch(e){
+        respaldo[dest+"_error"] = e.message;
+      }
+    }
+
+    try{
+      for(let i=0;i<localStorage.length;i++){
+        const key = localStorage.key(i);
+        respaldo.localStorage[key] = localStorage.getItem(key);
+      }
+    }catch(e){}
+
+    const blob = new Blob([JSON.stringify(respaldo,null,2)], {type:"application/json;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const fecha = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = "respaldo_cuenta_vueltas_"+cliente+"_"+fecha+".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+    alert("✅ Respaldo descargado. Revisa la carpeta Descargas.");
+  }catch(error){
+    console.error(error);
+    alert("❌ Error creando respaldo: "+error.message);
+  }
+};
+</script>
+
 <button id="btnRespaldoFlotanteReal" type="button" onclick="descargarRespaldoSistema()" style="position:fixed;right:18px;bottom:18px;z-index:2147483647;width:auto!important;max-width:250px!important;background:linear-gradient(180deg,#22c55e,#15803d)!important;color:white!important;border:4px solid #facc15!important;border-radius:999px!important;padding:15px 20px!important;font-size:17px!important;font-weight:900!important;box-shadow:0 0 30px rgba(34,197,94,.95)!important">💾 RESPALDO</button>
 <div id="loginPanel" style="display:none;background:white;color:#111;padding:20px;border:3px solid red;position:fixed;top:20px;left:20px;z-index:9999;border-radius:12px;box-shadow:0 8px 25px rgba(0,0,0,.45);width:280px">
   <h2 style="color:#111;margin-top:0">Ingreso al Sistema</h2>
@@ -504,6 +584,7 @@ th{background:#090909;color:white;border-color:#333}.nota{font-size:12px;color:#
   <button type="button" class="gris" style="font-size:12px;padding:9px;margin:0 0 7px" onclick="toggleClaveLogin()">👁️ Mostrar / ocultar contraseña</button>
   <button id="btnLogin" onclick="iniciarSesionSistema()">Ingresar</button>
   <button type="button" class="morado" style="font-size:12px;padding:9px;margin-top:0" onclick="recuperarClaveLogin()">🔑 Olvidé mi contraseña</button>
+  <button type="button" class="amarillo" style="font-size:12px;padding:9px;margin-top:0" onclick="descargarRespaldoSistema()">💾 DESCARGAR RESPALDO</button>
   <p id="loginMensaje" style="color:#dc2626;font-size:12px;font-weight:bold"></p>
 </div>
 <div id="sistemaPanel" style="display:none">
